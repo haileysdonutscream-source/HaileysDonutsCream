@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Hailey’s Donuts & Cream</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body{
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(#ffe6f0,#ffd6e7);
+  padding:10px;
+}
+.container{
+  max-width:500px;
+  margin:auto;
+  background:white;
+  padding:18px;
+  border-radius:18px;
+  box-shadow:0 8px 20px rgba(0,0,0,.15);
+}
+h1,h2{
+  color:#c2185b;
+  text-align:center;
+}
+h2{
+  margin-top:18px;
+  border-bottom:2px dashed #f3b5cc;
+  padding-bottom:4px;
+}
+.item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:8px 0;
+  padding:6px;
+  border-bottom:1px dotted #f3b5cc;
+}
+input,select{
+  padding:10px;
+  margin:6px 0;
+  width:100%;
+  border-radius:10px;
+  border:1px solid #ddd;
+  background:#fff7fb;
+}
+.qty{width:60px}
+button{
+  background: linear-gradient(45deg,#25D366,#1ebe5d);
+  color:white;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-size:18px;
+  width:100%;
+  font-weight:bold;
+  cursor:pointer;
+}
+button:hover{transform:scale(1.02)}
+.total{
+  font-size:22px;
+  text-align:center;
+  margin:12px;
+  color:#c2185b;
+  font-weight:bold;
+  background:#ffe3ef;
+  padding:10px;
+  border-radius:12px;
+}
+.logo{text-align:center}
+.logo img{max-width:220px;margin-bottom:6px}
+.error{border:2px solid red!important;background:#ffe6e6;}
+
+.galeria{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin:10px 0;
+}
+.galeria img{
+  width:100%;
+  height:100px;
+  object-fit:cover;
+  border-radius:10px;
+  cursor:pointer;
+  transition:transform .2s;
+}
+.galeria img:hover{transform:scale(1.05)}
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+.modal img{
+  max-width:90%;
+  max-height:90%;
+  border-radius:12px;
+}
+
+.aviso{
+  background:#fff3cd;
+  border:1px solid #ffeeba;
+  padding:10px;
+  border-radius:12px;
+  font-size:14px;
+  margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div class="logo">
+<img src="logo.png">
+</div>
+
+<h1>Hailey’s Donuts & Cream</h1>
+
+<div class="galeria">
+  <img src="foto1.png" onclick="zoom(this.src)">
+  <img src="foto2.png" onclick="zoom(this.src)">
+  <img src="foto3.jpg" onclick="zoom(this.src)">
+  <img src="foto4.png" onclick="zoom(this.src)">
+  <img src="foto5.jpg" onclick="zoom(this.src)">
+  <img src="foto6.jpg" onclick="zoom(this.src)">
+</div>
+
+<div class="modal" id="modal" onclick="cerrarZoom()">
+  <img id="imgGrande">
+</div>
+
+<label>Nombre:</label>
+<input id="nombre">
+
+<label>Dirección:</label>
+<input id="direccion">
+
+<label>Método de pago:</label>
+<select id="pago">
+<option>Efectivo</option>
+<option>Transferencia</option>
+</select>
+
+<label>Fecha:</label>
+<input type="date" id="fecha">
+
+<label>Hora:</label>
+<input type="time" id="hora">
+
+<h2>🚚 Tipo de entrega</h2>
+
+<div class="aviso">
+📍 Delivery solo en: Licey al Medio, Tamboril, Pontezuela, Centro, Pekín, Monumental y Universitaria.
+</div>
+
+<select id="tipoEntrega" onchange="toggleDelivery()">
+<option value="pickup">Recoger en tienda (Licey al Medio)</option>
+<option value="delivery">Delivery</option>
+</select>
+
+<div id="zonaContainer" style="display:none;">
+<h2>Zonas disponibles</h2>
+<select id="zona" onchange="calcular()">
+<option value="0">Selecciona tu zona</option>
+<option value="50">Zona 1 – Licey al Medio (RD$50)</option>
+<option value="100">Zona 2 – Tamboril / Pontezuela (RD$100)</option>
+<option value="250">Zona 3 – Centro / Pekín / Monumental / Universitaria (RD$250)</option>
+</select>
+</div>
+
+<h2>🍩 Combos</h2>
+
+<div class="item">6 Donitas + 1 topping – RD$160
+<input type="number" min="0" value="0" class="qty" data-name="6 Donitas" data-price="160" data-toppings="1" oninput="calcular()"></div>
+
+<div class="item">12 Donitas + 2 toppings – RD$300
+<input type="number" min="0" value="0" class="qty" data-name="12 Donitas" data-price="300" data-toppings="2" oninput="calcular()"></div>
+
+<div class="item">24 Donitas + 3 toppings – RD$600
+<input type="number" min="0" value="0" class="qty" data-name="24 Donitas" data-price="600" data-toppings="3" oninput="calcular()"></div>
+
+<div class="item">4 Donitas + 1 topping – RD$130
+<input type="number" min="0" value="0" class="qty" data-name="4 Donitas" data-price="130" data-toppings="1" oninput="calcular()"></div>
+
+<div class="item">9 Donitas + 1 topping – RD$200
+<input type="number" min="0" value="0" class="qty" data-name="9 Donitas" data-price="200" data-toppings="1" oninput="calcular()"></div>
+
+<h2>Toppings</h2>
+<div id="toppingsContainer"></div>
+
+<div class="total" id="total">TOTAL: RD$0</div>
+
+<button onclick="enviar()">📲 Enviar pedido</button>
+
+</div>
+
+<script>
+const toppings=[
+{name:"Kisses",price:55},{name:"Hershey’s blanco",price:50},{name:"Hershey’s negro",price:50},
+{name:"Almendras",price:50},{name:"M&M",price:50},{name:"Oreo",price:35},
+{name:"Chispas de colores",price:30},{name:"Crema Dubai",price:75},
+{name:"Twix",price:65},{name:"Canela",price:10},
+{name:"Azúcar glass",price:25},{name:"Crema pastelera",price:55}
+];
+
+function toggleDelivery(){
+let tipo=document.getElementById("tipoEntrega").value;
+document.getElementById("zonaContainer").style.display=(tipo==="delivery")?"block":"none";
+calcular();
+}
+
+function actualizarToppings(max){
+let cont=document.getElementById("toppingsContainer");
+let seleccionados=[];
+cont.querySelectorAll(".toppingSelect").forEach(s=>seleccionados.push(s.value));
+if(cont.querySelectorAll(".toppingSelect").length===max)return;
+cont.innerHTML="";
+for(let i=0;i<max;i++){
+let s=document.createElement("select");
+s.className="toppingSelect";
+s.onchange=calcular;
+let o=document.createElement("option");
+o.text="Selecciona topping "+(i+1);o.value=0;
+s.appendChild(o);
+toppings.forEach(t=>{
+let op=document.createElement("option");
+op.value=t.price;op.text=t.name+" (RD$"+t.price+")";
+s.appendChild(op);
+});
+if(seleccionados[i])s.value=seleccionados[i];
+cont.appendChild(s);
+}
+}
+
+function calcular(){
+let total=0,maxToppings=0;
+document.querySelectorAll(".qty").forEach(c=>{
+let q=parseInt(c.value)||0;
+total+=q*parseInt(c.dataset.price);
+maxToppings+=q*parseInt(c.dataset.toppings);
+});
+actualizarToppings(maxToppings);
+document.querySelectorAll(".toppingSelect").forEach(s=>{
+total+=parseInt(s.value)||0;
+});
+if(document.getElementById("tipoEntrega").value==="delivery"){
+total+=parseInt(document.getElementById("zona").value)||0;
+}
+document.getElementById("total").innerText="TOTAL: RD$"+total;
+}
+
+function enviar(){
+let nombre=document.getElementById("nombre");
+let direccion=document.getElementById("direccion");
+let fecha=document.getElementById("fecha");
+let hora=document.getElementById("hora");
+let zona=document.getElementById("zona");
+let tipo=document.getElementById("tipoEntrega").value;
+let pago=document.getElementById("pago");
+
+if(nombre.value==""){alert("Nombre requerido");return;}
+if(direccion.value==""){alert("Dirección requerida");return;}
+if(fecha.value==""){alert("Fecha requerida");return;}
+if(hora.value==""){alert("Hora requerida");return;}
+
+let texto="Hola, quiero ordenar:%0A";
+let total=0,hay=false;
+
+document.querySelectorAll(".qty").forEach(i=>{
+let q=parseInt(i.value)||0;
+if(q>0){
+hay=true;
+let p=parseInt(i.dataset.price);
+texto+="- "+q+" x "+i.dataset.name+" RD$"+(q*p)+"%0A";
+total+=q*p;
+}
+});
+if(!hay){alert("Elige al menos un combo");return;}
+
+let toppingsElegidos=[];
+document.querySelectorAll(".toppingSelect").forEach(s=>{
+if(s.value>0){
+toppingsElegidos.push(s.options[s.selectedIndex].text);
+total+=parseInt(s.value);
+}
+});
+if(toppingsElegidos.length){
+texto+="Toppings:%0A";
+toppingsElegidos.forEach(t=>texto+="- "+t+"%0A");
+}
+
+if(tipo==="delivery"){
+if(zona.value=="0"){alert("Selecciona una zona");return;}
+texto+="Entrega: Delivery%0A";
+texto+="Zona: "+zona.options[zona.selectedIndex].text+"%0A";
+texto+="Costo delivery: RD$"+zona.value+"%0A";
+total+=parseInt(zona.value);
+}else{
+texto+="Entrega: Recoger en tienda (Licey al Medio)%0A";
+}
+
+texto+="Fecha: "+fecha.value+"%0A";
+texto+="Hora: "+hora.value+"%0A";
+texto+="Nombre: "+nombre.value+"%0A";
+texto+="Dirección: "+direccion.value+"%0A";
+texto+="Pago: "+pago.value+"%0A";
+texto+="TOTAL: RD$"+total;
+
+window.open("https://wa.me/18297096223?text="+texto);
+}
+
+function zoom(src){
+document.getElementById("imgGrande").src=src;
+document.getElementById("modal").style.display="flex";
+}
+function cerrarZoom(){
+document.getElementById("modal").style.display="none";
+}
+</script>
+
+</body>
+</html>
