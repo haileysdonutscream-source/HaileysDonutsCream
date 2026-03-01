@@ -102,6 +102,11 @@ button:hover{transform:scale(1.02)}
   object-fit:cover;
   border-radius:10px;
   cursor:pointer;
+  transition: transform 0.2s ease;   /* 👈 animación */
+}
+
+.galeria img:hover{
+  transform: scale(1.05);            /* 👈 zoom al pasar el mouse */
 }
 
 .modal{
@@ -344,3 +349,4 @@ document.getElementById("modal").style.display="none";
 
 </body>
 </html>
+
