@@ -5,33 +5,43 @@
 <title>Hailey’s Donuts & Cream</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Fuente bonita -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Pacifico&display=swap" rel="stylesheet">
+
 <style>
-* {
-  box-sizing: border-box;
-}
+*{box-sizing:border-box}
 
 body{
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: linear-gradient(#ffe6f0,#ffd6e7);
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:#ffe6f0;
   padding:10px;
 }
+
 .container{
   max-width:500px;
   margin:auto;
   background:white;
-  padding:18px;
-  border-radius:18px;
-  box-shadow:0 8px 20px rgba(0,0,0,.15);
+  padding:15px;
+  border-radius:15px;
+  box-shadow:0 0 10px rgba(0,0,0,.15)
 }
+
 h1,h2{
+  font-family:'Pacifico',cursive;
   color:#c2185b;
   text-align:center;
 }
+
 h2{
   margin-top:18px;
   border-bottom:2px dashed #f3b5cc;
   padding-bottom:4px;
 }
+
+.logo{text-align:center}
+.logo img{max-width:220px}
+
 .item{
   display:flex;
   justify-content:space-between;
@@ -40,6 +50,7 @@ h2{
   padding:6px;
   border-bottom:1px dotted #f3b5cc;
 }
+
 input,select{
   padding:10px;
   margin:6px 0;
@@ -48,9 +59,11 @@ input,select{
   border:1px solid #ddd;
   background:#fff7fb;
 }
+
 .qty{width:60px}
+
 button{
-  background: linear-gradient(45deg,#25D366,#1ebe5d);
+  background:linear-gradient(45deg,#ff5fa2,#ff8cc6);
   color:white;
   padding:14px;
   border:none;
@@ -60,7 +73,9 @@ button{
   font-weight:bold;
   cursor:pointer;
 }
+
 button:hover{transform:scale(1.02)}
+
 .total{
   font-size:22px;
   text-align:center;
@@ -71,9 +86,8 @@ button:hover{transform:scale(1.02)}
   padding:10px;
   border-radius:12px;
 }
-.logo{text-align:center}
-.logo img{max-width:220px;margin-bottom:6px}
-.error{border:2px solid red!important;background:#ffe6e6;}
+
+.error{border:2px solid red!important;background:#ffe6e6}
 
 .galeria{
   display:grid;
@@ -81,15 +95,14 @@ button:hover{transform:scale(1.02)}
   gap:6px;
   margin:10px 0;
 }
+
 .galeria img{
   width:100%;
   height:100px;
   object-fit:cover;
   border-radius:10px;
   cursor:pointer;
-  transition:transform .2s;
 }
-.galeria img:hover{transform:scale(1.05)}
 
 .modal{
   display:none;
@@ -100,6 +113,7 @@ button:hover{transform:scale(1.02)}
   align-items:center;
   z-index:999;
 }
+
 .modal img{
   max-width:90%;
   max-height:90%;
@@ -127,16 +141,16 @@ button:hover{transform:scale(1.02)}
 <h1>Hailey’s Donuts & Cream</h1>
 
 <div class="galeria">
-  <img src="foto1.png" onclick="zoom(this.src)">
-  <img src="foto2.png" onclick="zoom(this.src)">
-  <img src="foto3.jpg" onclick="zoom(this.src)">
-  <img src="foto4.png" onclick="zoom(this.src)">
-  <img src="foto5.jpg" onclick="zoom(this.src)">
-  <img src="foto6.jpg" onclick="zoom(this.src)">
+<img src="foto1.png" onclick="zoom(this.src)">
+<img src="foto2.png" onclick="zoom(this.src)">
+<img src="foto3.jpg" onclick="zoom(this.src)">
+<img src="foto4.png" onclick="zoom(this.src)">
+<img src="foto5.jpg" onclick="zoom(this.src)">
+<img src="foto6.jpg" onclick="zoom(this.src)">
 </div>
 
 <div class="modal" id="modal" onclick="cerrarZoom()">
-  <img id="imgGrande">
+<img id="imgGrande">
 </div>
 
 <label>Nombre:</label>
