@@ -74,6 +74,11 @@ button.secondary{
   color:#333;
   font-weight:600;
 }
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  transform:none;
+}
 .topbar{
   display:flex;
   align-items:center;
@@ -126,6 +131,26 @@ hr{
   border:none;
   border-top:1px dashed #f3b5cc;
   margin:14px 0;
+}
+.actionCol button{
+  width:100%;
+}
+.actionCol .secondary{
+  margin-top:8px;
+}
+.actionCol .mini{
+  margin-top:8px;
+  font-size:14px;
+  padding:10px 12px;
+}
+.actionCol .hint{
+  margin-top:8px;
+  font-size:12px;
+  color:#777;
+  background:#fff;
+  border:1px dashed #f3b5cc;
+  padding:8px 10px;
+  border-radius:12px;
 }
 </style>
 </head>
@@ -204,8 +229,8 @@ hr{
         </div>
         <hr>
         <div class="small muted">
-          Nota: Los pedidos viejos seguirán funcionando aunque luego cambies de computadora.  
-          Lo único que cambia es que tendrás que volver a iniciar sesión.
+          Nota: Los pedidos viven en Firestore. Cambiar de computadora no daña nada:
+          solo vuelves a iniciar sesión y listo.
         </div>
       </div>
     </div>
@@ -217,10 +242,10 @@ hr{
         <table class="table">
           <thead>
             <tr>
-              <th style="width:180px;">Cliente</th>
+              <th style="width:200px;">Cliente</th>
               <th>Pedido</th>
-              <th style="width:220px;">Estados</th>
-              <th style="width:220px;">Acciones</th>
+              <th style="width:230px;">Estados</th>
+              <th style="width:260px;">Acciones</th>
             </tr>
           </thead>
           <tbody id="tablaPedidos"></tbody>
@@ -230,13 +255,13 @@ hr{
   </div>
 </div>
 
-<!-- Firebase v8 (igual que tu tienda, para no inventar) -->
+<!-- Firebase v8 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
-/** 1) CONFIG (tu config actual) **/
+/** 1) CONFIG **/
 const firebaseConfig = {
   apiKey: "AIzaSyBIc3oJMmSTnOg4EaFsCLOkhyLoGXEWj6c",
   authDomain: "minidonas-d5e36.firebaseapp.com",
@@ -276,18 +301,15 @@ async function login(){
 }
 
 async function logout(){
-  // Cierra sesión del panel
   await auth.signOut();
 }
 
 /** 4) Verificar ADMIN con custom claims **/
 async function assertAdmin(user){
-  // Fuerza refresco del token para leer claims actualizados
   const tokenResult = await user.getIdTokenResult(true);
   const isAdmin = !!(tokenResult && tokenResult.claims && tokenResult.claims.admin);
 
   if(!isAdmin){
-    // Si no es admin, fuera.
     await auth.signOut();
     throw new Error("Este usuario NO es admin. (No tiene el claim admin=true)");
   }
@@ -308,19 +330,47 @@ function listenPedidos(){
     });
 }
 
-/** 6) Render **/
+/** Helpers **/
 function safe(v){ return (v===undefined || v===null) ? "" : String(v); }
 
 function fmtFecha(ts){
   try{
     if(!ts) return "";
-    // puede venir como Date, Timestamp o string
     if(typeof ts.toDate === "function") return ts.toDate().toLocaleString();
     if(ts instanceof Date) return ts.toLocaleString();
     return String(ts);
   }catch(_){ return ""; }
 }
 
+function escapeHtml(str){
+  return String(str || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+/**
+ * Normaliza teléfono a formato wa.me
+ * - Acepta: "8091234567", "829-123-4567", "+1 8091234567", "1 8091234567"
+ * - Devuelve: "18091234567" (sin +)
+ */
+function normalizarTelefonoWa(tel){
+  const digits = String(tel || "").replace(/\D/g, "");
+  if(!digits) return "";
+
+  // Si viene con +1 o 1 delante (11 dígitos) => ok
+  if(digits.length === 11 && digits.startsWith("1")) return digits;
+
+  // Si viene 10 dígitos (RD típico: 809/829/849 + 7) => le ponemos 1
+  if(digits.length === 10) return "1" + digits;
+
+  // Si viene 12+ raro, lo dejamos como está (pero probablemente mal)
+  return digits;
+}
+
+/** 6) KPIs **/
 function actualizarKPIs(){
   const total = pedidosCache.length;
   const pend = pedidosCache.filter(p => (p.estado || "pendiente") === "pendiente").length;
@@ -331,6 +381,7 @@ function actualizarKPIs(){
   document.getElementById("kNoPag").innerText = noPag;
 }
 
+/** 7) Render **/
 function renderFiltrado(){
   const fEstado = document.getElementById("fEstado").value;
   const fPago = document.getElementById("fPago").value;
@@ -366,22 +417,31 @@ function renderFiltrado(){
     const motivoNoPago = p.motivoNoPago || "";
     const notas = p.notas || "";
 
-    const combos = Array.isArray(p.combos) ? p.combos.map(c => `• ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("<br>") : "";
-    const tops = Array.isArray(p.tops) ? p.tops.map(t => `• ${t}`).join("<br>") : "";
+    const combos = Array.isArray(p.combos)
+      ? p.combos.map(c => `• ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("<br>")
+      : "";
+    const tops = Array.isArray(p.tops)
+      ? p.tops.map(t => `• ${t}`).join("<br>")
+      : "";
 
     const entrega = (p.tipo === "delivery") ? "🚚 Delivery" : "📍 Pickup";
     const total = safe(p.total);
-
     const creado = fmtFecha(p.creado);
+
+    const telRaw = p.telefono || p.tel || p.phone || ""; // por si algún día lo guardas con otro nombre
+    const telWa = normalizarTelefonoWa(telRaw);
+    const tieneTel = !!telWa;
 
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>
         <strong>${safe(p.nombre)}</strong><br>
         <span class="small muted">${safe(p.direccion)}</span><br>
+        ${telRaw ? `<span class="small">📞 <b>${escapeHtml(telRaw)}</b></span><br>` : `<span class="small muted">📞 (sin teléfono)</span><br>`}
         <span class="small">${entrega} • Pago: <b>${safe(p.pago)}</b></span><br>
         <span class="small muted">Fecha/Hora: ${safe(p.fecha)} ${safe(p.hora)}</span><br>
         <span class="small muted">Creado: ${safe(creado)}</span>
+        ${p.ultimaRespuestaTipo ? `<br><span class="small muted">Última resp.: <b>${escapeHtml(p.ultimaRespuestaTipo)}</b> (${fmtFecha(p.ultimaRespuestaFecha)})</span>` : ``}
       </td>
 
       <td>
@@ -415,25 +475,23 @@ function renderFiltrado(){
         <textarea placeholder="Notas..." onblur="updatePedido('${p.id}', {notas:this.value})">${escapeHtml(notas)}</textarea>
       </td>
 
-      <td>
-        <button onclick="abrirWhatsApp('${encodeURIComponent(p.mensaje || '')}')">Reenviar WhatsApp</button>
-        <button class="secondary" style="margin-top:8px;" onclick="copiarTexto('${encodeURIComponent(p.mensaje || '')}')">Copiar mensaje</button>
+      <td class="actionCol">
+        <!-- 1) Respuestas rápidas (al cliente) -->
+        <button class="mini" ${tieneTel ? "" : "disabled"} onclick="enviarRespuesta('${p.id}', 'recibido')">✅ Enviar: Pedido recibido</button>
+        <button class="mini secondary" ${tieneTel ? "" : "disabled"} onclick="enviarRespuesta('${p.id}', 'listo')">🍩 Enviar: Pedido listo</button>
+
+        ${tieneTel ? "" : `<div class="hint">Para enviar WhatsApp al cliente falta el <b>teléfono</b> en este pedido.</div>`}
+
+        <!-- 2) Herramientas (tu mensaje original) -->
+        <button style="margin-top:10px;" onclick="abrirWhatsAppNegocio('${encodeURIComponent(p.mensaje || '')}')">Reenviar WhatsApp (mensaje original)</button>
+        <button class="secondary" onclick="copiarTexto('${encodeURIComponent(p.mensaje || '')}')">Copiar mensaje</button>
       </td>
     `;
     tbody.appendChild(row);
   });
 }
 
-function escapeHtml(str){
-  return String(str || "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-/** 7) Acciones **/
+/** 8) Actualizar pedido **/
 async function updatePedido(id, patch){
   try{
     await db.collection("pedidos").doc(id).set(patch, { merge:true });
@@ -442,12 +500,14 @@ async function updatePedido(id, patch){
   }
 }
 
-function abrirWhatsApp(mensajeEnc){
+/** 9) Acciones WhatsApp **/
+function abrirWhatsAppNegocio(mensajeEnc){
   const msg = decodeURIComponent(mensajeEnc || "");
   if(!msg){
     alert("Este pedido no tiene mensaje guardado.");
     return;
   }
+  // Esto abre WhatsApp hacia TU número del negocio con el texto (como antes).
   window.open("https://wa.me/18297096223?text=" + encodeURIComponent(msg));
 }
 
@@ -461,7 +521,66 @@ async function copiarTexto(mensajeEnc){
   }
 }
 
-/** 8) Boot **/
+/** 10) Respuestas rápidas al cliente **/
+function construirMensaje(p, tipo){
+  const nombre = safe(p.nombre);
+  const fecha = safe(p.fecha);
+  const hora  = safe(p.hora);
+  const direccion = safe(p.direccion);
+  const total = safe(p.total);
+  const pago = safe(p.pago);
+  const entrega = (p.tipo === "delivery") ? "Delivery" : "Recoger en tienda";
+
+  if(tipo === "recibido"){
+    return `Hola ${nombre} 👋\n\n✅ Hemos recibido tu pedido.\nEn cuanto esté listo te notificaremos por aquí.\n\nGracias por preferirnos 🩷`;
+  }
+
+  if(tipo === "listo"){
+    return `Hola ${nombre} 🍩\n\n✅ Tu pedido del ${fecha} a las ${hora} está listo.\n\n📍 Dirección registrada:\n${direccion}\n\nSi hay que corregir algo, respóndeme con la dirección correcta.\n\nTotal: RD$${total} • Pago: ${pago} • ${entrega}\n\nGracias 🩷`;
+  }
+
+  return "";
+}
+
+async function enviarRespuesta(pedidoId, tipo){
+  const p = pedidosCache.find(x => x.id === pedidoId);
+  if(!p){
+    alert("No encontré ese pedido en memoria (recarga la página).");
+    return;
+  }
+
+  const telRaw = p.telefono || p.tel || p.phone || "";
+  const telWa = normalizarTelefonoWa(telRaw);
+  if(!telWa){
+    alert("Este pedido no tiene teléfono. (No puedo abrir WhatsApp al cliente)");
+    return;
+  }
+
+  const msg = construirMensaje(p, tipo);
+  if(!msg){
+    alert("Mensaje vacío (tipo inválido).");
+    return;
+  }
+
+  // 1) Guardar en Firestore que se envió respuesta
+  try{
+    await db.collection("pedidos").doc(pedidoId).set({
+      ultimaRespuestaTipo: tipo,
+      ultimaRespuestaMensaje: msg,
+      ultimaRespuestaFecha: firebase.firestore.FieldValue.serverTimestamp(),
+      respondido: true
+    }, { merge:true });
+  }catch(e){
+    alert("Guardando estado de respuesta falló: " + e.message);
+    // igual abrimos WhatsApp, pero te aviso
+  }
+
+  // 2) Abrir WhatsApp hacia el cliente
+  const url = "https://wa.me/" + telWa + "?text=" + encodeURIComponent(msg);
+  window.open(url);
+}
+
+/** 11) Boot **/
 auth.onAuthStateChanged(async (user)=>{
   const loginBox = document.getElementById("loginBox");
   const appBox = document.getElementById("appBox");
