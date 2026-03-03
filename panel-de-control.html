@@ -152,10 +152,78 @@ hr{
   padding:8px 10px;
   border-radius:12px;
 }
+
+
+.miniGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:6px;
+  justify-items:center;
+}
+
+.iconBtn{
+  width:34px;
+  height:34px;
+  padding:0;
+  border-radius:10px;
+  font-size:15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.fullWidth{
+  grid-column: span 2;
+}
+
+.iconBtn:hover{
+  transform:scale(1.08);
+}
+
 </style>
 </head>
 
 <body>
+
+<!-- MODAL EDITAR PEDIDO -->
+<div id="editModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:9999; display:flex; justify-content:center; align-items:center; padding:12px;">
+  <div class="card" style="background:white; max-width:920px; width:100%; max-height:92vh; overflow:auto;">
+    <h2>✏️ Editar pedido</h2>
+    <div id="editBody">
+<div id="editBody">
+  
+  <!-- Cliente -->
+  <label>Nombre</label>
+  <input id="eNombre">
+
+  <label>Dirección</label>
+  <input id="eDireccion">
+
+  <!-- 👇👇👇 AQUÍ VAMOS A PEGAR 👇👇👇 -->
+
+  <label class="small muted">Toppings</label>
+  <div id="editToppings"></div>
+
+  <div style="display:flex; gap:8px; margin-top:6px;">
+    <button class="secondary" type="button" onclick="addEditTopping()">+ Topping</button>
+    <button class="secondary" type="button" onclick="clearEditToppings()">Limpiar</button>
+  </div>
+
+  <!-- 👆👆👆 HASTA AQUÍ 👆👆👆 -->
+
+</div>
+
+
+</div>
+    <div class="row" style="justify-content:flex-end; margin-top:10px;">
+      <button class="secondary" onclick="cerrarEdit()">Cancelar</button>
+      <button style="margin-left:10px;" onclick="guardarEdit()">Guardar cambios</button>
+    </div>
+    <div id="editMsg" class="small muted" style="margin-top:8px;"></div>
+  </div>
+</div>
+
+
 <div class="container">
   <h1>Panel de control</h1>
 
@@ -261,6 +329,297 @@ hr{
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
+let editId = null;
+let editDraft = null;
+
+function abrirEdit(id){
+
+
+
+
+
+
+
+  const p = pedidosCache.find(x => x.id === id);
+  if(!p){ alert("No encontré el pedido."); return; 
+renderEditToppings(p.tops || []);
+
+}
+
+  editId = id;
+  // clonar para editar sin tocar el cache hasta guardar
+  editDraft = JSON.parse(JSON.stringify(p));
+
+  // defaults
+  editDraft.combos = Array.isArray(editDraft.combos) ? editDraft.combos : [];
+  editDraft.tops = Array.isArray(editDraft.tops) ? editDraft.tops : [];
+  editDraft.tipo = editDraft.tipo || "pickup";
+  editDraft.pagoEstado = editDraft.pagoEstado || "pendiente";
+  editDraft.estado = editDraft.estado || "pendiente";
+
+  renderEdit();
+  document.getElementById("editModal").classList.remove("hidden");
+}
+
+function cerrarEdit(){
+  editId = null;
+  editDraft = null;
+  document.getElementById("editMsg").innerText = "";
+  document.getElementById("editModal").classList.add("hidden");
+}
+
+function setEditMsg(msg){ document.getElementById("editMsg").innerText = msg || ""; }
+
+function renderEdit(){
+  const p = editDraft;
+  const el = document.getElementById("editBody");
+
+  const zonaVal = safe(p.zonaCosto || "0"); // si la guardas
+  const tipo = p.tipo || "pickup";
+
+  el.innerHTML = `
+    <div class="row">
+      <div class="card" style="flex:1; min-width:240px;">
+        <strong>Cliente</strong>
+        <label>Nombre</label>
+        <input id="eNombre" value="${escapeHtml(p.nombre)}">
+
+        <label>Teléfono (WhatsApp)</label>
+        <input id="eTelefono" value="${escapeHtml(p.telefono || '')}" placeholder="8091234567">
+
+        <label>Dirección</label>
+        <input id="eDireccion" value="${escapeHtml(p.direccion)}">
+      </div>
+
+      <div class="card" style="flex:1; min-width:240px;">
+        <strong>Entrega / Fecha</strong>
+        <label>Fecha</label>
+        <input id="eFecha" type="date" value="${escapeHtml(p.fecha)}">
+
+        <label>Hora</label>
+        <input id="eHora" type="time" value="${escapeHtml(p.hora)}">
+
+        <label>Tipo</label>
+        <select id="eTipo" onchange="toggleZonaEdit()">
+          <option value="pickup" ${tipo==='pickup'?'selected':''}>Pickup</option>
+          <option value="delivery" ${tipo==='delivery'?'selected':''}>Delivery</option>
+        </select>
+
+        <div id="zonaEditBox" style="${tipo==='delivery'?'':'display:none;'}">
+          <label>Costo Delivery</label>
+          <select id="eZonaCosto" onchange="recalcularTotalEdit()">
+            <option value="0">Sin costo</option>
+            <option value="50" ${zonaVal==='50'?'selected':''}>Zona 1 (RD$50)</option>
+            <option value="100" ${zonaVal==='100'?'selected':''}>Zona 2 (RD$100)</option>
+            <option value="250" ${zonaVal==='250'?'selected':''}>Zona 3 (RD$250)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card" style="flex:1; min-width:240px;">
+        <strong>Estados / Pago</strong>
+        <label>Estado pedido</label>
+        <select id="eEstado">
+          <option value="pendiente" ${p.estado==='pendiente'?'selected':''}>Pendiente</option>
+          <option value="realizado" ${p.estado==='realizado'?'selected':''}>Realizado</option>
+          <option value="cancelado" ${p.estado==='cancelado'?'selected':''}>Cancelado</option>
+        </select>
+
+        <label>Pago (método)</label>
+        <select id="ePago">
+          <option ${p.pago==='Efectivo'?'selected':''}>Efectivo</option>
+          <option ${p.pago==='Transferencia'?'selected':''}>Transferencia</option>
+        </select>
+
+        <label>Estado del pago</label>
+        <select id="ePagoEstado">
+          <option value="pendiente" ${p.pagoEstado==='pendiente'?'selected':''}>Pendiente</option>
+          <option value="pagado" ${p.pagoEstado==='pagado'?'selected':''}>Pagado</option>
+          <option value="no_pagado" ${p.pagoEstado==='no_pagado'?'selected':''}>No pagado</option>
+        </select>
+
+        <label>Motivo (si no pagó)</label>
+        <input id="eMotivoNoPago" value="${escapeHtml(p.motivoNoPago || '')}" placeholder="Ej: no respondió">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="card" style="flex:2; min-width:280px;">
+        <strong>Combos (edita cantidades)</strong>
+        <div class="small muted">Cambias cantidad y recalculo el total.</div>
+        <div id="combosEdit"></div>
+        <button class="secondary mini" onclick="agregarComboEdit()" style="margin-top:8px;">+ Agregar combo</button>
+      </div>
+
+      <div class="card" style="flex:1; min-width:260px;">
+        <strong>Toppings</strong>
+        <div class="small muted">Uno por línea.</div>
+        <textarea id="eTops" oninput="recalcularTotalEdit()">${escapeHtml((p.tops||[]).join("\n"))}</textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="card" style="flex:1; min-width:240px;">
+        <strong>Total</strong>
+        <div class="pill">TOTAL RD$ <span id="eTotal">${safe(p.total||0)}</span></div>
+        <div class="small muted" style="margin-top:8px;">*El total se recalcula con combos + toppings (si tienen precio en texto) + delivery.</div>
+      </div>
+
+      <div class="card" style="flex:2; min-width:280px;">
+        <strong>Notas internas</strong>
+        <textarea id="eNotas">${escapeHtml(p.notas||'')}</textarea>
+      </div>
+    </div>
+  `;
+
+  renderCombosEdit();
+  recalcularTotalEdit();
+}
+
+function toggleZonaEdit(){
+  const tipo = document.getElementById("eTipo").value;
+  document.getElementById("zonaEditBox").style.display = (tipo==="delivery") ? "block" : "none";
+  recalcularTotalEdit();
+}
+
+function renderCombosEdit(){
+  const box = document.getElementById("combosEdit");
+  const combos = editDraft.combos || [];
+  if(!combos.length){
+    box.innerHTML = `<div class="muted small" style="margin-top:6px;">No hay combos. Agrega uno.</div>`;
+    return;
+  }
+
+  box.innerHTML = combos.map((c, idx)=>`
+    <div class="row" style="align-items:flex-end;">
+      <div style="flex:2; min-width:180px;">
+        <label class="small muted">Combo</label>
+        <input value="${escapeHtml(c.combo||'')}" oninput="editDraft.combos[${idx}].combo=this.value">
+      </div>
+      <div style="width:120px;">
+        <label class="small muted">Cantidad</label>
+        <input type="number" min="0" value="${Number(c.cantidad||0)}" oninput="editDraft.combos[${idx}].cantidad=Number(this.value||0); recalcularTotalEdit();">
+      </div>
+      <div style="width:140px;">
+        <label class="small muted">Precio (línea)</label>
+        <input type="number" min="0" value="${Number(c.precio||0)}" oninput="editDraft.combos[${idx}].precio=Number(this.value||0); recalcularTotalEdit();">
+      </div>
+      <div style="width:110px;">
+        <button class="secondary mini" onclick="eliminarComboEdit(${idx})">Eliminar</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function agregarComboEdit(){
+  editDraft.combos.push({ combo:"", cantidad:1, precio:0 });
+  renderCombosEdit();
+  recalcularTotalEdit();
+}
+
+function eliminarComboEdit(idx){
+  editDraft.combos.splice(idx,1);
+  renderCombosEdit();
+  recalcularTotalEdit();
+}
+
+/**
+ * Recalcula total:
+ * - suma combos.precio
+ * - suma toppings: si el texto contiene "(RD$75)" lo detecta y suma 75, si no, suma 0
+ * - suma delivery (eZonaCosto)
+ */
+function recalcularTotalEdit(){
+  let total = 0;
+
+  (editDraft.combos||[]).forEach(c=>{
+    total += Number(c.precio||0);
+  });
+
+  // toppings: intenta sacar RD$ del texto
+  const topsText = (document.getElementById("eTops")?.value || "");
+  const tops = topsText.split("\n").map(x=>x.trim()).filter(Boolean);
+  editDraft.tops = tops;
+
+  tops.forEach(t=>{
+    const m = t.match(/RD\$\s*(\d+)/i);
+    if(m && m[1]) total += Number(m[1]);
+  });
+
+  const tipo = document.getElementById("eTipo")?.value || "pickup";
+  if(tipo==="delivery"){
+    const dz = Number(document.getElementById("eZonaCosto")?.value || 0);
+    editDraft.zonaCosto = dz;
+    total += dz;
+  }else{
+    editDraft.zonaCosto = 0;
+  }
+
+  editDraft.total = total;
+  const totalEl = document.getElementById("eTotal");
+  if(totalEl) totalEl.innerText = total;
+}
+
+async function guardarEdit(){
+  if(!editId || !editDraft){ return; }
+
+  // tomar inputs
+  editDraft.nombre = document.getElementById("eNombre").value.trim();
+  editDraft.telefono = document.getElementById("eTelefono").value.trim();
+  editDraft.direccion = document.getElementById("eDireccion").value.trim();
+  editDraft.fecha = document.getElementById("eFecha").value;
+  editDraft.hora = document.getElementById("eHora").value;
+  editDraft.tipo = document.getElementById("eTipo").value;
+  editDraft.estado = document.getElementById("eEstado").value;
+  editDraft.pago = document.getElementById("ePago").value;
+  editDraft.pagoEstado = document.getElementById("ePagoEstado").value;
+  editDraft.motivoNoPago = document.getElementById("eMotivoNoPago").value.trim();
+  editDraft.notas = document.getElementById("eNotas").value;
+
+  // regla: teléfono obligatorio si delivery
+  if(editDraft.tipo === "delivery"){
+    const soloDig = (editDraft.telefono||"").replace(/\D/g,"");
+    if(!soloDig || soloDig.length < 10){
+      setEditMsg("📞 Para delivery el teléfono es obligatorio y debe tener al menos 10 dígitos.");
+      return;
+    }
+
+const topsEditados = getEditToppings();
+patch.tops = topsEditados;
+  }
+
+  recalcularTotalEdit();
+
+  // marca auditoría
+  const patch = {
+    nombre: editDraft.nombre,
+    telefono: editDraft.telefono || "",
+    direccion: editDraft.direccion,
+    fecha: editDraft.fecha,
+    hora: editDraft.hora,
+    tipo: editDraft.tipo,
+    zonaCosto: Number(editDraft.zonaCosto||0),
+    estado: editDraft.estado,
+    pago: editDraft.pago,
+    pagoEstado: editDraft.pagoEstado,
+    motivoNoPago: editDraft.motivoNoPago || "",
+    notas: editDraft.notas || "",
+    combos: editDraft.combos || [],
+    tops: editDraft.tops || [],
+    total: Number(editDraft.total||0),
+    editadoEn: firebase.firestore.FieldValue.serverTimestamp(),
+    editadoPor: (auth.currentUser && auth.currentUser.email) ? auth.currentUser.email : "admin"
+  };
+
+  try{
+    setEditMsg("Guardando...");
+    await db.collection("pedidos").doc(editId).set(patch, { merge:true });
+    setEditMsg("✅ Guardado.");
+    setTimeout(cerrarEdit, 400);
+  }catch(e){
+    setEditMsg("Error: " + e.message);
+  }
+}
 /** 1) CONFIG **/
 const firebaseConfig = {
   apiKey: "AIzaSyBIc3oJMmSTnOg4EaFsCLOkhyLoGXEWj6c",
@@ -278,6 +637,22 @@ const db = firebase.firestore();
 /** 2) Estado local **/
 let pedidosCache = [];
 let unsubPedidos = null;
+
+/** 3) Catálogo de toppings **/
+const TOPPINGS_CATALOGO = [
+  {name:"Kisses",price:55},
+  {name:"Hershey’s blanco",price:50},
+  {name:"Hershey’s negro",price:50},
+  {name:"Almendras",price:50},
+  {name:"M&M",price:50},
+  {name:"Oreo",price:35},
+  {name:"Chispas de colores",price:30},
+  {name:"Crema Dubai",price:75},
+  {name:"Twix",price:65},
+  {name:"Canela",price:10},
+  {name:"Azúcar glass",price:25},
+  {name:"Crema pastelera",price:55}
+];
 
 /** 3) Auth UI **/
 function setLoginMsg(msg){ document.getElementById("loginMsg").innerText = msg || ""; }
@@ -435,6 +810,7 @@ function renderFiltrado(){
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>
+
         <strong>${safe(p.nombre)}</strong><br>
         <span class="small muted">${safe(p.direccion)}</span><br>
         ${telRaw ? `<span class="small">📞 <b>${escapeHtml(telRaw)}</b></span><br>` : `<span class="small muted">📞 (sin teléfono)</span><br>`}
@@ -475,17 +851,18 @@ function renderFiltrado(){
         <textarea placeholder="Notas..." onblur="updatePedido('${p.id}', {notas:this.value})">${escapeHtml(notas)}</textarea>
       </td>
 
-      <td class="actionCol">
-        <!-- 1) Respuestas rápidas (al cliente) -->
-        <button class="mini" ${tieneTel ? "" : "disabled"} onclick="enviarRespuesta('${p.id}', 'recibido')">✅ Enviar: Pedido recibido</button>
-        <button class="mini secondary" ${tieneTel ? "" : "disabled"} onclick="enviarRespuesta('${p.id}', 'listo')">🍩 Enviar: Pedido listo</button>
+<td class="actionCol">
+  <div class="miniGrid">
+    <button class="iconBtn" title="Editar"
+      onclick="abrirEdit('${p.id}')">✏️</button>
 
-        ${tieneTel ? "" : `<div class="hint">Para enviar WhatsApp al cliente falta el <b>teléfono</b> en este pedido.</div>`}
+    <button class="iconBtn" title="Enviar: Pedido recibido"
+      onclick="enviarPlantilla('${p.id}','recibido')">✅</button>
 
-        <!-- 2) Herramientas (tu mensaje original) -->
-        <button style="margin-top:10px;" onclick="abrirWhatsAppNegocio('${encodeURIComponent(p.mensaje || '')}')">Reenviar WhatsApp (mensaje original)</button>
-        <button class="secondary" onclick="copiarTexto('${encodeURIComponent(p.mensaje || '')}')">Copiar mensaje</button>
-      </td>
+    <button class="iconBtn fullWidth" title="Enviar: Pedido listo"
+      onclick="enviarPlantilla('${p.id}','listo')">📦</button>
+  </div>
+</td>
     `;
     tbody.appendChild(row);
   });
@@ -498,6 +875,78 @@ async function updatePedido(id, patch){
   }catch(e){
     alert("Error actualizando: " + e.message);
   }
+}
+
+function normalizarTel(tel){
+  tel = String(tel || "").replace(/\D/g,"");
+  // Si el cliente pone 829..., 809..., etc. asumimos RD +1
+  if(tel.length === 10) tel = "1" + tel;
+  return tel;
+}
+
+function getPedidoById(id){
+  return pedidosCache.find(p => p.id === id);
+}
+
+function armarResumenPedido(p){
+  const combos = Array.isArray(p.combos)
+    ? p.combos.map(c => `- ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("\n")
+    : "- (sin combos)";
+
+  const tops = Array.isArray(p.tops) && p.tops.length
+    ? p.tops.map(t => `- ${t}`).join("\n")
+    : "- (sin toppings)";
+
+  const entrega = (p.tipo === "delivery") ? "Delivery" : "Recoger en tienda (Licey al Medio)";
+  const zonaTxt = p.zonaTexto ? `\nZona: ${p.zonaTexto}` : "";
+
+  return `PEDIDO:\n${combos}\n\nTOPPINGS:\n${tops}\n\nEntrega: ${entrega}${zonaTxt}\nDirección: ${p.direccion || ""}\nFecha/Hora: ${p.fecha || ""} ${p.hora || ""}\nTOTAL: RD$${p.total || 0}`;
+}
+
+function enviarPlantilla(id, tipo){
+  const p = getPedidoById(id);
+  if(!p){
+    alert("No encontré ese pedido.");
+    return;
+  }
+
+  const tel = normalizarTel(p.telefono);
+  if(!tel){
+    alert("Este pedido no tiene teléfono guardado. (Agrega el campo Teléfono en la tienda para próximos pedidos)");
+    return;
+  }
+
+  const resumen = armarResumenPedido(p);
+
+  let msg = "";
+  if(tipo === "recibido"){
+    msg =
+`Hola ${p.nombre || ""} 👋
+Hemos recibido tu pedido ✅
+
+${resumen}
+
+En un momento te confirmamos el tiempo estimado.`;
+  }else if(tipo === "listo"){
+    msg =
+`Hola $ { p.nombre || ""} 👋
+Tu pedido está listo! 📦✨
+
+Por favor revisa y confirma estos datos (o corrige si algo está mal):
+
+${resumen}
+
+Responde con:
+✅ "Confirmo"
+o
+✏️ "Corregir:" y tu dirección correcta.`;
+  }else{
+    alert("Tipo de plantilla inválido.");
+    return;
+  }
+
+  // WhatsApp al CLIENTE
+  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
 /** 9) Acciones WhatsApp **/
