@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Panel de control - Hailey’s Donuts & Cream</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:#ffe6f0;
+  padding:10px;
+}
+.container{
+  max-width:920px;
+  margin:auto;
+  background:white;
+  padding:15px;
+  border-radius:15px;
+  box-shadow:0 0 10px rgba(0,0,0,.15);
+  overflow:hidden;
+}
+h1,h2{
+  font-family:'Pacifico',cursive;
+  color:#c2185b;
+  text-align:center;
+  margin:10px 0;
+}
+h2{
+  margin-top:18px;
+  border-bottom:2px dashed #f3b5cc;
+  padding-bottom:6px;
+}
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.card{
+  background:#fff7fb;
+  border:1px solid #f3b5cc;
+  border-radius:14px;
+  padding:12px;
+}
+.card strong{color:#c2185b}
+input,select,textarea{
+  padding:10px;
+  margin:6px 0;
+  width:100%;
+  border-radius:10px;
+  border:1px solid #ddd;
+  background:#fff;
+  font-family:inherit;
+}
+textarea{min-height:70px; resize:vertical;}
+button{
+  background:linear-gradient(45deg,#ff5fa2,#ff8cc6);
+  color:white;
+  padding:12px 14px;
+  border:none;
+  border-radius:14px;
+  font-size:16px;
+  width:auto;
+  font-weight:bold;
+  cursor:pointer;
+}
+button:hover{transform:scale(1.02)}
+button.secondary{
+  background:#eee;
+  color:#333;
+  font-weight:600;
+}
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:10px 0;
+}
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#ffe3ef;
+  color:#c2185b;
+  font-weight:700;
+}
+.table{
+  width:100%;
+  border-collapse:collapse;
+  overflow:hidden;
+  border-radius:12px;
+}
+.table th, .table td{
+  border-bottom:1px dotted #f3b5cc;
+  padding:10px;
+  vertical-align:top;
+  font-size:14px;
+}
+.table th{
+  text-align:left;
+  color:#c2185b;
+  background:#fff3f8;
+  position:sticky;
+  top:0;
+  z-index:1;
+}
+.small{font-size:12px; color:#666;}
+.muted{color:#777;}
+.pill{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#ffe3ef;
+  color:#c2185b;
+  font-weight:700;
+  font-size:12px;
+}
+.hidden{display:none !important;}
+hr{
+  border:none;
+  border-top:1px dashed #f3b5cc;
+  margin:14px 0;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>Panel de control</h1>
+
+  <!-- LOGIN -->
+  <div id="loginBox" class="card">
+    <h2>🔐 Iniciar sesión</h2>
+    <div class="row">
+      <div style="flex:1; min-width:220px;">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="tucorreo@gmail.com" />
+      </div>
+      <div style="flex:1; min-width:220px;">
+        <label>Contraseña</label>
+        <input id="password" type="password" placeholder="••••••••" />
+      </div>
+    </div>
+    <div class="row" style="justify-content:flex-end;">
+      <button onclick="login()">Entrar</button>
+    </div>
+    <div id="loginMsg" class="small muted"></div>
+  </div>
+
+  <!-- APP -->
+  <div id="appBox" class="hidden">
+    <div class="topbar">
+      <div>
+        <span class="badge">👤 <span id="userEmail">-</span></span>
+        <span class="badge">🔑 Admin</span>
+      </div>
+      <div class="row" style="align-items:center;">
+        <button class="secondary" onclick="logout()">Cerrar sesión</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="card" style="flex:1; min-width:250px;">
+        <strong>Filtros</strong>
+        <label>Estado</label>
+        <select id="fEstado" onchange="renderFiltrado()">
+          <option value="todos">Todos</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="realizado">Realizados</option>
+          <option value="cancelado">Cancelados</option>
+        </select>
+
+        <label>Pago</label>
+        <select id="fPago" onchange="renderFiltrado()">
+          <option value="todos">Todos</option>
+          <option value="pagado">Pagados</option>
+          <option value="pendiente">Pago pendiente</option>
+          <option value="no_pagado">No pagados</option>
+        </select>
+
+        <label>Buscar (nombre / dirección)</label>
+        <input id="fBuscar" placeholder="Ej: Ana, Licey..." oninput="renderFiltrado()" />
+        <div class="small muted">Tip: usa el buscador para encontrar pedidos rápido.</div>
+      </div>
+
+      <div class="card" style="flex:2; min-width:280px;">
+        <strong>Resumen</strong>
+        <div class="row">
+          <div style="flex:1; min-width:180px;">
+            <div class="pill">Total pedidos: <span id="kTotal">0</span></div>
+          </div>
+          <div style="flex:1; min-width:180px;">
+            <div class="pill">Pendientes: <span id="kPend">0</span></div>
+          </div>
+          <div style="flex:1; min-width:180px;">
+            <div class="pill">No pagados: <span id="kNoPag">0</span></div>
+          </div>
+        </div>
+        <hr>
+        <div class="small muted">
+          Nota: Los pedidos viejos seguirán funcionando aunque luego cambies de computadora.  
+          Lo único que cambia es que tendrás que volver a iniciar sesión.
+        </div>
+      </div>
+    </div>
+
+    <h2>📦 Pedidos</h2>
+
+    <div class="card" style="padding:0;">
+      <div style="max-height:65vh; overflow:auto; border-radius:14px;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width:180px;">Cliente</th>
+              <th>Pedido</th>
+              <th style="width:220px;">Estados</th>
+              <th style="width:220px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaPedidos"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase v8 (igual que tu tienda, para no inventar) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+/** 1) CONFIG (tu config actual) **/
+const firebaseConfig = {
+  apiKey: "AIzaSyBIc3oJMmSTnOg4EaFsCLOkhyLoGXEWj6c",
+  authDomain: "minidonas-d5e36.firebaseapp.com",
+  projectId: "minidonas-d5e36",
+  storageBucket: "minidonas-d5e36.firebasestorage.app",
+  messagingSenderId: "311892742337",
+  appId: "1:311892742337:web:29c1a95fba484cf4578440"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/** 2) Estado local **/
+let pedidosCache = [];
+let unsubPedidos = null;
+
+/** 3) Auth UI **/
+function setLoginMsg(msg){ document.getElementById("loginMsg").innerText = msg || ""; }
+
+async function login(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if(!email || !password){
+    setLoginMsg("Pon email y contraseña.");
+    return;
+  }
+
+  try{
+    setLoginMsg("Entrando...");
+    await auth.signInWithEmailAndPassword(email, password);
+    setLoginMsg("");
+  }catch(e){
+    setLoginMsg("Error: " + (e.message || e));
+  }
+}
+
+async function logout(){
+  // Cierra sesión del panel
+  await auth.signOut();
+}
+
+/** 4) Verificar ADMIN con custom claims **/
+async function assertAdmin(user){
+  // Fuerza refresco del token para leer claims actualizados
+  const tokenResult = await user.getIdTokenResult(true);
+  const isAdmin = !!(tokenResult && tokenResult.claims && tokenResult.claims.admin);
+
+  if(!isAdmin){
+    // Si no es admin, fuera.
+    await auth.signOut();
+    throw new Error("Este usuario NO es admin. (No tiene el claim admin=true)");
+  }
+}
+
+/** 5) Firestore: escuchar pedidos **/
+function listenPedidos(){
+  if(unsubPedidos) unsubPedidos();
+
+  unsubPedidos = db.collection("pedidos")
+    .orderBy("creado", "desc")
+    .onSnapshot((snap)=>{
+      pedidosCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+      actualizarKPIs();
+      renderFiltrado();
+    }, (err)=>{
+      alert("Error leyendo pedidos: " + err.message);
+    });
+}
+
+/** 6) Render **/
+function safe(v){ return (v===undefined || v===null) ? "" : String(v); }
+
+function fmtFecha(ts){
+  try{
+    if(!ts) return "";
+    // puede venir como Date, Timestamp o string
+    if(typeof ts.toDate === "function") return ts.toDate().toLocaleString();
+    if(ts instanceof Date) return ts.toLocaleString();
+    return String(ts);
+  }catch(_){ return ""; }
+}
+
+function actualizarKPIs(){
+  const total = pedidosCache.length;
+  const pend = pedidosCache.filter(p => (p.estado || "pendiente") === "pendiente").length;
+  const noPag = pedidosCache.filter(p => (p.pagoEstado || "pendiente") === "no_pagado").length;
+
+  document.getElementById("kTotal").innerText = total;
+  document.getElementById("kPend").innerText = pend;
+  document.getElementById("kNoPag").innerText = noPag;
+}
+
+function renderFiltrado(){
+  const fEstado = document.getElementById("fEstado").value;
+  const fPago = document.getElementById("fPago").value;
+  const fBuscar = document.getElementById("fBuscar").value.trim().toLowerCase();
+
+  let list = [...pedidosCache];
+
+  if(fEstado !== "todos"){
+    list = list.filter(p => (p.estado || "pendiente") === fEstado);
+  }
+  if(fPago !== "todos"){
+    list = list.filter(p => (p.pagoEstado || "pendiente") === fPago);
+  }
+  if(fBuscar){
+    list = list.filter(p => {
+      const a = (p.nombre || "").toLowerCase();
+      const b = (p.direccion || "").toLowerCase();
+      return a.includes(fBuscar) || b.includes(fBuscar);
+    });
+  }
+
+  const tbody = document.getElementById("tablaPedidos");
+  tbody.innerHTML = "";
+
+  if(list.length === 0){
+    tbody.innerHTML = `<tr><td colspan="4" class="muted" style="padding:14px;">No hay pedidos con esos filtros.</td></tr>`;
+    return;
+  }
+
+  list.forEach(p=>{
+    const estado = p.estado || "pendiente";
+    const pagoEstado = p.pagoEstado || "pendiente";
+    const motivoNoPago = p.motivoNoPago || "";
+    const notas = p.notas || "";
+
+    const combos = Array.isArray(p.combos) ? p.combos.map(c => `• ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("<br>") : "";
+    const tops = Array.isArray(p.tops) ? p.tops.map(t => `• ${t}`).join("<br>") : "";
+
+    const entrega = (p.tipo === "delivery") ? "🚚 Delivery" : "📍 Pickup";
+    const total = safe(p.total);
+
+    const creado = fmtFecha(p.creado);
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>
+        <strong>${safe(p.nombre)}</strong><br>
+        <span class="small muted">${safe(p.direccion)}</span><br>
+        <span class="small">${entrega} • Pago: <b>${safe(p.pago)}</b></span><br>
+        <span class="small muted">Fecha/Hora: ${safe(p.fecha)} ${safe(p.hora)}</span><br>
+        <span class="small muted">Creado: ${safe(creado)}</span>
+      </td>
+
+      <td>
+        <div><b>Combos</b></div>
+        <div class="small">${combos || "<span class='muted'>-</span>"}</div>
+        <div style="margin-top:8px;"><b>Toppings</b></div>
+        <div class="small">${tops || "<span class='muted'>-</span>"}</div>
+        <div style="margin-top:10px;"><span class="pill">TOTAL RD$${total}</span></div>
+      </td>
+
+      <td>
+        <label class="small muted">Estado del pedido</label>
+        <select onchange="updatePedido('${p.id}', {estado:this.value})">
+          <option value="pendiente" ${estado==='pendiente'?'selected':''}>Pendiente</option>
+          <option value="realizado" ${estado==='realizado'?'selected':''}>Realizado</option>
+          <option value="cancelado" ${estado==='cancelado'?'selected':''}>Cancelado</option>
+        </select>
+
+        <label class="small muted">Estado del pago</label>
+        <select onchange="updatePedido('${p.id}', {pagoEstado:this.value})">
+          <option value="pendiente" ${pagoEstado==='pendiente'?'selected':''}>Pendiente</option>
+          <option value="pagado" ${pagoEstado==='pagado'?'selected':''}>Pagado</option>
+          <option value="no_pagado" ${pagoEstado==='no_pagado'?'selected':''}>No pagado</option>
+        </select>
+
+        <label class="small muted">Motivo (si no pagó)</label>
+        <input value="${escapeHtml(motivoNoPago)}" placeholder="Ej: no respondió"
+               onblur="updatePedido('${p.id}', {motivoNoPago:this.value})"/>
+
+        <label class="small muted">Notas internas</label>
+        <textarea placeholder="Notas..." onblur="updatePedido('${p.id}', {notas:this.value})">${escapeHtml(notas)}</textarea>
+      </td>
+
+      <td>
+        <button onclick="abrirWhatsApp('${encodeURIComponent(p.mensaje || '')}')">Reenviar WhatsApp</button>
+        <button class="secondary" style="margin-top:8px;" onclick="copiarTexto('${encodeURIComponent(p.mensaje || '')}')">Copiar mensaje</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function escapeHtml(str){
+  return String(str || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+/** 7) Acciones **/
+async function updatePedido(id, patch){
+  try{
+    await db.collection("pedidos").doc(id).set(patch, { merge:true });
+  }catch(e){
+    alert("Error actualizando: " + e.message);
+  }
+}
+
+function abrirWhatsApp(mensajeEnc){
+  const msg = decodeURIComponent(mensajeEnc || "");
+  if(!msg){
+    alert("Este pedido no tiene mensaje guardado.");
+    return;
+  }
+  window.open("https://wa.me/18297096223?text=" + encodeURIComponent(msg));
+}
+
+async function copiarTexto(mensajeEnc){
+  const msg = decodeURIComponent(mensajeEnc || "");
+  try{
+    await navigator.clipboard.writeText(msg);
+    alert("Copiado ✅");
+  }catch(_){
+    alert("No pude copiar (permiso del navegador).");
+  }
+}
+
+/** 8) Boot **/
+auth.onAuthStateChanged(async (user)=>{
+  const loginBox = document.getElementById("loginBox");
+  const appBox = document.getElementById("appBox");
+
+  if(!user){
+    if(unsubPedidos) unsubPedidos();
+    pedidosCache = [];
+    loginBox.classList.remove("hidden");
+    appBox.classList.add("hidden");
+    document.getElementById("userEmail").innerText = "-";
+    return;
+  }
+
+  try{
+    await assertAdmin(user);
+
+    document.getElementById("userEmail").innerText = user.email || "(sin email)";
+    loginBox.classList.add("hidden");
+    appBox.classList.remove("hidden");
+
+    listenPedidos();
+  }catch(e){
+    alert(e.message);
+  }
+});
+</script>
+</body>
+</html>
