@@ -168,12 +168,15 @@ button:hover{transform:scale(1.02)}
 <h1>Hailey’s Donuts & Cream</h1>
 
 <div class="galeria">
-<img src="foto1.png" onclick="zoom(this.src)">
-<img src="foto2.png" onclick="zoom(this.src)">
-<img src="foto3.jpg" onclick="zoom(this.src)">
-<img src="foto4.png" onclick="zoom(this.src)">
-<img src="foto5.jpg" onclick="zoom(this.src)">
-<img src="foto6.jpg" onclick="zoom(this.src)">
+<img src="foto1.jpeg" onclick="zoom(this.src)">
+<img src="foto2.jpeg" onclick="zoom(this.src)">
+<img src="foto3.jpeg" onclick="zoom(this.src)">
+<img src="foto4.jpeg" onclick="zoom(this.src)">
+<img src="foto5.jpeg" onclick="zoom(this.src)">
+<img src="foto6.jpeg" onclick="zoom(this.src)">
+<img src="foto7.jpeg" onclick="zoom(this.src)">
+<img src="foto8.jpeg" onclick="zoom(this.src)">
+<img src="foto9.jpeg" onclick="zoom(this.src)">
 </div>
 
 <div class="modal" id="modal" onclick="cerrarZoom()">
@@ -263,7 +266,18 @@ button:hover{transform:scale(1.02)}
 
 
 <script>
+  
+function zoom(src){
+  document.getElementById("imgGrande").src = src;
+  document.getElementById("modal").style.display = "flex";
+}
 
+function cerrarZoom(){
+  document.getElementById("modal").style.display = "none";
+}
+
+
+  
 let textoFinal = "";
 let pedidoActual = {};
 
@@ -453,3 +467,4 @@ const db = firebase.firestore();
 </script>
 </body>
 </html>
+
