@@ -1,20 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <head>
 <meta charset="UTF-8">
 <title>Hailey’s Donuts & Cream</title>
 
 <link rel="icon" type="image/png" href="logo.png">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-...
-</head>
-<meta charset="UTF-8">
-<title>Hailey’s Donuts & Cream</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Fuente bonita -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Pacifico&display=swap" rel="stylesheet">
 
 <style>
@@ -33,7 +25,8 @@ body{
   background:white;
   padding:15px;
   border-radius:15px;
-  box-shadow:0 0 10px rgba(0,0,0,.15)
+  box-shadow:0 0 10px rgba(0,0,0,.15);
+  overflow:hidden;
 }
 
 h1,h2{
@@ -71,6 +64,19 @@ input,select{
 
 .qty{width:60px}
 
+#toppingsContainer{
+  width:100%;
+}
+
+#toppingsContainer select{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border-radius:10px;
+  border:1px solid #ddd;
+  background:#fff7fb;
+}
+
 button{
   background:linear-gradient(45deg,#ff5fa2,#ff8cc6);
   color:white;
@@ -96,8 +102,6 @@ button:hover{transform:scale(1.02)}
   border-radius:12px;
 }
 
-.error{border:2px solid red!important;background:#ffe6e6}
-
 .galeria{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -111,12 +115,10 @@ button:hover{transform:scale(1.02)}
   object-fit:cover;
   border-radius:10px;
   cursor:pointer;
-  transition: transform 0.2s ease;   /* 👈 animación */
+  transition:transform .2s;
 }
 
-.galeria img:hover{
-  transform: scale(1.1);
-}
+.galeria img:hover{transform:scale(1.05)}
 
 .modal{
   display:none;
@@ -144,6 +146,17 @@ button:hover{transform:scale(1.02)}
 }
 </style>
 </head>
+
+<div id="resumenModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:2000; justify-content:center; align-items:center;">
+  <div style="background:white; padding:20px; border-radius:15px; max-width:400px; width:90%;">
+    <h2>🧾 Resumen</h2>
+    <div id="resumenContenido"></div>
+    <br>
+    <button onclick="cerrarResumen()">Cancelar</button>
+<button     onclick="confirmarEnvio()">Confirmar y enviar</button>
+
+  </div>
+</div>
 
 <body>
 <div class="container">
@@ -232,7 +245,28 @@ button:hover{transform:scale(1.02)}
 
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
+
+let textoFinal = "";
+let pedidoActual = {};
+
 const toppings=[
 {name:"Kisses",price:55},{name:"Hershey’s blanco",price:50},{name:"Hershey’s negro",price:50},
 {name:"Almendras",price:50},{name:"M&M",price:50},{name:"Oreo",price:35},
@@ -242,121 +276,180 @@ const toppings=[
 ];
 
 function toggleDelivery(){
-let tipo=document.getElementById("tipoEntrega").value;
-document.getElementById("zonaContainer").style.display=(tipo==="delivery")?"block":"none";
-calcular();
-}
-
-function actualizarToppings(max){
-let cont=document.getElementById("toppingsContainer");
-let seleccionados=[];
-cont.querySelectorAll(".toppingSelect").forEach(s=>seleccionados.push(s.value));
-if(cont.querySelectorAll(".toppingSelect").length===max)return;
-cont.innerHTML="";
-for(let i=0;i<max;i++){
-let s=document.createElement("select");
-s.className="toppingSelect";
-s.onchange=calcular;
-let o=document.createElement("option");
-o.text="Selecciona topping "+(i+1);o.value=0;
-s.appendChild(o);
-toppings.forEach(t=>{
-let op=document.createElement("option");
-op.value=t.price;op.text=t.name+" (RD$"+t.price+")";
-s.appendChild(op);
-});
-if(seleccionados[i])s.value=seleccionados[i];
-cont.appendChild(s);
-}
+  let tipo=document.getElementById("tipoEntrega").value;
+  document.getElementById("zonaContainer").style.display =
+    (tipo==="delivery") ? "block" : "none";
+  calcular();
 }
 
 function calcular(){
-let total=0,maxToppings=0;
-document.querySelectorAll(".qty").forEach(c=>{
-let q=parseInt(c.value)||0;
-total+=q*parseInt(c.dataset.price);
-maxToppings+=q*parseInt(c.dataset.toppings);
-});
-actualizarToppings(maxToppings);
-document.querySelectorAll(".toppingSelect").forEach(s=>{
-total+=parseInt(s.value)||0;
-});
-if(document.getElementById("tipoEntrega").value==="delivery"){
-total+=parseInt(document.getElementById("zona").value)||0;
+  let total = 0;
+  let maxToppings = 0;
+
+  document.querySelectorAll(".qty").forEach(c=>{
+    let q = parseInt(c.value) || 0;
+    total += q * parseInt(c.dataset.price);
+    maxToppings += q * parseInt(c.dataset.toppings);
+  });
+
+  actualizarToppings(maxToppings);
+
+  document.querySelectorAll(".toppingSelect").forEach(s=>{
+    total += parseInt(s.value) || 0;
+  });
+
+  if(document.getElementById("tipoEntrega").value==="delivery"){
+    total += parseInt(document.getElementById("zona").value) || 0;
+  }
+
+  document.getElementById("total").innerText = "TOTAL: RD$"+total;
 }
-document.getElementById("total").innerText="TOTAL: RD$"+total;
+
+function actualizarToppings(max){
+  let cont=document.getElementById("toppingsContainer");
+  let seleccionados=[];
+  document.querySelectorAll(".toppingSelect").forEach(s=>seleccionados.push(s.value));
+  cont.innerHTML="";
+
+  if(max<=0){
+    cont.innerHTML="<p style='color:#999;font-size:14px'>Selecciona un combo para elegir toppings</p>";
+    return;
+  }
+
+  for(let i=0;i<max;i++){
+    let s=document.createElement("select");
+    s.className="toppingSelect";
+    s.onchange=calcular;
+
+    let o=document.createElement("option");
+    o.value=0;
+    o.text="Selecciona topping "+(i+1);
+    s.appendChild(o);
+
+    toppings.forEach(t=>{
+      let op=document.createElement("option");
+      op.value=t.price;
+      op.text=t.name+" (RD$"+t.price+")";
+      s.appendChild(op);
+    });
+
+    if(seleccionados[i]) s.value=seleccionados[i];
+    cont.appendChild(s);
+  }
 }
 
 function enviar(){
-let nombre=document.getElementById("nombre");
-let direccion=document.getElementById("direccion");
-let fecha=document.getElementById("fecha");
-let hora=document.getElementById("hora");
-let zona=document.getElementById("zona");
-let tipo=document.getElementById("tipoEntrega").value;
-let pago=document.getElementById("pago");
+  let nombre=document.getElementById("nombre").value;
+  let direccion=document.getElementById("direccion").value;
+  let fecha=document.getElementById("fecha").value;
+  let hora=document.getElementById("hora").value;
+  let pago=document.getElementById("pago").value;
+  let tipo=document.getElementById("tipoEntrega").value;
+  let zona=document.getElementById("zona");
 
-if(nombre.value==""){alert("Nombre requerido");return;}
-if(direccion.value==""){alert("Dirección requerida");return;}
-if(fecha.value==""){alert("Fecha requerida");return;}
-if(hora.value==""){alert("Hora requerida");return;}
+  if(!nombre||!direccion||!fecha||!hora){
+    alert("Completa todos los datos");
+    return;
+  }
 
-let texto="Hola, quiero ordenar:%0A";
-let total=0,hay=false;
+  let resumen="";
+  let texto="Hola, quiero ordenar:%0A";
+  let total=0;
+  let combos=[];
 
-document.querySelectorAll(".qty").forEach(i=>{
-let q=parseInt(i.value)||0;
-if(q>0){
-hay=true;
-let p=parseInt(i.dataset.price);
-texto+="- "+q+" x "+i.dataset.name+" RD$"+(q*p)+"%0A";
-total+=q*p;
+  document.querySelectorAll(".qty").forEach(i=>{
+    let q=parseInt(i.value)||0;
+    if(q>0){
+      let p=parseInt(i.dataset.price);
+      combos.push({combo:i.dataset.name,cantidad:q,precio:q*p});
+      resumen+=`🍩 ${q} x ${i.dataset.name} — RD$${q*p}<br>`;
+      texto+=`- ${q} x ${i.dataset.name} RD$${q*p}%0A`;
+      total+=q*p;
+    }
+  });
+
+
+
+
+  if(combos.length==0){
+    alert("Elige al menos un combo");
+    return;
+  }
+
+  let tops=[];
+  document.querySelectorAll(".toppingSelect").forEach(s=>{
+    if(s.value>0){
+      tops.push(s.options[s.selectedIndex].text);
+      total+=parseInt(s.value);
+    }
+  });
+
+  if(tops.length){
+    resumen+="<br><b>Toppings:</b><br>";
+    texto+="Toppings:%0A";
+    tops.forEach(t=>{
+      resumen+=`- ${t}<br>`;
+      texto+=`- ${t}%0A`;
+    });
+  }
+
+  if(tipo==="delivery"){
+    if(zona.value=="0"){alert("Selecciona zona");return;}
+    resumen+=`<br>🚚 ${zona.options[zona.selectedIndex].text}<br>`;
+    texto+=`Entrega: Delivery%0AZona: ${zona.options[zona.selectedIndex].text}%0A`;
+    total+=parseInt(zona.value);
+  } else {
+    resumen+=`<br>📍 Recoger en tienda<br>`;
+    texto+=`Entrega: Recoger en tienda%0A`;
+  }
+
+  resumen+=`<br><b>TOTAL: RD$${total}</b>`;
+  texto+=`TOTAL: RD$${total}`;
+
+  pedidoActual={nombre,direccion,fecha,hora,pago,tipo,combos,tops,total};
+
+  textoFinal=texto;
+  document.getElementById("resumenContenido").innerHTML=resumen;
+  document.getElementById("resumenModal").style.display="flex";
 }
-});
-if(!hay){alert("Elige al menos un combo");return;}
 
-let toppingsElegidos=[];
-document.querySelectorAll(".toppingSelect").forEach(s=>{
-if(s.value>0){
-toppingsElegidos.push(s.options[s.selectedIndex].text);
-total+=parseInt(s.value);
-}
-});
-if(toppingsElegidos.length){
-texto+="Toppings:%0A";
-toppingsElegidos.forEach(t=>texto+="- "+t+"%0A");
-}
-
-if(tipo==="delivery"){
-if(zona.value=="0"){alert("Selecciona una zona");return;}
-texto+="Entrega: Delivery%0A";
-texto+="Zona: "+zona.options[zona.selectedIndex].text+"%0A";
-texto+="Costo delivery: RD$"+zona.value+"%0A";
-total+=parseInt(zona.value);
-}else{
-texto+="Entrega: Recoger en tienda (Licey al Medio)%0A";
+function confirmarEnvio(){
+  db.collection("pedidos").add({
+    ...pedidoActual,
+    mensaje: decodeURIComponent(textoFinal),
+    creado: new Date()
+  }).then(()=>{
+    window.open("https://wa.me/18297096223?text="+textoFinal);
+    document.getElementById("resumenModal").style.display="none";
+  }).catch(e=>{
+    alert("Error guardando pedido: "+e.message);
+  });
 }
 
-texto+="Fecha: "+fecha.value+"%0A";
-texto+="Hora: "+hora.value+"%0A";
-texto+="Nombre: "+nombre.value+"%0A";
-texto+="Dirección: "+direccion.value+"%0A";
-texto+="Pago: "+pago.value+"%0A";
-texto+="TOTAL: RD$"+total;
-
-window.open("https://wa.me/18297096223?text="+texto);
+function cerrarResumen(){
+  document.getElementById("resumenModal").style.display="none";
 }
 
-function zoom(src){
-document.getElementById("imgGrande").src=src;
-document.getElementById("modal").style.display="flex";
-}
-function cerrarZoom(){
-document.getElementById("modal").style.display="none";
-}
+
+
+
 </script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBIc3oJMmSTnOg4EaFsCLOkhyLoGXEWj6c",
+  authDomain: "minidonas-d5e36.firebaseapp.com",
+  projectId: "minidonas-d5e36",
+  storageBucket: "minidonas-d5e36.firebasestorage.app",
+  messagingSenderId: "311892742337",
+  appId: "1:311892742337:web:29c1a95fba484cf4578440"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
 </body>
 </html>
-
-
