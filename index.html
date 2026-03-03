@@ -147,8 +147,6 @@ button:hover{transform:scale(1.02)}
 </style>
 </head>
 
-
-<body>
 <div id="resumenModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:2000; justify-content:center; align-items:center;">
   <div style="background:white; padding:20px; border-radius:15px; max-width:400px; width:90%;">
     <h2>🧾 Resumen</h2>
@@ -160,9 +158,12 @@ button:hover{transform:scale(1.02)}
   </div>
 </div>
 
+<body>
 
 
-  
+
+
+
 <div class="container">
 
 <div class="logo">
@@ -192,6 +193,9 @@ button:hover{transform:scale(1.02)}
 
 <label>Dirección:</label>
 <input id="direccion">
+
+<label>Teléfono (WhatsApp):</label>
+<input id="telefono" placeholder="Ej: 8091234567">
 
 <label>Método de pago:</label>
 <select id="pago">
@@ -270,7 +274,7 @@ button:hover{transform:scale(1.02)}
 
 
 <script>
-  
+
 function zoom(src){
   document.getElementById("imgGrande").src = src;
   document.getElementById("modal").style.display = "flex";
@@ -281,7 +285,6 @@ function cerrarZoom(){
 }
 
 
-  
 let textoFinal = "";
 let pedidoActual = {};
 
@@ -364,12 +367,24 @@ function enviar(){
   let pago=document.getElementById("pago").value;
   let tipo=document.getElementById("tipoEntrega").value;
   let zona=document.getElementById("zona");
+let telefono = document.getElementById("telefono").value.trim();
 
   if(!nombre||!direccion||!fecha||!hora){
     alert("Completa todos los datos");
     return;
   }
 
+if(tipo === "delivery"){
+  const soloDigitos = telefono.replace(/\D/g,'');
+  if(!soloDigitos){
+    alert("Para delivery el teléfono es obligatorio (WhatsApp).");
+    return;
+  }
+  if(soloDigitos.length < 10){
+    alert("Teléfono inválido. Ej: 8091234567");
+    return;
+  }
+}
   let resumen="";
   let texto="Hola, quiero ordenar:%0A";
   let total=0;
@@ -424,7 +439,7 @@ function enviar(){
   resumen+=`<br><b>TOTAL: RD$${total}</b>`;
   texto+=`TOTAL: RD$${total}`;
 
-  pedidoActual={nombre,direccion,fecha,hora,pago,tipo,combos,tops,total};
+  pedidoActual={nombre,direccion,telefono,fecha,hora,pago,tipo,combos,tops,total};
 
   textoFinal=texto;
   document.getElementById("resumenContenido").innerHTML=resumen;
@@ -471,9 +486,3 @@ const db = firebase.firestore();
 </script>
 </body>
 </html>
-
-
-
-
-
-
