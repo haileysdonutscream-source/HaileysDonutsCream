@@ -53,14 +53,17 @@ h2{
   border-bottom:1px dotted #f3b5cc;
 }
 
-input,select{
+input,select,textarea{
   padding:10px;
   margin:6px 0;
   width:100%;
   border-radius:10px;
   border:1px solid #ddd;
   background:#fff7fb;
+  font-family:inherit;
 }
+
+textarea{ resize:vertical; min-height:80px; }
 
 .qty{width:60px}
 
@@ -91,10 +94,15 @@ button{
 
 button:hover{transform:scale(1.02)}
 
+button.secondary{
+  background:#eee;
+  color:#333;
+  font-weight:600;
+}
+
 .total{
-  font-size:22px;
+  font-size:18px;
   text-align:center;
-  margin:12px;
   color:#c2185b;
   font-weight:bold;
   background:#ffe3ef;
@@ -144,156 +152,218 @@ button:hover{transform:scale(1.02)}
   font-size:14px;
   margin-bottom:10px;
 }
+
+.success{
+  background:#d1e7dd;
+  border:1px solid #badbcc;
+  color:#0f5132;
+  padding:10px;
+  border-radius:12px;
+  font-size:14px;
+  margin:10px 0;
+  display:none;
+}
+
+/* Barra sticky */
+.stickyBar{
+  position:sticky;
+  bottom:0;
+  background:white;
+  padding:10px 0 0;
+  border-top:1px dashed #f3b5cc;
+  margin-top:12px;
+}
+.stickyBar .rowSticky{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.stickyBar .rowSticky .total{
+  flex:1;
+  margin:0;
+}
+.stickyBar .rowSticky button{
+  width:auto;
+  white-space:nowrap;
+  padding:12px 14px;
+  font-size:16px;
+}
+
+.smallMuted{
+  font-size:12px;
+  color:#777;
+}
 </style>
 </head>
 
+<!-- MODAL RESUMEN -->
 <div id="resumenModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:2000; justify-content:center; align-items:center;">
-  <div style="background:white; padding:20px; border-radius:15px; max-width:400px; width:90%;">
+  <div style="background:white; padding:20px; border-radius:15px; max-width:420px; width:92%; max-height:85vh; overflow:auto;">
     <h2>🧾 Resumen</h2>
-    <div id="resumenContenido"></div>
-    <br>
-    <button onclick="cerrarResumen()">Cancelar</button>
-<button     onclick="confirmarEnvio()">Confirmar y enviar</button>
 
+    <div id="resumenContenido"></div>
+
+    <!-- Nota en el resumen -->
+    <div style="margin-top:10px;">
+      <label style="font-weight:600; color:#c2185b;">📝 Nota del pedido (opcional)</label>
+      <textarea id="notaPedidoResumen" placeholder="Ej: sin azúcar glass, más Oreo, bien cargado de crema, etc."></textarea>
+      <div class="smallMuted">Esto se guardará en el pedido para que ustedes lo vean en el panel.</div>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button class="secondary" type="button" onclick="cerrarResumen()">Cancelar</button>
+      <button type="button" onclick="confirmarEnvio()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TRANSFERENCIA -->
+<div id="transferModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:3000; justify-content:center; align-items:center;">
+  <div style="background:white; padding:20px; border-radius:15px; max-width:420px; width:92%;">
+    <h2>🏦 Transferencia</h2>
+
+    <div class="aviso" style="margin-top:10px;">
+      <b>Datos bancarios:</b><br>
+      <div id="transferInfoBox" class="small muted" style="margin-top:6px;">
+        Banco..., Cuenta..., Nombre..., etc.
+      </div>
+    </div>
+
+    <label style="margin-top:10px; display:block;">Referencia / Nº de comprobante (opcional)</label>
+    <input id="refTransfer" placeholder="Ej: 839201 / captura / etc.">
+
+    <label style="margin-top:10px; display:block;">Nota para tu pedido (opcional)</label>
+    <input id="notaPedidoTransfer" placeholder="Ej: más chocolate, sin azúcar glass...">
+
+    <div style="display:flex; gap:10px; margin-top:14px;">
+      <button class="secondary" type="button" onclick="cerrarTransfer()">Cancelar</button>
+      <button type="button" onclick="confirmarTransferencia()">Listo, ya transferí</button>
+    </div>
+
+    <div id="transferMsg" class="small muted" style="margin-top:10px;"></div>
   </div>
 </div>
 
 <body>
-
-
-
-
-
 <div class="container">
 
-<div class="logo">
-<img src="logo.png">
+  <div class="logo">
+    <img src="logo.png" alt="Logo">
+  </div>
+
+  <h1>Hailey’s Donuts & Cream</h1>
+
+  <!-- Galería -->
+  <details style="margin-top:10px;">
+    <summary style="cursor:pointer; font-weight:700; color:#c2185b;">📸 Ver fotos</summary>
+    <div class="galeria">
+      <img src="foto1.jpeg" onclick="zoom(this.src)">
+      <img src="foto2.jpeg" onclick="zoom(this.src)">
+      <img src="foto3.jpeg" onclick="zoom(this.src)">
+      <img src="foto4.jpeg" onclick="zoom(this.src)">
+      <img src="foto5.jpeg" onclick="zoom(this.src)">
+      <img src="foto6.jpeg" onclick="zoom(this.src)">
+      <img src="foto7.jpeg" onclick="zoom(this.src)">
+      <img src="foto8.jpeg" onclick="zoom(this.src)">
+      <img src="foto9.jpeg" onclick="zoom(this.src)">
+    </div>
+  </details>
+
+  <div class="modal" id="modal" onclick="cerrarZoom()">
+    <img id="imgGrande">
+  </div>
+
+  <h2>🚚 Tipo de entrega</h2>
+
+  <div class="aviso">
+    📍 Delivery solo en: Licey al Medio, Tamboril, Pontezuela, Centro, Pekín, Monumental y Universitaria.
+  </div>
+
+  <select id="tipoEntrega" onchange="toggleDelivery()">
+    <option value="pickup">Recoger en tienda (Licey al Medio)</option>
+    <option value="delivery">Delivery</option>
+  </select>
+
+  <div id="zonaContainer" style="display:none;">
+    <h2>Zonas disponibles</h2>
+    <select id="zona" onchange="calcular()">
+      <option value="0">Selecciona tu zona</option>
+      <option value="50">Zona 1 – Licey al Medio (RD$50)</option>
+      <option value="100">Zona 2 – Tamboril / Pontezuela (RD$100)</option>
+      <option value="250">Zona 3 – Centro / Pekín / Monumental / Universitaria (RD$250)</option>
+    </select>
+  </div>
+
+  <h2 id="combosTitle">🍩 Combos</h2>
+  <div id="combosList"></div>
+
+  <h2 id="toppingsTitle">✨ Toppings</h2>
+  <!-- lista informativa (opcional) -->
+  <div id="toppingsList"></div>
+  <!-- selects reales que se usan para sumar -->
+  <div id="toppingsContainer"></div>
+
+  <h2>👤 Tus datos</h2>
+
+  <label>Nombre:</label>
+  <input id="nombre">
+
+  <label>Dirección:</label>
+  <input id="direccion">
+
+  <label>Teléfono (WhatsApp):</label>
+  <input id="telefono" placeholder="Ej: 8091234567">
+
+  <label>Método de pago:</label>
+  <select id="pago">
+    <option>Efectivo</option>
+    <option>Transferencia</option>
+  </select>
+
+  <label>Fecha:</label>
+  <input type="date" id="fecha">
+
+  <label>Hora:</label>
+  <input type="time" id="hora">
+
+  <div id="thanksMsg" class="success">
+    ✅ Gracias por tu pedido. Lo recibimos y te escribiremos desde el negocio en breve. 🩷
+  </div>
+
+  <div class="stickyBar">
+    <div class="rowSticky">
+      <div class="total" id="total">TOTAL: RD$0</div>
+      <button type="button" onclick="enviar()">🧾 Ver resumen</button>
+    </div>
+    <div class="smallMuted" style="text-align:center; margin-top:6px;">
+      Al confirmar, tu pedido se guarda. No se enviará WhatsApp automáticamente.
+    </div>
+  </div>
+
 </div>
-
-<h1>Hailey’s Donuts & Cream</h1>
-
-<div class="galeria">
-<img src="foto1.jpeg" onclick="zoom(this.src)">
-<img src="foto2.jpeg" onclick="zoom(this.src)">
-<img src="foto3.jpeg" onclick="zoom(this.src)">
-<img src="foto4.jpeg" onclick="zoom(this.src)">
-<img src="foto5.jpeg" onclick="zoom(this.src)">
-<img src="foto6.jpeg" onclick="zoom(this.src)">
-<img src="foto7.jpeg" onclick="zoom(this.src)">
-<img src="foto8.jpeg" onclick="zoom(this.src)">
-<img src="foto9.jpeg" onclick="zoom(this.src)">
-</div>
-
-<div class="modal" id="modal" onclick="cerrarZoom()">
-<img id="imgGrande">
-</div>
-
-<label>Nombre:</label>
-<input id="nombre">
-
-<label>Dirección:</label>
-<input id="direccion">
-
-<label>Teléfono (WhatsApp):</label>
-<input id="telefono" placeholder="Ej: 8091234567">
-
-<label>Método de pago:</label>
-<select id="pago">
-<option>Efectivo</option>
-<option>Transferencia</option>
-</select>
-
-<label>Fecha:</label>
-<input type="date" id="fecha">
-
-<label>Hora:</label>
-<input type="time" id="hora">
-
-<h2>🚚 Tipo de entrega</h2>
-
-<div class="aviso">
-📍 Delivery solo en: Licey al Medio, Tamboril, Pontezuela, Centro, Pekín, Monumental y Universitaria.
-</div>
-
-<select id="tipoEntrega" onchange="toggleDelivery()">
-<option value="pickup">Recoger en tienda (Licey al Medio)</option>
-<option value="delivery">Delivery</option>
-</select>
-
-<div id="zonaContainer" style="display:none;">
-<h2>Zonas disponibles</h2>
-<select id="zona" onchange="calcular()">
-<option value="0">Selecciona tu zona</option>
-<option value="50">Zona 1 – Licey al Medio (RD$50)</option>
-<option value="100">Zona 2 – Tamboril / Pontezuela (RD$100)</option>
-<option value="250">Zona 3 – Centro / Pekín / Monumental / Universitaria (RD$250)</option>
-</select>
-</div>
-
-<h2>🍩 Combos</h2>
-
-<div class="item">6 Donitas + 1 topping – RD$160
-<input type="number" min="0" value="0" class="qty" data-name="6 Donitas" data-price="160" data-toppings="1" oninput="calcular()"></div>
-
-<div class="item">12 Donitas + 2 toppings – RD$300
-<input type="number" min="0" value="0" class="qty" data-name="12 Donitas" data-price="300" data-toppings="2" oninput="calcular()"></div>
-
-<div class="item">24 Donitas + 3 toppings – RD$600
-<input type="number" min="0" value="0" class="qty" data-name="24 Donitas" data-price="600" data-toppings="3" oninput="calcular()"></div>
-
-<div class="item">4 Donitas + 1 topping – RD$130
-<input type="number" min="0" value="0" class="qty" data-name="4 Donitas" data-price="130" data-toppings="1" oninput="calcular()"></div>
-
-<div class="item">9 Donitas + 1 topping – RD$200
-<input type="number" min="0" value="0" class="qty" data-name="9 Donitas" data-price="200" data-toppings="1" oninput="calcular()"></div>
-
-<h2>Toppings</h2>
-<div id="toppingsContainer"></div>
-
-<div class="total" id="total">TOTAL: RD$0</div>
-
-<button onclick="enviar()">📲 Enviar pedido</button>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <script>
-
 function zoom(src){
   document.getElementById("imgGrande").src = src;
   document.getElementById("modal").style.display = "flex";
 }
-
 function cerrarZoom(){
   document.getElementById("modal").style.display = "none";
 }
 
-
+// ====== Estado pedido ======
 let textoFinal = "";
 let pedidoActual = {};
+window.__thanksMessage = "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
+window.__transferInfo = "";
 
-const toppings=[
-{name:"Kisses",price:55},{name:"Hershey’s blanco",price:50},{name:"Hershey’s negro",price:50},
-{name:"Almendras",price:50},{name:"M&M",price:50},{name:"Oreo",price:35},
-{name:"Chispas de colores",price:30},{name:"Crema Dubai",price:75},
-{name:"Twix",price:65},{name:"Canela",price:10},
-{name:"Azúcar glass",price:25},{name:"Crema pastelera",price:55}
+// ====== Catálogo dinámico (por defecto, por si Firestore está vacío) ======
+let toppings = [
+  {name:"Kisses",price:55},{name:"Hershey’s blanco",price:50},{name:"Hershey’s negro",price:50},
+  {name:"Almendras",price:50},{name:"M&M",price:50},{name:"Oreo",price:35},
+  {name:"Chispas de colores",price:30},{name:"Crema Dubai",price:75},
+  {name:"Twix",price:65},{name:"Canela",price:10},
+  {name:"Azúcar glass",price:25},{name:"Crema pastelera",price:55}
 ];
 
 function toggleDelivery(){
@@ -307,7 +377,8 @@ function calcular(){
   let total = 0;
   let maxToppings = 0;
 
-  document.querySelectorAll(".qty").forEach(c=>{
+  // SOLO combos (evita doble conteo)
+  document.querySelectorAll(".comboQty").forEach(c=>{
     let q = parseInt(c.value) || 0;
     total += q * parseInt(c.dataset.price);
     maxToppings += q * parseInt(c.dataset.toppings);
@@ -315,10 +386,12 @@ function calcular(){
 
   actualizarToppings(maxToppings);
 
+  // sumar toppings seleccionados
   document.querySelectorAll(".toppingSelect").forEach(s=>{
     total += parseInt(s.value) || 0;
   });
 
+  // delivery
   if(document.getElementById("tipoEntrega").value==="delivery"){
     total += parseInt(document.getElementById("zona").value) || 0;
   }
@@ -360,58 +433,46 @@ function actualizarToppings(max){
 }
 
 function enviar(){
-  let nombre=document.getElementById("nombre").value;
-  let direccion=document.getElementById("direccion").value;
+  pedidoActual = {};
+  textoFinal = "";
+
+  document.getElementById("thanksMsg").style.display = "none";
+
+  let nombre=document.getElementById("nombre").value.trim();
+  let direccion=document.getElementById("direccion").value.trim();
   let fecha=document.getElementById("fecha").value;
   let hora=document.getElementById("hora").value;
   let pago=document.getElementById("pago").value;
   let tipo=document.getElementById("tipoEntrega").value;
   let zona=document.getElementById("zona");
-let telefono = document.getElementById("telefono").value.trim();
+  let telefono=document.getElementById("telefono").value.trim();
 
-  if(!nombre||!direccion||!fecha||!hora){
-    alert("Completa todos los datos");
-    return;
-  }
-
-if(tipo === "delivery"){
-  const soloDigitos = telefono.replace(/\D/g,'');
-  if(!soloDigitos){
-    alert("Para delivery el teléfono es obligatorio (WhatsApp).");
-    return;
-  }
-  if(soloDigitos.length < 10){
-    alert("Teléfono inválido. Ej: 8091234567");
-    return;
-  }
-}
+  // combos
   let resumen="";
   let texto="Hola, quiero ordenar:%0A";
   let total=0;
   let combos=[];
 
-  document.querySelectorAll(".qty").forEach(i=>{
+  document.querySelectorAll(".comboQty").forEach(i=>{
     let q=parseInt(i.value)||0;
     if(q>0){
       let p=parseInt(i.dataset.price);
-      combos.push({combo:i.dataset.name,cantidad:q,precio:q*p});
+      combos.push({combo:i.dataset.name,cantidad:q,precio:q*p, toppingsIncluidos: Number(i.dataset.toppings||0)});
       resumen+=`🍩 ${q} x ${i.dataset.name} — RD$${q*p}<br>`;
       texto+=`- ${q} x ${i.dataset.name} RD$${q*p}%0A`;
       total+=q*p;
     }
   });
 
-
-
-
-  if(combos.length==0){
+  if(combos.length===0){
     alert("Elige al menos un combo");
     return;
   }
 
+  // toppings seleccionados (incluidos)
   let tops=[];
   document.querySelectorAll(".toppingSelect").forEach(s=>{
-    if(s.value>0){
+    if(Number(s.value)>0){
       tops.push(s.options[s.selectedIndex].text);
       total+=parseInt(s.value);
     }
@@ -426,8 +487,26 @@ if(tipo === "delivery"){
     });
   }
 
+  // validar datos personales (después)
+  if(!nombre || !direccion || !fecha || !hora){
+    alert("Completa tus datos (Nombre, Dirección, Fecha y Hora).");
+    return;
+  }
+
+  // Tel obligatorio siempre
+  const soloDigitos = telefono.replace(/\D/g,'');
+  if(!soloDigitos){
+    alert("El teléfono es obligatorio (WhatsApp).");
+    return;
+  }
+  if(soloDigitos.length < 10){
+    alert("Teléfono inválido. Ej: 8091234567");
+    return;
+  }
+
+  // entrega
   if(tipo==="delivery"){
-    if(zona.value=="0"){alert("Selecciona zona");return;}
+    if(!zona || zona.value=="0"){ alert("Selecciona zona"); return; }
     resumen+=`<br>🚚 ${zona.options[zona.selectedIndex].text}<br>`;
     texto+=`Entrega: Delivery%0AZona: ${zona.options[zona.selectedIndex].text}%0A`;
     total+=parseInt(zona.value);
@@ -439,34 +518,97 @@ if(tipo === "delivery"){
   resumen+=`<br><b>TOTAL: RD$${total}</b>`;
   texto+=`TOTAL: RD$${total}`;
 
-  pedidoActual={nombre,direccion,telefono,fecha,hora,pago,tipo,combos,tops,total};
+  // Nota del resumen
+  const notaResumen = (document.getElementById("notaPedidoResumen").value || "").trim();
+
+  pedidoActual={
+    nombre,direccion,telefono,fecha,hora,pago,tipo,
+    zonaCosto: (tipo==="delivery") ? Number(zona?.value||0) : 0,
+    combos,tops,total,
+    notaCliente: notaResumen
+  };
 
   textoFinal=texto;
   document.getElementById("resumenContenido").innerHTML=resumen;
+
   document.getElementById("resumenModal").style.display="flex";
 }
 
 function confirmarEnvio(){
-  db.collection("pedidos").add({
-    ...pedidoActual,
-    mensaje: decodeURIComponent(textoFinal),
-    creado: new Date()
-  }).then(()=>{
-    window.open("https://wa.me/18297096223?text="+textoFinal);
-    document.getElementById("resumenModal").style.display="none";
-  }).catch(e=>{
-    alert("Error guardando pedido: "+e.message);
-  });
+  const telInput = (document.getElementById("telefono")?.value || "").trim();
+  const soloDigitos = telInput.replace(/\D/g, "");
+
+  if(!soloDigitos){
+    alert("El teléfono es obligatorio (WhatsApp).");
+    return;
+  }
+  if(soloDigitos.length < 10){
+    alert("Teléfono inválido. Ej: 8091234567");
+    return;
+  }
+
+  pedidoActual.telefono = telInput;
+
+  // Si es transferencia: abre modal de transferencia y no guarda aún
+  if((pedidoActual.pago||"") === "Transferencia"){
+    abrirTransfer();
+    return;
+  }
+
+  // efectivo: guarda directo
+  guardarPedidoFirestore();
 }
 
 function cerrarResumen(){
   document.getElementById("resumenModal").style.display="none";
 }
 
+// ===== Transferencia =====
+function abrirTransfer(){
+  document.getElementById("transferMsg").innerText = "";
+  document.getElementById("refTransfer").value = "";
+  document.getElementById("notaPedidoTransfer").value = "";
+  document.getElementById("transferModal").style.display = "flex";
+}
 
+function cerrarTransfer(){
+  document.getElementById("transferModal").style.display = "none";
+}
 
+function confirmarTransferencia(){
+  const ref = (document.getElementById("refTransfer").value || "").trim();
+  const notaT = (document.getElementById("notaPedidoTransfer").value || "").trim();
 
+  pedidoActual.transferRef = ref;
+  // si el cliente puso nota aquí, la guardamos también (sin pisar la otra)
+  if(notaT){
+    pedidoActual.notaCliente = (pedidoActual.notaCliente ? (pedidoActual.notaCliente + " | ") : "") + notaT;
+  }
+
+  cerrarTransfer();
+  guardarPedidoFirestore();
+}
+
+function guardarPedidoFirestore(){
+  db.collection("pedidos").add({
+    ...pedidoActual,
+    mensaje: decodeURIComponent(textoFinal),
+    creado: new Date()
+  }).then(()=>{
+    alert(window.__thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.");
+    document.getElementById("resumenModal").style.display="none";
+  }).catch(e=>{
+    alert("Error guardando pedido: "+e.message);
+  });
+}
+
+// ===== Helpers HTML =====
+function escapeHtml(str=""){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+function escapeAttr(str=""){ return escapeHtml(str); }
 </script>
+
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -483,6 +625,103 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+let unsubStoreProducts = null;
+
+// ✅ EN VIVO: textos + productos (sin índices)
+function escucharTiendaEnVivo(){
+  // Textos
+  db.collection("store_settings").doc("main")
+    .onSnapshot((snap)=>{
+      const s = snap.exists ? snap.data() : {};
+      document.getElementById("combosTitle").textContent = s.combosTitle || "🍩 Combos";
+      document.getElementById("toppingsTitle").textContent = s.toppingsTitle || "✨ Toppings";
+      window.__thanksMessage = s.thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
+
+      const tinfo = (s.transferInfo || "").trim();
+      window.__transferInfo = tinfo;
+      document.getElementById("transferInfoBox").innerHTML = tinfo ? escapeHtml(tinfo).replace(/\n/g,"<br>") : "Banco..., Cuenta..., Nombre..., etc.";
+    });
+
+  // Productos
+  if(unsubStoreProducts) unsubStoreProducts();
+
+  unsubStoreProducts = db.collection("store_products")
+    .onSnapshot((snap)=>{
+      const combosDocs = [];
+      const toppingsDocs = [];
+
+      snap.forEach(doc=>{
+        const p = { id: doc.id, ...doc.data() };
+        if(p.active !== true) return;
+        if(p.type === "combo") combosDocs.push(p);
+        if(p.type === "topping") toppingsDocs.push(p);
+      });
+
+      // ordenar por sortOrder
+      combosDocs.sort((a,b)=> (a.sortOrder||0) - (b.sortOrder||0));
+      toppingsDocs.sort((a,b)=> (a.sortOrder||0) - (b.sortOrder||0));
+
+      // actualizar array global usado por selects
+      toppings = toppingsDocs.map(t => ({ name: t.name, price: Number(t.price||0) }));
+
+      renderCombosFS(combosDocs);
+      renderToppingsFS(toppingsDocs);
+
+      calcular();
+    }, (err)=>{
+      console.log("Error leyendo store_products:", err);
+    });
+}
+
+function renderCombosFS(combosDocs){
+  const cont = document.getElementById("combosList");
+  cont.innerHTML = "";
+
+  if(!combosDocs.length){
+    cont.innerHTML = `<div class="smallMuted" style="text-align:center; padding:8px;">(No hay combos activos en la tienda)</div>`;
+    return;
+  }
+
+  combosDocs.forEach(c=>{
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      ${escapeHtml(c.name)}${Number(c.toppingsIncluded||0)>0 ? ` + ${Number(c.toppingsIncluded)} topping(s)` : ""} – RD$${Number(c.price||0)}
+      <input type="number" min="0" value="0" class="qty comboQty"
+        data-name="${escapeAttr(c.name)}"
+        data-price="${Number(c.price||0)}"
+        data-toppings="${Number(c.toppingsIncluded||0)}"
+        oninput="calcular()">
+    `;
+    cont.appendChild(div);
+  });
+}
+
+// Lista informativa (sin inputs) para no romper el total
+function renderToppingsFS(toppingsDocs){
+  const cont = document.getElementById("toppingsList");
+  cont.innerHTML = "";
+
+  if(!toppingsDocs.length){
+    cont.innerHTML = `<div class="smallMuted" style="text-align:center; padding:8px;">(No hay toppings activos)</div>`;
+    return;
+  }
+
+  toppingsDocs.forEach(t=>{
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `${escapeHtml(t.name)} – RD$${Number(t.price||0)}`;
+    cont.appendChild(div);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", ()=> {
+  toggleDelivery();
+  escucharTiendaEnVivo();
+  calcular();
+});
 </script>
+
 </body>
 </html>
