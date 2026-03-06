@@ -36,10 +36,127 @@ hr{border:none;border-top:1px dashed #f3b5cc;margin:14px 0;}
 .actionCol button{width:100%;}
 .actionCol .secondary{margin-top:8px;}
 .actionCol .mini{margin-top:8px;font-size:14px;padding:10px 12px;}
-.miniGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;justify-items:center;}
-.iconBtn{width:34px;height:34px;padding:0;border-radius:10px;font-size:15px;display:flex;align-items:center;justify-content:center;}
-.fullWidth{grid-column:span 2;}
-.iconBtn:hover{transform:scale(1.08);}
+.miniGrid{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.iconBtn{
+  min-width:170px;
+  height:48px;
+  padding:0 18px;
+  border-radius:18px;
+  font-size:15px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+
+
+
+.iconBtn:hover{
+  transform:scale(1.04);
+}
+
+/* Botones acciones pedidos */
+
+.btnEdit{
+  background:#ff8cc6;
+}
+
+.btnRec{
+  background:#38b000;
+}
+
+.btnReady{
+  background:#0077b6;
+}
+
+.btnDelete{
+  background:#ff3b3b;
+}
+
+.btnEdit:hover{background:#ff5fa2;}
+.btnRec:hover{background:#2a9100;}
+.btnReady:hover{background:#005f8e;}
+.btnDelete:hover{background:#d62828;}
+
+/* ===========================
+   ✅ PEDIDOS CERRADOS (COLAPSAR/EXPANDIR)
+=========================== */
+tr.pedidoRow .colDetalle{ display:none; }
+tr.pedidoRow.open .colDetalle{ display:table-cell; }
+tr.pedidoRow{ cursor:pointer; }
+
+
+/* Split pedidos: lista izquierda + detalle derecha */
+.pedSplit{display:flex; gap:10px; flex-wrap:wrap;}
+.pedLeft{
+  flex:1.4;
+  min-width:340px;
+}
+
+.pedRight{
+  flex:1.6;
+  min-width:420px;
+}
+
+.pedList{max-height:65vh; overflow:auto; padding:6px; border-radius:14px;}
+.pedItem{
+  background:#fff7fb;
+  border:1px solid #f3b5cc;
+  border-radius:14px;
+  padding:12px;
+  margin:10px 0;
+  cursor:pointer;
+}
+.pedItem:hover{transform:scale(1.01)}
+.pedItem.active{border:2px solid #ff5fa2; box-shadow:0 10px 22px rgba(0,0,0,.08);}
+.pedTop{display:flex; justify-content:space-between; gap:10px; align-items:flex-start;}
+.pedName{font-weight:800; color:#c2185b; font-size:18px;}
+.pedMeta{font-size:12px; color:#777; margin-top:6px;}
+.pedMoney{font-weight:900; color:#c2185b;}
+.pedTag{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#ffe3ef;
+  color:#c2185b;
+  font-weight:700;
+  font-size:12px;
+  border:1px solid #f3b5cc;
+}
+
+.pedAtendido{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#d8f3dc;
+  color:#2d6a4f;
+  font-weight:700;
+  font-size:12px;
+  border:1px solid #95d5b2;
+  margin-left:6px;
+}
+
+
+
+.detalleGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 760px){
+  .detalleGrid{
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 
@@ -57,6 +174,13 @@ hr{border:none;border-top:1px dashed #f3b5cc;margin:14px 0;}
     </div>
     <div id="editMsg" class="small muted" style="margin-top:8px;"></div>
   </div>
+</div>
+
+<!-- ✅ Toast pedido nuevo -->
+<div id="toastNew" class="hidden"
+  style="position:fixed; right:14px; bottom:14px; background:white; border:1px solid #f3b5cc; padding:12px 14px; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,.18); z-index:99999;">
+  <b style="color:#c2185b">🛎️ Pedido nuevo</b>
+  <div class="small muted" id="toastText" style="margin-top:4px;">—</div>
 </div>
 
 <div class="container">
@@ -138,147 +262,167 @@ hr{border:none;border-top:1px dashed #f3b5cc;margin:14px 0;}
       </div>
     </div>
 
-<div class="topbar" style="margin-top:10px;">
-  <div class="row" style="gap:8px;">
-    <button type="button" onclick="mostrarSeccion('pedidos')">📦 Pedidos</button>
-    <button type="button" class="secondary" onclick="mostrarSeccion('tienda')">🏪 Editar tienda</button>
-  </div>
-</div>
-
-<!-- SECCION TIENDA -->
-<div id="tiendaBox" class="hidden">
-  <h2>🏪 Editar tienda</h2>
-
-  <div class="row">
-    <!-- TEXTOS -->
-    <div class="card" style="flex:1; min-width:280px;">
-      <strong>Textos de la página</strong>
-
-      <label>Título Combos</label>
-      <input id="stCombosTitle" placeholder="🍩 Combos">
-
-      <label>Título Toppings</label>
-      <input id="stToppingsTitle" placeholder="✨ Toppings">
-
-      <label>Mensaje de gracias</label>
-      <textarea id="stThanks" placeholder="✅ ¡Gracias por tu pedido! En breve te contactaremos."></textarea>
-
-      <label>Texto Transferencia (datos bancarios)</label>
-      <textarea id="stTransfer" placeholder="Banco..., Cuenta..., Nombre..., etc."></textarea>
-
-      <div class="row" style="justify-content:flex-end;">
-        <button type="button" onclick="guardarStoreSettings()">💾 Guardar textos</button>
+    <div class="topbar" style="margin-top:10px;">
+      <div class="row" style="gap:8px;">
+        <button type="button" onclick="mostrarSeccion('pedidos')">📦 Pedidos</button>
+        <button type="button" class="secondary" onclick="mostrarSeccion('tienda')">🏪 Editar tienda</button>
       </div>
-
-      <div id="stMsg" class="small muted"></div>
     </div>
 
-    <!-- PRODUCTOS -->
-    <div class="card" style="flex:2; min-width:320px;">
-      <strong>Productos (Combos / Toppings)</strong>
+    <!-- SECCION TIENDA -->
+    <div id="tiendaBox" class="hidden">
+      <h2>🏪 Editar tienda</h2>
 
       <div class="row">
-        <div style="flex:1; min-width:160px;">
-          <label>Tipo</label>
-          <select id="pType">
-            <option value="combo">Combo</option>
-            <option value="topping">Topping</option>
-          </select>
+        <!-- TEXTOS -->
+        <div class="card" style="flex:1; min-width:280px;">
+          <strong>Textos de la página</strong>
+
+          <label>Título Combos</label>
+          <input id="stCombosTitle" placeholder="🍩 Combos">
+
+          <label>Título Toppings</label>
+          <input id="stToppingsTitle" placeholder="✨ Toppings">
+
+          <label>Mensaje de gracias</label>
+          <textarea id="stThanks" placeholder="✅ ¡Gracias por tu pedido! En breve te contactaremos."></textarea>
+
+          <label>Texto Transferencia (datos bancarios)</label>
+          <textarea id="stTransfer" placeholder="Banco..., Cuenta..., Nombre..., etc."></textarea>
+
+          <div class="row" style="justify-content:flex-end;">
+            <button type="button" onclick="guardarStoreSettings()">💾 Guardar textos</button>
+          </div>
+
+          <div id="stMsg" class="small muted"></div>
         </div>
 
-        <div style="flex:2; min-width:220px;">
-          <label>Nombre</label>
-          <input id="pName" placeholder="Ej: 6 Donitas / Oreo">
-        </div>
+        <!-- PRODUCTOS -->
+        <div class="card" style="flex:2; min-width:320px;">
+          <strong>Productos (Combos / Toppings)</strong>
 
-        <div style="width:140px;">
-          <label>Precio</label>
-          <input id="pPrice" type="number" min="0" placeholder="0">
+          <div class="row">
+            <div style="flex:1; min-width:160px;">
+              <label>Tipo</label>
+              <select id="pType">
+                <option value="combo">Combo</option>
+                <option value="topping">Topping</option>
+              </select>
+            </div>
+
+            <div style="flex:2; min-width:220px;">
+              <label>Nombre</label>
+              <input id="pName" placeholder="Ej: 6 Donitas / Oreo">
+            </div>
+
+            <div style="width:140px;">
+              <label>Precio</label>
+              <input id="pPrice" type="number" min="0" placeholder="0">
+            </div>
+          </div>
+
+          <div class="row">
+            <div style="width:180px;">
+              <label>Toppings incluidos (solo combos)</label>
+              <input id="pTopsIncl" type="number" min="0" value="0">
+            </div>
+
+            <div style="width:160px;">
+              <label>Orden</label>
+              <input id="pSort" type="number" min="0" value="0">
+            </div>
+
+            <div style="flex:1; min-width:180px;">
+              <label>Badge (opcional)</label>
+              <input id="pBadge" placeholder="OFERTA / NUEVO">
+            </div>
+
+            <div style="width:160px;">
+              <label>Activo</label>
+              <select id="pActive">
+                <option value="true">Sí</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row" style="justify-content:flex-end;">
+            <button type="button" onclick="crearProducto()">➕ Agregar</button>
+          </div>
+
+          <hr>
+
+          <div style="max-height:45vh; overflow:auto; border-radius:14px;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Nombre</th>
+                  <th>Precio</th>
+                  <th>Incl.</th>
+                  <th>Orden</th>
+                  <th>Activo</th>
+                  <th>Badge</th>
+                  <th style="width:120px;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaProductos"></tbody>
+            </table>
+          </div>
+
+          <div id="prodMsg" class="small muted" style="margin-top:8px;"></div>
         </div>
       </div>
+    </div>
 
-      <div class="row">
-        <div style="width:180px;">
-          <label>Toppings incluidos (solo combos)</label>
-          <input id="pTopsIncl" type="number" min="0" value="0">
-        </div>
+    <!-- SECCION PEDIDOS -->
+    <div id="pedidosBox">
+  <h2>📦 Pedidos</h2>
 
-        <div style="width:160px;">
-          <label>Orden</label>
-          <input id="pSort" type="number" min="0" value="0">
-        </div>
+  <div class="pedSplit">
 
-        <div style="flex:1; min-width:180px;">
-          <label>Badge (opcional)</label>
-          <input id="pBadge" placeholder="OFERTA / NUEVO">
-        </div>
+    <!-- Izquierda: lista -->
+    <div class="card pedLeft">
+      <div class="row" style="justify-content:space-between;align-items:center;">
+        <strong>Pedidos</strong>
+        <div class="pill"><span id="leftCount">0</span> pedido(s)</div>
+      </div>
+      <div id="listaPedidos" class="pedList"></div>
+    </div>
 
-        <div style="width:160px;">
-          <label>Activo</label>
-          <select id="pActive">
-            <option value="true">Sí</option>
-            <option value="false">No</option>
-          </select>
-        </div>
+    <!-- Derecha: detalle (misma info que tu foto) -->
+    <div class="card pedRight">
+      <div class="row" style="justify-content:space-between;align-items:center;">
+        <strong>Detalle</strong>
+        <span id="detalleNuevo" class="pedTag hidden">Nuevo</span>
       </div>
 
-      <div class="row" style="justify-content:flex-end;">
-        <button type="button" onclick="crearProducto()">➕ Agregar</button>
+      <div id="detalleContenido" class="muted" style="margin-top:8px;">
+        Selecciona un pedido a la izquierda.
       </div>
 
       <hr>
 
-      <div style="max-height:45vh; overflow:auto; border-radius:14px;">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Tipo</th>
-              <th>Nombre</th>
-              <th>Precio</th>
-              <th>Incl.</th>
-              <th>Orden</th>
-              <th>Activo</th>
-              <th>Badge</th>
-              <th style="width:120px;">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tablaProductos"></tbody>
-        </table>
-      </div>
+      <div class="miniGrid" style="justify-items:stretch;">
+<button id="dBtnEdit" class="iconBtn" disabled>
+✏️ Editar
+</button>
 
-      <div id="prodMsg" class="small muted" style="margin-top:8px;"></div>
+<button id="dBtnRec" class="iconBtn" disabled>
+✅ Pedido recibido
+</button>
+
+<button id="dBtnLis" class="iconBtn" disabled>
+📦 Pedido listo
+</button>
+
+<button id="dBtnDel" class="iconBtn" disabled>
+🗑 Eliminar
+</button>      </div>
     </div>
+
   </div>
 </div>
-
-<!-- SECCION PEDIDOS (la tuya) -->
-<div id="pedidosBox">
-  <!-- tu h2 y tabla de pedidos se quedan como están -->
-</div>
-
-
-
-
-
-
-    <h2>📦 Pedidos</h2>
-
-    <div class="card" style="padding:0;">
-      <div style="max-height:65vh; overflow:auto; border-radius:14px;">
-        <table class="table">
-          <thead>
-            <tr>
-              <th style="width:200px;">Cliente</th>
-              <th>Pedido</th>
-              <th style="width:230px;">Estados</th>
-              <th style="width:260px;">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tablaPedidos"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- Firebase v8 -->
@@ -376,14 +520,9 @@ async function login(){
 
 async function logout(){ await auth.signOut(); }
 
-
 /* ===========================
    TIENDA (EDITABLE)
-   Colecciones:
-   - store_settings (doc: main)
-   - store_products
 =========================== */
-
 let unsubProductos = null;
 
 function setStMsg(msg){ document.getElementById("stMsg").innerText = msg || ""; }
@@ -473,7 +612,6 @@ async function crearProducto(){
       updatedBy: auth.currentUser?.email || "admin"
     });
 
-    // limpiar form
     document.getElementById("pName").value = "";
     document.getElementById("pPrice").value = "";
     document.getElementById("pTopsIncl").value = "0";
@@ -495,7 +633,6 @@ function listenProductos(){
     .onSnapshot((snap)=>{
       const rows = snap.docs.map(d=>({ id:d.id, ...d.data() }));
 
-      // ordenar por tipo en JS (combo primero)
       rows.sort((a,b)=>{
         const ta = (a.type||"").toLowerCase();
         const tb = (b.type||"").toLowerCase();
@@ -572,12 +709,6 @@ async function borrarProd(id){
   }
 }
 
-/* ===========================
-   IMPORTANTE:
-   Tus editores de pedidos usan COMBOS_CATALOGO y TOPPINGS_CATALOGO.
-   Para que cuando cambies precios aquí también se refleje ahí,
-   los sincronizamos desde store_products.
-=========================== */
 function syncCatalogosParaEditarPedidos(rows){
   const combos = rows
     .filter(x => x.type === "combo")
@@ -594,7 +725,6 @@ function syncCatalogosParaEditarPedidos(rows){
       price: Number(x.price || 0)
     }));
 
-  // Reemplaza arrays (manteniendo referencias para tu código actual)
   COMBOS_CATALOGO.length = 0;
   combos.forEach(c => COMBOS_CATALOGO.push(c));
 
@@ -612,16 +742,69 @@ async function assertAdmin(user){
   }
 }
 
+/* ===========================
+   ✅ AVISO + SONIDO (OPCION 5)
+=========================== */
+function playNewOrderSound(){
+  try{
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+
+    o.type = "sine";
+    o.frequency.value = 880;
+    g.gain.value = 0.0001;
+
+    o.connect(g);
+    g.connect(ctx.destination);
+
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
+
+    o.stop(ctx.currentTime + 0.28);
+    setTimeout(()=> ctx.close(), 400);
+  }catch(e){}
+}
+
+function showToastNew(p){
+  const toast = document.getElementById("toastNew");
+  const text = document.getElementById("toastText");
+  if(!toast || !text) return;
+
+  const nombre = (p.nombre || "Cliente").toString();
+  const total = Number(p.total || 0);
+  text.textContent = `${nombre} • RD$${total}`;
+
+  toast.classList.remove("hidden");
+  setTimeout(()=> toast.classList.add("hidden"), 3500);
+}
+
 /** Firestore listen **/
+let firstPedidosLoad = true;
+
 function listenPedidos(){
   if(unsubPedidos) unsubPedidos();
 
   unsubPedidos = db.collection("pedidos")
     .orderBy("creado", "desc")
     .onSnapshot((snap)=>{
+
+      if(!firstPedidosLoad){
+        const added = snap.docChanges().filter(c => c.type === "added");
+        if(added.length){
+          const newest = added[0].doc.data() || {};
+          playNewOrderSound();
+          showToastNew(newest);
+        }
+      }
+
       pedidosCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
       actualizarKPIs();
       renderFiltrado();
+
+      firstPedidosLoad = false;
     }, (err)=>{
       alert("Error leyendo pedidos: " + err.message);
     });
@@ -638,13 +821,43 @@ function actualizarKPIs(){
   document.getElementById("kNoPag").innerText = noPag;
 }
 
-/** Render tabla **/
+/* ===========================
+   ✅ ELIMINAR PEDIDO (BOTON EXTRA)
+=========================== */
+async function borrarPedido(id){
+  const p = pedidosCache.find(x => x.id === id);
+  if(!p){ alert("No encontré el pedido."); return; }
+
+  const ok = confirm(`¿Eliminar este pedido?\n\nCliente: ${p.nombre || ""}\nTotal: RD$${p.total || 0}`);
+  if(!ok) return;
+
+  try{
+    await db.collection("pedidos").doc(id).delete();
+  }catch(e){
+    alert("Error eliminando: " + e.message);
+  }
+}
+
+/** Render tabla (✅ colapsado por defecto) **/
+let selectedPedidoId = null;
+
+function recortar(txt, n=32){
+  txt = String(txt||"");
+  if(txt.length <= n) return txt;
+  return txt.slice(0, n-1) + "…";
+}
+
 function renderFiltrado(){
   const fEstado = document.getElementById("fEstado").value;
   const fPago = document.getElementById("fPago").value;
   const fBuscar = document.getElementById("fBuscar").value.trim().toLowerCase();
 
   let list = [...pedidosCache];
+list.sort((a,b)=>{
+  const ea = a.estado === "realizado" ? 1 : 0;
+  const eb = b.estado === "realizado" ? 1 : 0;
+  return ea - eb;
+});
 
   if(fEstado !== "todos") list = list.filter(p => (p.estado || "pendiente") === fEstado);
   if(fPago !== "todos") list = list.filter(p => (p.pagoEstado || "pendiente") === fPago);
@@ -657,88 +870,215 @@ function renderFiltrado(){
     });
   }
 
-  const tbody = document.getElementById("tablaPedidos");
-  tbody.innerHTML = "";
+  // contador
+  const cEl = document.getElementById("leftCount");
+  if(cEl) cEl.innerText = list.length;
 
-  if(list.length === 0){
-    tbody.innerHTML = `<tr><td colspan="4" class="muted" style="padding:14px;">No hay pedidos con esos filtros.</td></tr>`;
+  // selección estable
+  if(selectedPedidoId && !list.find(x => x.id === selectedPedidoId)) selectedPedidoId = null;
+  if(!selectedPedidoId && list.length) selectedPedidoId = list[0].id;
+
+  renderListaIzquierda(list);
+
+  const sel = list.find(x => x.id === selectedPedidoId) || null;
+  renderDetalleDerecha(sel);
+}
+
+function renderListaIzquierda(list){
+  const cont = document.getElementById("listaPedidos");
+  if(!cont) return;
+  cont.innerHTML = "";
+
+  if(!list.length){
+    cont.innerHTML = `<div class="muted" style="padding:10px;">No hay pedidos con esos filtros.</div>`;
     return;
   }
 
   list.forEach(p=>{
-    const estado = p.estado || "pendiente";
-    const pagoEstado = p.pagoEstado || "pendiente";
-    const motivoNoPago = p.motivoNoPago || "";
-    const notas = p.notas || "";
+    const item = document.createElement("div");
+    item.className = "pedItem" + (p.id === selectedPedidoId ? " active" : "");
 
-    const combos = Array.isArray(p.combos)
-      ? p.combos.map(c => `• ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("<br>")
-      : "";
-
-    const tops = Array.isArray(p.tops)
-      ? p.tops.map(t => `• ${escapeHtml(t)}`).join("<br>")
-      : "";
-
-    const entrega = (p.tipo === "delivery") ? "🚚 Delivery" : "📍 Pickup";
-    const total = safe(p.total);
+    const nombre = escapeHtml(p.nombre || "Cliente");
+    const total = Number(p.total || 0);
     const creado = fmtFecha(p.creado);
-    const telRaw = p.telefono || "";
+    const dir = recortar(p.direccion || "", 34);
 
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>
-        <strong>${escapeHtml(p.nombre || "")}</strong><br>
-        <span class="small muted">${escapeHtml(p.direccion || "")}</span><br>
-        ${telRaw ? `<span class="small">📞 <b>${escapeHtml(telRaw)}</b></span><br>` : `<span class="small muted">📞 (sin teléfono)</span><br>`}
-        <span class="small">${entrega} • Pago: <b>${escapeHtml(p.pago || "")}</b></span><br>
-        <span class="small muted">Fecha/Hora: ${escapeHtml(p.fecha || "")} ${escapeHtml(p.hora || "")}</span><br>
-        <span class="small muted">Creado: ${escapeHtml(creado)}</span>
-      </td>
+    // "Nuevo" (por ahora): pendiente
+    const esNuevo = (p.estado || "pendiente") === "pendiente";
+const atendido = (p.estado === "realizado");
 
-      <td>
-        <div><b>Combos</b></div>
-        <div class="small">${combos || "<span class='muted'>-</span>"}</div>
-        <div style="margin-top:8px;"><b>Toppings</b></div>
-        <div class="small">${tops || "<span class='muted'>-</span>"}</div>
-        <div style="margin-top:10px;"><span class="pill">TOTAL RD$${escapeHtml(total)}</span></div>
-      </td>
-
-      <td>
-        <label class="small muted">Estado del pedido</label>
-        <select onchange="updatePedido('${p.id}', {estado:this.value})">
-          <option value="pendiente" ${estado==='pendiente'?'selected':''}>Pendiente</option>
-          <option value="realizado" ${estado==='realizado'?'selected':''}>Realizado</option>
-          <option value="cancelado" ${estado==='cancelado'?'selected':''}>Cancelado</option>
-        </select>
-
-        <label class="small muted">Estado del pago</label>
-        <select onchange="updatePedido('${p.id}', {pagoEstado:this.value})">
-          <option value="pendiente" ${pagoEstado==='pendiente'?'selected':''}>Pendiente</option>
-          <option value="pagado" ${pagoEstado==='pagado'?'selected':''}>Pagado</option>
-          <option value="no_pagado" ${pagoEstado==='no_pagado'?'selected':''}>No pagado</option>
-        </select>
-
-        <label class="small muted">Motivo (si no pagó)</label>
-        <input value="${escapeHtml(motivoNoPago)}" placeholder="Ej: no respondió"
-               onblur="updatePedido('${p.id}', {motivoNoPago:this.value})"/>
-
-        <label class="small muted">Notas internas</label>
-        <textarea placeholder="Notas..." onblur="updatePedido('${p.id}', {notas:this.value})">${escapeHtml(notas)}</textarea>
-      </td>
-
-      <td class="actionCol">
-        <div class="miniGrid">
-          <button class="iconBtn" type="button" title="Editar" onclick="abrirEdit('${p.id}')">✏️</button>
-          <button class="iconBtn" type="button" title="Enviar: Pedido recibido" onclick="enviarPlantilla('${p.id}','recibido')">✅</button>
-          <button class="iconBtn fullWidth" type="button" title="Enviar: Pedido listo" onclick="enviarPlantilla('${p.id}','listo')">📦</button>
+    item.innerHTML = `
+      <div class="pedTop">
+        <div>
+          <div class="pedName">${nombre}</div>
+          <div class="pedMeta">${escapeHtml(dir)}</div>
+          <div class="pedMeta">Creado: ${escapeHtml(creado)}</div>
         </div>
-      </td>
+        <div style="text-align:right;">
+          ${esNuevo ? `<span class="pedTag">Nuevo</span>` : ``}
+${atendido ? `<span class="pedAtendido">Atendido</span>` : ``}
+          <div class="pedMoney" style="margin-top:8px;">RD$${total}</div>
+        </div>
+      </div>
     `;
-    tbody.appendChild(row);
+
+    item.onclick = ()=>{
+      selectedPedidoId = p.id;
+      renderListaIzquierda(list);
+      renderDetalleDerecha(p);
+    };
+
+    cont.appendChild(item);
   });
 }
 
-/** Actualizar pedido **/
+function renderDetalleDerecha(p){
+  const box = document.getElementById("detalleContenido");
+  const badge = document.getElementById("detalleNuevo");
+
+  const bEdit = document.getElementById("dBtnEdit");
+  const bRec  = document.getElementById("dBtnRec");
+  const bLis  = document.getElementById("dBtnLis");
+  const bDel  = document.getElementById("dBtnDel");
+
+  function disableAll(){
+  [bEdit,bRec,bLis,bDel].forEach(b=>{ if(b){ b.disabled=true; } });
+}
+
+  if(!box){ return; }
+
+  if(!p){
+    if(badge) badge.classList.add("hidden");
+    box.innerHTML = `Selecciona un pedido a la izquierda.`;
+    disableAll();
+    return;
+  }
+
+  const estado = p.estado || "pendiente";
+  const pagoEstado = p.pagoEstado || "pendiente";
+  const motivoNoPago = p.motivoNoPago || "";
+  const notas = p.notas || "";
+
+  const combos = Array.isArray(p.combos)
+    ? p.combos.map(c => `• ${c.cantidad} x ${escapeHtml(c.combo)} (RD$${c.precio})`).join("<br>")
+    : "";
+
+  const tops = Array.isArray(p.tops)
+    ? p.tops.map(t => `• ${escapeHtml(t)}`).join("<br>")
+    : "";
+
+  const entrega = (p.tipo === "delivery") ? "🚚 Delivery" : "📍 Pickup";
+  const total = safe(p.total);
+  const creado = fmtFecha(p.creado);
+  const telRaw = p.telefono || "";
+
+  // Badge "Nuevo"
+  const esNuevo = (p.estado || "pendiente") === "pendiente";
+const atendido = (p.estado === "realizado");
+  if(badge){
+    if(esNuevo) badge.classList.remove("hidden");
+    else badge.classList.add("hidden");
+  }
+
+  // ✅ MISMA info que tu foto (Cliente / Pedido / Estados)
+  box.innerHTML = `
+  <div class="card" style="padding:14px; margin-bottom:10px;">
+    <div class="row" style="justify-content:space-between; align-items:center;">
+  <strong>Información del cliente</strong>
+</div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+      <div>
+        <div class="small muted">Cliente</div>
+        <div><strong>${escapeHtml(p.nombre || "")}</strong></div>
+      </div>
+
+      <div>
+        <div class="small muted">Teléfono</div>
+        <div>${telRaw ? `📞 <b>${escapeHtml(telRaw)}</b>` : `<span class="muted">(sin teléfono)</span>`}</div>
+      </div>
+
+      <div>
+        <div class="small muted">Dirección</div>
+        <div>${escapeHtml(p.direccion || "—")}</div>
+      </div>
+
+      <div>
+        <div class="small muted">Entrega</div>
+        <div>${entrega}</div>
+      </div>
+
+      <div>
+        <div class="small muted">Método de pago</div>
+        <div><b>${escapeHtml(p.pago || "—")}</b></div>
+      </div>
+
+      <div>
+        <div class="small muted">Fecha de entrega</div>
+        <div>${escapeHtml(p.fecha || "")} ${escapeHtml(p.hora || "")}</div>
+      </div>
+
+      <div style="grid-column:1 / -1;">
+        <div class="small muted">Creado</div>
+        <div>${escapeHtml(creado)}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:14px; margin-bottom:10px;">
+    <strong>Resumen del pedido</strong>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:10px;">
+      <div>
+        <div><b>Combos</b></div>
+        <div class="small" style="margin-top:6px;">${combos || "<span class='muted'>-</span>"}</div>
+      </div>
+
+      <div>
+        <div><b>Toppings</b></div>
+        <div class="small" style="margin-top:6px;">${tops || "<span class='muted'>-</span>"}</div>
+      </div>
+
+      <div style="grid-column:1 / -1;">
+        <span class="pill">TOTAL RD$${escapeHtml(total)}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:14px;">
+    <strong style="display:block; margin-bottom:8px;">Gestión del pedido</strong>
+
+<div style="margin-top:4px;">
+  <label class="small muted">Estado del pedido</label>
+  <select onchange="updatePedido('${p.id}', {estado:this.value})">
+      <option value="pendiente" ${estado==='pendiente'?'selected':''}>Pendiente</option>
+      <option value="realizado" ${estado==='realizado'?'selected':''}>Realizado</option>
+      <option value="cancelado" ${estado==='cancelado'?'selected':''}>Cancelado</option>
+    </select>
+
+    <label class="small muted">Estado del pago</label>
+    <select onchange="updatePedido('${p.id}', {pagoEstado:this.value})">
+      <option value="pendiente" ${pagoEstado==='pendiente'?'selected':''}>Pendiente</option>
+      <option value="pagado" ${pagoEstado==='pagado'?'selected':''}>Pagado</option>
+      <option value="no_pagado" ${pagoEstado==='no_pagado'?'selected':''}>No pagado</option>
+    </select>
+
+    <label class="small muted">Motivo (si no pagó)</label>
+    <input value="${escapeHtml(motivoNoPago)}" placeholder="Ej: no respondió"
+           onblur="updatePedido('${p.id}', {motivoNoPago:this.value})"/>
+
+    <label class="small muted">Notas internas</label>
+    <textarea placeholder="Notas..." onblur="updatePedido('${p.id}', {notas:this.value})">${escapeHtml(notas)}</textarea>
+  </div>
+`;
+  // Botones: MISMO comportamiento + agregar eliminar
+  [bEdit,bRec,bLis,bDel].forEach(b=>{ if(b) b.disabled=false; });
+
+  if(bEdit) bEdit.onclick = ()=> abrirEdit(p.id);
+  if(bRec)  bRec.onclick  = ()=> enviarPlantilla(p.id,'recibido');
+if(bLis)  bLis.onclick  = ()=> marcarPedidoListo(p.id);
+  if(bDel)  bDel.onclick  = ()=> borrarPedido(p.id);
+}/** Actualizar pedido **/
 async function updatePedido(id, patch){
   try{
     await db.collection("pedidos").doc(id).set(patch, { merge:true });
@@ -809,6 +1149,22 @@ o
   window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
+
+async function marcarPedidoListo(id){
+
+  // enviar mensaje de pedido listo
+  enviarPlantilla(id,'listo');
+
+  try{
+    await db.collection("pedidos").doc(id).set({
+      estado:"realizado"
+    },{merge:true});
+  }
+  catch(e){
+    alert("Error actualizando estado: " + e.message);
+  }
+
+}
 /* ===========================
    EDIT MODAL (FUNCIONA)
 =========================== */
@@ -1293,6 +1649,8 @@ async function guardarEdit(){
   }
 }
 
+
+
 /** Boot **/
 auth.onAuthStateChanged(async (user)=>{
   const loginBox = document.getElementById("loginBox");
@@ -1300,7 +1658,7 @@ auth.onAuthStateChanged(async (user)=>{
 
   if(!user){
     if(unsubPedidos) unsubPedidos();
-	if(unsubProductos) unsubProductos();
+    if(unsubProductos) unsubProductos();
     pedidosCache = [];
     loginBox.classList.remove("hidden");
     appBox.classList.add("hidden");
@@ -1319,5 +1677,6 @@ auth.onAuthStateChanged(async (user)=>{
   }
 });
 </script>
+
 </body>
 </html>
