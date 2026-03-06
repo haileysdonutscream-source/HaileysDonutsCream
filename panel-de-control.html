@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
+<link rel="icon" type="image/png" href="logo.png">
 <title>Panel de control - Hailey’s Donuts & Cream</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -9,177 +10,36 @@
 
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:'Poppins',sans-serif;
-  background:#ffe6f0;
-  padding:10px;
-}
-.container{
-  max-width:920px;
-  margin:auto;
-  background:white;
-  padding:15px;
-  border-radius:15px;
-  box-shadow:0 0 10px rgba(0,0,0,.15);
-  overflow:hidden;
-}
-h1,h2{
-  font-family:'Pacifico',cursive;
-  color:#c2185b;
-  text-align:center;
-  margin:10px 0;
-}
-h2{
-  margin-top:18px;
-  border-bottom:2px dashed #f3b5cc;
-  padding-bottom:6px;
-}
-.row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.card{
-  background:#fff7fb;
-  border:1px solid #f3b5cc;
-  border-radius:14px;
-  padding:12px;
-}
+body{margin:0;font-family:'Poppins',sans-serif;background:#ffe6f0;padding:10px;}
+.container{max-width:920px;margin:auto;background:white;padding:15px;border-radius:15px;box-shadow:0 0 10px rgba(0,0,0,.15);overflow:hidden;}
+h1,h2{font-family:'Pacifico',cursive;color:#c2185b;text-align:center;margin:10px 0;}
+h2{margin-top:18px;border-bottom:2px dashed #f3b5cc;padding-bottom:6px;}
+.row{display:flex;gap:10px;flex-wrap:wrap;}
+.card{background:#fff7fb;border:1px solid #f3b5cc;border-radius:14px;padding:12px;}
 .card strong{color:#c2185b}
-input,select,textarea{
-  padding:10px;
-  margin:6px 0;
-  width:100%;
-  border-radius:10px;
-  border:1px solid #ddd;
-  background:#fff;
-  font-family:inherit;
-}
+input,select,textarea{padding:10px;margin:6px 0;width:100%;border-radius:10px;border:1px solid #ddd;background:#fff;font-family:inherit;}
 textarea{min-height:70px; resize:vertical;}
-button{
-  background:linear-gradient(45deg,#ff5fa2,#ff8cc6);
-  color:white;
-  padding:12px 14px;
-  border:none;
-  border-radius:14px;
-  font-size:16px;
-  width:auto;
-  font-weight:bold;
-  cursor:pointer;
-}
+button{background:linear-gradient(45deg,#ff5fa2,#ff8cc6);color:white;padding:12px 14px;border:none;border-radius:14px;font-size:16px;width:auto;font-weight:bold;cursor:pointer;}
 button:hover{transform:scale(1.02)}
-button.secondary{
-  background:#eee;
-  color:#333;
-  font-weight:600;
-}
-button:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-  transform:none;
-}
-.topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  flex-wrap:wrap;
-  margin:10px 0;
-}
-.badge{
-  display:inline-block;
-  padding:6px 10px;
-  border-radius:999px;
-  background:#ffe3ef;
-  color:#c2185b;
-  font-weight:700;
-}
-.table{
-  width:100%;
-  border-collapse:collapse;
-  overflow:hidden;
-  border-radius:12px;
-}
-.table th, .table td{
-  border-bottom:1px dotted #f3b5cc;
-  padding:10px;
-  vertical-align:top;
-  font-size:14px;
-}
-.table th{
-  text-align:left;
-  color:#c2185b;
-  background:#fff3f8;
-  position:sticky;
-  top:0;
-  z-index:1;
-}
-.small{font-size:12px; color:#666;}
+button.secondary{background:#eee;color:#333;font-weight:600;}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0;}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#ffe3ef;color:#c2185b;font-weight:700;}
+.table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:12px;}
+.table th,.table td{border-bottom:1px dotted #f3b5cc;padding:10px;vertical-align:top;font-size:14px;}
+.table th{text-align:left;color:#c2185b;background:#fff3f8;position:sticky;top:0;z-index:1;}
+.small{font-size:12px;color:#666;}
 .muted{color:#777;}
-.pill{
-  display:inline-block;
-  padding:4px 8px;
-  border-radius:999px;
-  background:#ffe3ef;
-  color:#c2185b;
-  font-weight:700;
-  font-size:12px;
-}
+.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#ffe3ef;color:#c2185b;font-weight:700;font-size:12px;}
 .hidden{display:none !important;}
-hr{
-  border:none;
-  border-top:1px dashed #f3b5cc;
-  margin:14px 0;
-}
-.actionCol button{
-  width:100%;
-}
-.actionCol .secondary{
-  margin-top:8px;
-}
-.actionCol .mini{
-  margin-top:8px;
-  font-size:14px;
-  padding:10px 12px;
-}
-.actionCol .hint{
-  margin-top:8px;
-  font-size:12px;
-  color:#777;
-  background:#fff;
-  border:1px dashed #f3b5cc;
-  padding:8px 10px;
-  border-radius:12px;
-}
-
-
-.miniGrid{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:6px;
-  justify-items:center;
-}
-
-.iconBtn{
-  width:34px;
-  height:34px;
-  padding:0;
-  border-radius:10px;
-  font-size:15px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.fullWidth{
-  grid-column: span 2;
-}
-
-.iconBtn:hover{
-  transform:scale(1.08);
-}
-
+hr{border:none;border-top:1px dashed #f3b5cc;margin:14px 0;}
+.actionCol button{width:100%;}
+.actionCol .secondary{margin-top:8px;}
+.actionCol .mini{margin-top:8px;font-size:14px;padding:10px 12px;}
+.miniGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;justify-items:center;}
+.iconBtn{width:34px;height:34px;padding:0;border-radius:10px;font-size:15px;display:flex;align-items:center;justify-content:center;}
+.fullWidth{grid-column:span 2;}
+.iconBtn:hover{transform:scale(1.08);}
 </style>
 </head>
 
@@ -189,40 +49,15 @@ hr{
 <div id="editModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:9999; display:flex; justify-content:center; align-items:center; padding:12px;">
   <div class="card" style="background:white; max-width:920px; width:100%; max-height:92vh; overflow:auto;">
     <h2>✏️ Editar pedido</h2>
-    <div id="editBody">
-<div id="editBody">
-  
-  <!-- Cliente -->
-  <label>Nombre</label>
-  <input id="eNombre">
+    <div id="editBody"></div>
 
-  <label>Dirección</label>
-  <input id="eDireccion">
-
-  <!-- 👇👇👇 AQUÍ VAMOS A PEGAR 👇👇👇 -->
-
-  <label class="small muted">Toppings</label>
-  <div id="editToppings"></div>
-
-  <div style="display:flex; gap:8px; margin-top:6px;">
-    <button class="secondary" type="button" onclick="addEditTopping()">+ Topping</button>
-    <button class="secondary" type="button" onclick="clearEditToppings()">Limpiar</button>
-  </div>
-
-  <!-- 👆👆👆 HASTA AQUÍ 👆👆👆 -->
-
-</div>
-
-
-</div>
     <div class="row" style="justify-content:flex-end; margin-top:10px;">
-      <button class="secondary" onclick="cerrarEdit()">Cancelar</button>
-      <button style="margin-left:10px;" onclick="guardarEdit()">Guardar cambios</button>
+      <button class="secondary" type="button" onclick="cerrarEdit()">Cancelar</button>
+      <button type="button" style="margin-left:10px;" onclick="guardarEdit()">Guardar cambios</button>
     </div>
     <div id="editMsg" class="small muted" style="margin-top:8px;"></div>
   </div>
 </div>
-
 
 <div class="container">
   <h1>Panel de control</h1>
@@ -241,7 +76,7 @@ hr{
       </div>
     </div>
     <div class="row" style="justify-content:flex-end;">
-      <button onclick="login()">Entrar</button>
+      <button type="button" onclick="login()">Entrar</button>
     </div>
     <div id="loginMsg" class="small muted"></div>
   </div>
@@ -254,7 +89,7 @@ hr{
         <span class="badge">🔑 Admin</span>
       </div>
       <div class="row" style="align-items:center;">
-        <button class="secondary" onclick="logout()">Cerrar sesión</button>
+        <button class="secondary" type="button" onclick="logout()">Cerrar sesión</button>
       </div>
     </div>
 
@@ -303,6 +138,129 @@ hr{
       </div>
     </div>
 
+<div class="topbar" style="margin-top:10px;">
+  <div class="row" style="gap:8px;">
+    <button type="button" onclick="mostrarSeccion('pedidos')">📦 Pedidos</button>
+    <button type="button" class="secondary" onclick="mostrarSeccion('tienda')">🏪 Editar tienda</button>
+  </div>
+</div>
+
+<!-- SECCION TIENDA -->
+<div id="tiendaBox" class="hidden">
+  <h2>🏪 Editar tienda</h2>
+
+  <div class="row">
+    <!-- TEXTOS -->
+    <div class="card" style="flex:1; min-width:280px;">
+      <strong>Textos de la página</strong>
+
+      <label>Título Combos</label>
+      <input id="stCombosTitle" placeholder="🍩 Combos">
+
+      <label>Título Toppings</label>
+      <input id="stToppingsTitle" placeholder="✨ Toppings">
+
+      <label>Mensaje de gracias</label>
+      <textarea id="stThanks" placeholder="✅ ¡Gracias por tu pedido! En breve te contactaremos."></textarea>
+
+      <label>Texto Transferencia (datos bancarios)</label>
+      <textarea id="stTransfer" placeholder="Banco..., Cuenta..., Nombre..., etc."></textarea>
+
+      <div class="row" style="justify-content:flex-end;">
+        <button type="button" onclick="guardarStoreSettings()">💾 Guardar textos</button>
+      </div>
+
+      <div id="stMsg" class="small muted"></div>
+    </div>
+
+    <!-- PRODUCTOS -->
+    <div class="card" style="flex:2; min-width:320px;">
+      <strong>Productos (Combos / Toppings)</strong>
+
+      <div class="row">
+        <div style="flex:1; min-width:160px;">
+          <label>Tipo</label>
+          <select id="pType">
+            <option value="combo">Combo</option>
+            <option value="topping">Topping</option>
+          </select>
+        </div>
+
+        <div style="flex:2; min-width:220px;">
+          <label>Nombre</label>
+          <input id="pName" placeholder="Ej: 6 Donitas / Oreo">
+        </div>
+
+        <div style="width:140px;">
+          <label>Precio</label>
+          <input id="pPrice" type="number" min="0" placeholder="0">
+        </div>
+      </div>
+
+      <div class="row">
+        <div style="width:180px;">
+          <label>Toppings incluidos (solo combos)</label>
+          <input id="pTopsIncl" type="number" min="0" value="0">
+        </div>
+
+        <div style="width:160px;">
+          <label>Orden</label>
+          <input id="pSort" type="number" min="0" value="0">
+        </div>
+
+        <div style="flex:1; min-width:180px;">
+          <label>Badge (opcional)</label>
+          <input id="pBadge" placeholder="OFERTA / NUEVO">
+        </div>
+
+        <div style="width:160px;">
+          <label>Activo</label>
+          <select id="pActive">
+            <option value="true">Sí</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="justify-content:flex-end;">
+        <button type="button" onclick="crearProducto()">➕ Agregar</button>
+      </div>
+
+      <hr>
+
+      <div style="max-height:45vh; overflow:auto; border-radius:14px;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Incl.</th>
+              <th>Orden</th>
+              <th>Activo</th>
+              <th>Badge</th>
+              <th style="width:120px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaProductos"></tbody>
+        </table>
+      </div>
+
+      <div id="prodMsg" class="small muted" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECCION PEDIDOS (la tuya) -->
+<div id="pedidosBox">
+  <!-- tu h2 y tabla de pedidos se quedan como están -->
+</div>
+
+
+
+
+
+
     <h2>📦 Pedidos</h2>
 
     <div class="card" style="padding:0;">
@@ -329,53 +287,709 @@ hr{
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
+/** 1) CONFIG **/
+const firebaseConfig = {
+  apiKey: "AIzaSyBIc3oJMmSTnOg4EaFsCLOkhyLoGXEWj6c",
+  authDomain: "minidonas-d5e36.firebaseapp.com",
+  projectId: "minidonas-d5e36",
+  storageBucket: "minidonas-d5e36.firebasestorage.app",
+  messagingSenderId: "311892742337",
+  appId: "1:311892742337:web:29c1a95fba484cf4578440"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/** Estado local **/
+let pedidosCache = [];
+let unsubPedidos = null;
+
+/** Catálogos **/
+const COMBOS_CATALOGO = [
+  { name: "6 Donitas",  price: 160, toppings: 1 },
+  { name: "12 Donitas", price: 300, toppings: 2 },
+  { name: "24 Donitas", price: 600, toppings: 3 },
+  { name: "4 Donitas",  price: 130, toppings: 1 },
+  { name: "9 Donitas",  price: 200, toppings: 1 },
+];
+
+const TOPPINGS_CATALOGO = [
+  {name:"Kisses",price:55},
+  {name:"Hershey’s blanco",price:50},
+  {name:"Hershey’s negro",price:50},
+  {name:"Almendras",price:50},
+  {name:"M&M",price:50},
+  {name:"Oreo",price:35},
+  {name:"Chispas de colores",price:30},
+  {name:"Crema Dubai",price:75},
+  {name:"Twix",price:65},
+  {name:"Canela",price:10},
+  {name:"Azúcar glass",price:25},
+  {name:"Crema pastelera",price:55}
+];
+
+/** Helpers **/
+function safe(v){ return (v===undefined || v===null) ? "" : String(v); }
+
+function escapeHtml(str){
+  return String(str || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function fmtFecha(ts){
+  try{
+    if(!ts) return "";
+    if(typeof ts.toDate === "function") return ts.toDate().toLocaleString();
+    if(ts instanceof Date) return ts.toLocaleString();
+    return String(ts);
+  }catch(_){ return ""; }
+}
+
+/** Auth UI **/
+function setLoginMsg(msg){
+  const el = document.getElementById("loginMsg");
+  if(el) el.innerText = msg || "";
+}
+
+async function login(){
+  const email = (document.getElementById("email")?.value || "").trim();
+  const password = document.getElementById("password")?.value || "";
+
+  if(!email || !password){
+    setLoginMsg("Pon email y contraseña.");
+    return;
+  }
+
+  try{
+    setLoginMsg("Entrando...");
+    await auth.signInWithEmailAndPassword(email, password);
+    setLoginMsg("");
+  }catch(e){
+    setLoginMsg("Error: " + (e.message || e));
+  }
+}
+
+async function logout(){ await auth.signOut(); }
+
+
+/* ===========================
+   TIENDA (EDITABLE)
+   Colecciones:
+   - store_settings (doc: main)
+   - store_products
+=========================== */
+
+let unsubProductos = null;
+
+function setStMsg(msg){ document.getElementById("stMsg").innerText = msg || ""; }
+function setProdMsg(msg){ document.getElementById("prodMsg").innerText = msg || ""; }
+
+function mostrarSeccion(which){
+  const pedidosBox = document.getElementById("pedidosBox");
+  const tiendaBox = document.getElementById("tiendaBox");
+  if(which === "tienda"){
+    pedidosBox.classList.add("hidden");
+    tiendaBox.classList.remove("hidden");
+    cargarStoreSettings();
+    listenProductos();
+  }else{
+    tiendaBox.classList.add("hidden");
+    pedidosBox.classList.remove("hidden");
+  }
+}
+
+// Cargar textos
+async function cargarStoreSettings(){
+  try{
+    setStMsg("Cargando...");
+    const snap = await db.collection("store_settings").doc("main").get();
+    const d = snap.exists ? snap.data() : {};
+
+    document.getElementById("stCombosTitle").value = d.combosTitle || "🍩 Combos";
+    document.getElementById("stToppingsTitle").value = d.toppingsTitle || "✨ Toppings";
+    document.getElementById("stThanks").value = d.thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
+    document.getElementById("stTransfer").value = d.transferInfo || "";
+
+    setStMsg("✅ Listo.");
+  }catch(e){
+    setStMsg("Error: " + e.message);
+  }
+}
+
+async function guardarStoreSettings(){
+  try{
+    setStMsg("Guardando...");
+    const data = {
+      combosTitle: (document.getElementById("stCombosTitle").value || "").trim(),
+      toppingsTitle: (document.getElementById("stToppingsTitle").value || "").trim(),
+      thanksMessage: (document.getElementById("stThanks").value || "").trim(),
+      transferInfo: (document.getElementById("stTransfer").value || "").trim(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: auth.currentUser?.email || "admin"
+    };
+    await db.collection("store_settings").doc("main").set(data, { merge:true });
+    setStMsg("✅ Guardado.");
+  }catch(e){
+    setStMsg("Error: " + e.message);
+  }
+}
+
+// CRUD productos
+async function crearProducto(){
+  const type = document.getElementById("pType").value;
+  const name = (document.getElementById("pName").value || "").trim();
+  const price = Number(document.getElementById("pPrice").value || 0);
+  const topsIncl = Number(document.getElementById("pTopsIncl").value || 0);
+  const sortOrder = Number(document.getElementById("pSort").value || 0);
+  const badge = (document.getElementById("pBadge").value || "").trim();
+  const active = document.getElementById("pActive").value === "true";
+
+  if(!name){
+    setProdMsg("Pon un nombre.");
+    return;
+  }
+  if(price < 0){
+    setProdMsg("Precio inválido.");
+    return;
+  }
+
+  try{
+    setProdMsg("Agregando...");
+    await db.collection("store_products").add({
+      type,
+      name,
+      price,
+      toppingsIncluded: (type==="combo") ? topsIncl : 0,
+      sortOrder,
+      badge,
+      active,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: auth.currentUser?.email || "admin"
+    });
+
+    // limpiar form
+    document.getElementById("pName").value = "";
+    document.getElementById("pPrice").value = "";
+    document.getElementById("pTopsIncl").value = "0";
+    document.getElementById("pSort").value = "0";
+    document.getElementById("pBadge").value = "";
+    document.getElementById("pActive").value = "true";
+
+    setProdMsg("✅ Agregado.");
+  }catch(e){
+    setProdMsg("Error: " + e.message);
+  }
+}
+
+function listenProductos(){
+  if(unsubProductos) unsubProductos();
+
+  unsubProductos = db.collection("store_products")
+    .orderBy("sortOrder")
+    .onSnapshot((snap)=>{
+      const rows = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+
+      // ordenar por tipo en JS (combo primero)
+      rows.sort((a,b)=>{
+        const ta = (a.type||"").toLowerCase();
+        const tb = (b.type||"").toLowerCase();
+        if(ta === tb) return Number(a.sortOrder||0) - Number(b.sortOrder||0);
+        return ta.localeCompare(tb);
+      });
+
+      renderProductos(rows);
+      syncCatalogosParaEditarPedidos(rows);
+      setProdMsg("✅ Listo.");
+    }, (err)=>{
+      setProdMsg("Error leyendo productos: " + err.message);
+    });
+}
+
+function renderProductos(list){
+  const tbody = document.getElementById("tablaProductos");
+  tbody.innerHTML = "";
+
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="8" class="muted" style="padding:14px;">No hay productos todavía.</td></tr>`;
+    return;
+  }
+
+  list.forEach(p=>{
+    const row = document.createElement("tr");
+    const type = p.type || "";
+    const name = escapeHtml(p.name || "");
+    const price = Number(p.price || 0);
+    const incl = Number(p.toppingsIncluded || 0);
+    const sort = Number(p.sortOrder || 0);
+    const active = !!p.active;
+    const badge = escapeHtml(p.badge || "");
+
+    row.innerHTML = `
+      <td>${escapeHtml(type)}</td>
+      <td><input value="${name}" onblur="updProd('${p.id}', {name:this.value})"></td>
+      <td><input type="number" min="0" value="${price}" onblur="updProd('${p.id}', {price:Number(this.value||0)})"></td>
+      <td><input type="number" min="0" value="${incl}" ${type==='combo'?'':'disabled'} onblur="updProd('${p.id}', {toppingsIncluded:Number(this.value||0)})"></td>
+      <td><input type="number" min="0" value="${sort}" onblur="updProd('${p.id}', {sortOrder:Number(this.value||0)})"></td>
+      <td>
+        <select onchange="updProd('${p.id}', {active:(this.value==='true')})">
+          <option value="true" ${active?'selected':''}>Sí</option>
+          <option value="false" ${!active?'selected':''}>No</option>
+        </select>
+      </td>
+      <td><input value="${badge}" onblur="updProd('${p.id}', {badge:this.value})"></td>
+      <td>
+        <button class="secondary mini" type="button" onclick="borrarProd('${p.id}')">Borrar</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+async function updProd(id, patch){
+  try{
+    patch.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+    patch.updatedBy = auth.currentUser?.email || "admin";
+    await db.collection("store_products").doc(id).set(patch, { merge:true });
+    setProdMsg("✅ Guardado.");
+  }catch(e){
+    setProdMsg("Error: " + e.message);
+  }
+}
+
+async function borrarProd(id){
+  if(!confirm("¿Borrar este producto?")) return;
+  try{
+    await db.collection("store_products").doc(id).delete();
+    setProdMsg("✅ Borrado.");
+  }catch(e){
+    setProdMsg("Error: " + e.message);
+  }
+}
+
+/* ===========================
+   IMPORTANTE:
+   Tus editores de pedidos usan COMBOS_CATALOGO y TOPPINGS_CATALOGO.
+   Para que cuando cambies precios aquí también se refleje ahí,
+   los sincronizamos desde store_products.
+=========================== */
+function syncCatalogosParaEditarPedidos(rows){
+  const combos = rows
+    .filter(x => x.type === "combo")
+    .map(x => ({
+      name: x.name,
+      price: Number(x.price || 0),
+      toppings: Number(x.toppingsIncluded || 0)
+    }));
+
+  const tops = rows
+    .filter(x => x.type === "topping")
+    .map(x => ({
+      name: x.name,
+      price: Number(x.price || 0)
+    }));
+
+  // Reemplaza arrays (manteniendo referencias para tu código actual)
+  COMBOS_CATALOGO.length = 0;
+  combos.forEach(c => COMBOS_CATALOGO.push(c));
+
+  TOPPINGS_CATALOGO.length = 0;
+  tops.forEach(t => TOPPINGS_CATALOGO.push(t));
+}
+
+/** Admin **/
+async function assertAdmin(user){
+  const tokenResult = await user.getIdTokenResult(true);
+  const isAdmin = !!(tokenResult && tokenResult.claims && tokenResult.claims.admin);
+  if(!isAdmin){
+    await auth.signOut();
+    throw new Error("Este usuario NO es admin. (No tiene el claim admin=true)");
+  }
+}
+
+/** Firestore listen **/
+function listenPedidos(){
+  if(unsubPedidos) unsubPedidos();
+
+  unsubPedidos = db.collection("pedidos")
+    .orderBy("creado", "desc")
+    .onSnapshot((snap)=>{
+      pedidosCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+      actualizarKPIs();
+      renderFiltrado();
+    }, (err)=>{
+      alert("Error leyendo pedidos: " + err.message);
+    });
+}
+
+/** KPIs **/
+function actualizarKPIs(){
+  const total = pedidosCache.length;
+  const pend = pedidosCache.filter(p => (p.estado || "pendiente") === "pendiente").length;
+  const noPag = pedidosCache.filter(p => (p.pagoEstado || "pendiente") === "no_pagado").length;
+
+  document.getElementById("kTotal").innerText = total;
+  document.getElementById("kPend").innerText = pend;
+  document.getElementById("kNoPag").innerText = noPag;
+}
+
+/** Render tabla **/
+function renderFiltrado(){
+  const fEstado = document.getElementById("fEstado").value;
+  const fPago = document.getElementById("fPago").value;
+  const fBuscar = document.getElementById("fBuscar").value.trim().toLowerCase();
+
+  let list = [...pedidosCache];
+
+  if(fEstado !== "todos") list = list.filter(p => (p.estado || "pendiente") === fEstado);
+  if(fPago !== "todos") list = list.filter(p => (p.pagoEstado || "pendiente") === fPago);
+
+  if(fBuscar){
+    list = list.filter(p => {
+      const a = (p.nombre || "").toLowerCase();
+      const b = (p.direccion || "").toLowerCase();
+      return a.includes(fBuscar) || b.includes(fBuscar);
+    });
+  }
+
+  const tbody = document.getElementById("tablaPedidos");
+  tbody.innerHTML = "";
+
+  if(list.length === 0){
+    tbody.innerHTML = `<tr><td colspan="4" class="muted" style="padding:14px;">No hay pedidos con esos filtros.</td></tr>`;
+    return;
+  }
+
+  list.forEach(p=>{
+    const estado = p.estado || "pendiente";
+    const pagoEstado = p.pagoEstado || "pendiente";
+    const motivoNoPago = p.motivoNoPago || "";
+    const notas = p.notas || "";
+
+    const combos = Array.isArray(p.combos)
+      ? p.combos.map(c => `• ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("<br>")
+      : "";
+
+    const tops = Array.isArray(p.tops)
+      ? p.tops.map(t => `• ${escapeHtml(t)}`).join("<br>")
+      : "";
+
+    const entrega = (p.tipo === "delivery") ? "🚚 Delivery" : "📍 Pickup";
+    const total = safe(p.total);
+    const creado = fmtFecha(p.creado);
+    const telRaw = p.telefono || "";
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>
+        <strong>${escapeHtml(p.nombre || "")}</strong><br>
+        <span class="small muted">${escapeHtml(p.direccion || "")}</span><br>
+        ${telRaw ? `<span class="small">📞 <b>${escapeHtml(telRaw)}</b></span><br>` : `<span class="small muted">📞 (sin teléfono)</span><br>`}
+        <span class="small">${entrega} • Pago: <b>${escapeHtml(p.pago || "")}</b></span><br>
+        <span class="small muted">Fecha/Hora: ${escapeHtml(p.fecha || "")} ${escapeHtml(p.hora || "")}</span><br>
+        <span class="small muted">Creado: ${escapeHtml(creado)}</span>
+      </td>
+
+      <td>
+        <div><b>Combos</b></div>
+        <div class="small">${combos || "<span class='muted'>-</span>"}</div>
+        <div style="margin-top:8px;"><b>Toppings</b></div>
+        <div class="small">${tops || "<span class='muted'>-</span>"}</div>
+        <div style="margin-top:10px;"><span class="pill">TOTAL RD$${escapeHtml(total)}</span></div>
+      </td>
+
+      <td>
+        <label class="small muted">Estado del pedido</label>
+        <select onchange="updatePedido('${p.id}', {estado:this.value})">
+          <option value="pendiente" ${estado==='pendiente'?'selected':''}>Pendiente</option>
+          <option value="realizado" ${estado==='realizado'?'selected':''}>Realizado</option>
+          <option value="cancelado" ${estado==='cancelado'?'selected':''}>Cancelado</option>
+        </select>
+
+        <label class="small muted">Estado del pago</label>
+        <select onchange="updatePedido('${p.id}', {pagoEstado:this.value})">
+          <option value="pendiente" ${pagoEstado==='pendiente'?'selected':''}>Pendiente</option>
+          <option value="pagado" ${pagoEstado==='pagado'?'selected':''}>Pagado</option>
+          <option value="no_pagado" ${pagoEstado==='no_pagado'?'selected':''}>No pagado</option>
+        </select>
+
+        <label class="small muted">Motivo (si no pagó)</label>
+        <input value="${escapeHtml(motivoNoPago)}" placeholder="Ej: no respondió"
+               onblur="updatePedido('${p.id}', {motivoNoPago:this.value})"/>
+
+        <label class="small muted">Notas internas</label>
+        <textarea placeholder="Notas..." onblur="updatePedido('${p.id}', {notas:this.value})">${escapeHtml(notas)}</textarea>
+      </td>
+
+      <td class="actionCol">
+        <div class="miniGrid">
+          <button class="iconBtn" type="button" title="Editar" onclick="abrirEdit('${p.id}')">✏️</button>
+          <button class="iconBtn" type="button" title="Enviar: Pedido recibido" onclick="enviarPlantilla('${p.id}','recibido')">✅</button>
+          <button class="iconBtn fullWidth" type="button" title="Enviar: Pedido listo" onclick="enviarPlantilla('${p.id}','listo')">📦</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+/** Actualizar pedido **/
+async function updatePedido(id, patch){
+  try{
+    await db.collection("pedidos").doc(id).set(patch, { merge:true });
+  }catch(e){
+    alert("Error actualizando: " + e.message);
+  }
+}
+
+/** WhatsApp **/
+function normalizarTel(tel){
+  tel = String(tel || "").replace(/\D/g,"");
+  if(tel.length === 10) tel = "1" + tel;
+  return tel;
+}
+
+function getPedidoById(id){ return pedidosCache.find(p => p.id === id); }
+
+function armarResumenPedido(p){
+  const combos = Array.isArray(p.combos)
+    ? p.combos.map(c => `- ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("\n")
+    : "- (sin combos)";
+
+  const tops = Array.isArray(p.tops) && p.tops.length
+    ? p.tops.map(t => `- ${t}`).join("\n")
+    : "- (sin toppings)";
+
+  const entrega = (p.tipo === "delivery") ? "Delivery" : "Recoger en tienda (Licey al Medio)";
+  return `PEDIDO:\n${combos}\n\nTOPPINGS:\n${tops}\n\nEntrega: ${entrega}\nDirección: ${p.direccion || ""}\nFecha/Hora: ${p.fecha || ""} ${p.hora || ""}\nTOTAL: RD$${p.total || 0}`;
+}
+
+function enviarPlantilla(id, tipo){
+  const p = getPedidoById(id);
+  if(!p){ alert("No encontré ese pedido."); return; }
+
+  const tel = normalizarTel(p.telefono);
+  if(!tel){
+    alert("Este pedido no tiene teléfono guardado.");
+    return;
+  }
+
+  const resumen = armarResumenPedido(p);
+  let msg = "";
+
+  if(tipo === "recibido"){
+    msg = `Hola ${p.nombre || ""} 👋
+Hemos recibido tu pedido ✅
+
+${resumen}
+
+En un momento te confirmamos el tiempo estimado.`;
+  }else if(tipo === "listo"){
+    msg = `Hola ${p.nombre || ""} 👋
+Tu pedido está listo! 📦✨
+
+Por favor revisa y confirma estos datos (o corrige si algo está mal):
+
+${resumen}
+
+Responde con:
+✅ "Confirmo"
+o
+✏️ "Corregir:" y tu dirección correcta.`;
+  }else{
+    alert("Tipo de plantilla inválido.");
+    return;
+  }
+
+  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, "_blank");
+}
+
+/* ===========================
+   EDIT MODAL (FUNCIONA)
+=========================== */
 let editId = null;
 let editDraft = null;
 
-function abrirEdit(id){
-
-
-
-
-
-
-
-  const p = pedidosCache.find(x => x.id === id);
-  if(!p){ alert("No encontré el pedido."); return; 
-renderEditToppings(p.tops || []);
-
+function setEditMsg(msg){
+  const el = document.getElementById("editMsg");
+  if(el) el.innerText = msg || "";
 }
 
+function parseToppingTextToObj(txt){
+  const s = String(txt || "").trim();
+  if(!s) return null;
+  const name = s.replace(/\(.*?\)/g, "").trim();
+  const m = s.match(/RD\$\s*(\d+)/i);
+  const price = m ? Number(m[1]) : null;
+
+  const cat = TOPPINGS_CATALOGO.find(t => t.name.toLowerCase() === name.toLowerCase());
+  if(cat) return {name: cat.name, price: cat.price};
+  if(name && price != null) return {name, price};
+  if(name) return {name, price: 0};
+  return null;
+}
+
+function toppingObjToText(obj){
+  if(!obj) return "";
+  const n = obj.name || "";
+  const p = Number(obj.price || 0);
+  return `${n} (RD$${p})`;
+}
+
+function getRequiredToppingsCount(){
+  let count = 0;
+  (editDraft.combos || []).forEach(c=>{
+    const cant = Number(c.cantidad || 0);
+    const topsIncl = Number(c.toppingsIncluidos || 0);
+    count += cant * topsIncl;
+  });
+  return count;
+}
+
+function buildEditToppingSelect(label, selectedText){
+  const wrap = document.createElement("div");
+  wrap.style.margin = "6px 0";
+
+  const sel = document.createElement("select");
+  sel.className = "toppingSelectEdit";
+  sel.onchange = () => recalcularTotalEdit();
+
+  const opt0 = document.createElement("option");
+  opt0.value = "";
+  opt0.textContent = label;
+  sel.appendChild(opt0);
+
+  TOPPINGS_CATALOGO.forEach(t=>{
+    const op = document.createElement("option");
+    op.value = JSON.stringify(t);
+    op.textContent = `${t.name} (RD$${t.price})`;
+    sel.appendChild(op);
+  });
+
+  const parsed = parseToppingTextToObj(selectedText);
+  if(parsed){
+    const cat = TOPPINGS_CATALOGO.find(t => t.name.toLowerCase() === parsed.name.toLowerCase());
+    if(cat) sel.value = JSON.stringify(cat);
+  }
+
+  wrap.appendChild(sel);
+  return wrap;
+}
+
+function getEditToppingsSelected(){
+  const arr = [];
+  document.querySelectorAll(".toppingSelectEdit").forEach(sel=>{
+    if(sel.value){
+      const obj = JSON.parse(sel.value);
+      arr.push(toppingObjToText(obj));
+    }
+  });
+  return arr;
+}
+
+function getEditToppingsTotal(){
+  let sum = 0;
+  document.querySelectorAll(".toppingSelectEdit").forEach(sel=>{
+    if(sel.value){
+      const obj = JSON.parse(sel.value);
+      sum += Number(obj.price || 0);
+    }
+  });
+  return sum;
+}
+
+function refreshEditToppingsUI(){
+  const cont = document.getElementById("editToppingsContainer");
+  const hint = document.getElementById("editToppingsHint");
+  if(!cont || !hint) return;
+
+  const prev = getEditToppingsSelected();
+  const required = getRequiredToppingsCount();
+
+  cont.innerHTML = "";
+
+  if(required <= 0){
+    hint.textContent = "Elige combos para habilitar toppings.";
+    editDraft.tops = [];
+    return;
+  }
+
+  hint.textContent = `Toppings incluidos: ${required}`;
+
+  for(let i=0; i<required; i++){
+    cont.appendChild(buildEditToppingSelect(`Selecciona topping ${i+1}`, prev[i] || (editDraft.tops?.[i] || "")));
+  }
+
+  // mantener draft sincronizado
+  editDraft.tops = getEditToppingsSelected();
+}
+
+function addEditTopping(){
+  const cont = document.getElementById("editToppingsContainer");
+  if(!cont) return;
+  cont.appendChild(buildEditToppingSelect(`Topping extra ${cont.children.length+1}`, ""));
+  recalcularTotalEdit();
+}
+
+function clearEditToppings(){
+  document.querySelectorAll(".toppingSelectEdit").forEach(sel => sel.value = "");
+  recalcularTotalEdit();
+}
+
+function abrirEdit(id){
+  const p = pedidosCache.find(x => x.id === id);
+  if(!p){ alert("No encontré el pedido."); return; }
+
   editId = id;
-  // clonar para editar sin tocar el cache hasta guardar
   editDraft = JSON.parse(JSON.stringify(p));
 
-  // defaults
   editDraft.combos = Array.isArray(editDraft.combos) ? editDraft.combos : [];
-  editDraft.tops = Array.isArray(editDraft.tops) ? editDraft.tops : [];
-  editDraft.tipo = editDraft.tipo || "pickup";
-  editDraft.pagoEstado = editDraft.pagoEstado || "pendiente";
+  editDraft.tops   = Array.isArray(editDraft.tops) ? editDraft.tops : [];
+  editDraft.tipo   = editDraft.tipo || "pickup";
   editDraft.estado = editDraft.estado || "pendiente";
+  editDraft.pago   = editDraft.pago || "Efectivo";
+  editDraft.pagoEstado = editDraft.pagoEstado || "pendiente";
+  editDraft.motivoNoPago = editDraft.motivoNoPago || "";
+  editDraft.zonaCosto = Number(editDraft.zonaCosto || 0);
+
+  // Normalizar combos a estructura consistente
+  editDraft.combos = editDraft.combos.map(c=>{
+    const cat = COMBOS_CATALOGO.find(x => x.name === c.combo);
+    const cantidad = Number(c.cantidad || 0);
+    const unitPrice = Number(c.unitPrice ?? (cat ? cat.price : 0));
+    const topsIncl = Number(c.toppingsIncluidos ?? (cat ? cat.toppings : 0));
+    return {
+      combo: c.combo || (cat ? cat.name : ""),
+      cantidad,
+      unitPrice,
+      toppingsIncluidos: topsIncl,
+      precio: Number(c.precio ?? (cantidad * unitPrice))
+    };
+  });
 
   renderEdit();
   document.getElementById("editModal").classList.remove("hidden");
+  refreshEditToppingsUI();
+  recalcularTotalEdit();
 }
 
 function cerrarEdit(){
   editId = null;
   editDraft = null;
-  document.getElementById("editMsg").innerText = "";
+  setEditMsg("");
   document.getElementById("editModal").classList.add("hidden");
 }
-
-function setEditMsg(msg){ document.getElementById("editMsg").innerText = msg || ""; }
 
 function renderEdit(){
   const p = editDraft;
   const el = document.getElementById("editBody");
-
-  const zonaVal = safe(p.zonaCosto || "0"); // si la guardas
   const tipo = p.tipo || "pickup";
+  const zonaVal = String(Number(p.zonaCosto||0));
 
   el.innerHTML = `
     <div class="row">
@@ -408,7 +1022,7 @@ function renderEdit(){
         <div id="zonaEditBox" style="${tipo==='delivery'?'':'display:none;'}">
           <label>Costo Delivery</label>
           <select id="eZonaCosto" onchange="recalcularTotalEdit()">
-            <option value="0">Sin costo</option>
+            <option value="0" ${zonaVal==='0'?'selected':''}>Sin costo</option>
             <option value="50" ${zonaVal==='50'?'selected':''}>Zona 1 (RD$50)</option>
             <option value="100" ${zonaVal==='100'?'selected':''}>Zona 2 (RD$100)</option>
             <option value="250" ${zonaVal==='250'?'selected':''}>Zona 3 (RD$250)</option>
@@ -417,7 +1031,7 @@ function renderEdit(){
       </div>
 
       <div class="card" style="flex:1; min-width:240px;">
-        <strong>Estados / Pago</strong>
+        <strong>Pago / Estado</strong>
         <label>Estado pedido</label>
         <select id="eEstado">
           <option value="pendiente" ${p.estado==='pendiente'?'selected':''}>Pendiente</option>
@@ -445,16 +1059,23 @@ function renderEdit(){
 
     <div class="row">
       <div class="card" style="flex:2; min-width:280px;">
-        <strong>Combos (edita cantidades)</strong>
-        <div class="small muted">Cambias cantidad y recalculo el total.</div>
+        <strong>Combos</strong>
+        <div class="small muted">Selecciona combo + cantidad.</div>
         <div id="combosEdit"></div>
-        <button class="secondary mini" onclick="agregarComboEdit()" style="margin-top:8px;">+ Agregar combo</button>
+        <button class="secondary mini" type="button" onclick="agregarComboEdit()" style="margin-top:8px;">+ Agregar combo</button>
       </div>
 
       <div class="card" style="flex:1; min-width:260px;">
         <strong>Toppings</strong>
-        <div class="small muted">Uno por línea.</div>
-        <textarea id="eTops" oninput="recalcularTotalEdit()">${escapeHtml((p.tops||[]).join("\n"))}</textarea>
+        <div class="small muted">Incluidos = combos × cantidad. Extras opcionales.</div>
+
+        <div id="editToppingsContainer"></div>
+        <div class="small muted" id="editToppingsHint"></div>
+
+        <div style="display:flex; gap:8px; margin-top:6px;">
+          <button class="secondary" type="button" onclick="addEditTopping()">+ Topping</button>
+          <button class="secondary" type="button" onclick="clearEditToppings()">Limpiar</button>
+        </div>
       </div>
     </div>
 
@@ -462,7 +1083,7 @@ function renderEdit(){
       <div class="card" style="flex:1; min-width:240px;">
         <strong>Total</strong>
         <div class="pill">TOTAL RD$ <span id="eTotal">${safe(p.total||0)}</span></div>
-        <div class="small muted" style="margin-top:8px;">*El total se recalcula con combos + toppings (si tienen precio en texto) + delivery.</div>
+        <div class="small muted" style="margin-top:8px;">Total = combos + toppings + delivery.</div>
       </div>
 
       <div class="card" style="flex:2; min-width:280px;">
@@ -473,6 +1094,7 @@ function renderEdit(){
   `;
 
   renderCombosEdit();
+  refreshEditToppingsUI();
   recalcularTotalEdit();
 }
 
@@ -485,67 +1107,119 @@ function toggleZonaEdit(){
 function renderCombosEdit(){
   const box = document.getElementById("combosEdit");
   const combos = editDraft.combos || [];
+
   if(!combos.length){
     box.innerHTML = `<div class="muted small" style="margin-top:6px;">No hay combos. Agrega uno.</div>`;
     return;
   }
 
-  box.innerHTML = combos.map((c, idx)=>`
-    <div class="row" style="align-items:flex-end;">
-      <div style="flex:2; min-width:180px;">
-        <label class="small muted">Combo</label>
-        <input value="${escapeHtml(c.combo||'')}" oninput="editDraft.combos[${idx}].combo=this.value">
+  box.innerHTML = combos.map((c, idx)=>{
+    const cantidad = Number(c.cantidad || 0);
+    const cat = COMBOS_CATALOGO.find(x => x.name === c.combo);
+    const unit = Number(c.unitPrice ?? (cat ? cat.price : 0));
+    const topsIncl = Number(c.toppingsIncluidos ?? (cat ? cat.toppings : 0));
+
+    editDraft.combos[idx].unitPrice = unit;
+    editDraft.combos[idx].toppingsIncluidos = topsIncl;
+    editDraft.combos[idx].precio = cantidad * unit;
+
+    const options = COMBOS_CATALOGO.map(opt =>
+      `<option value="${escapeHtml(opt.name)}" ${opt.name===c.combo?'selected':''}>
+        ${escapeHtml(opt.name)} — RD$${opt.price} • ${opt.toppings} topping(s)
+      </option>`
+    ).join("");
+
+    return `
+      <div class="row" style="align-items:flex-end;">
+        <div style="flex:2; min-width:220px;">
+          <label class="small muted">Combo</label>
+          <select onchange="setComboEdit(${idx}, this.value)">
+            <option value="">Selecciona un combo</option>
+            ${options}
+          </select>
+        </div>
+
+        <div style="width:110px;">
+          <label class="small muted">Cant.</label>
+          <input type="number" min="0" value="${cantidad}"
+            oninput="editDraft.combos[${idx}].cantidad=Number(this.value||0); refreshEditToppingsUI(); recalcularTotalEdit();">
+        </div>
+
+        <div style="width:120px;">
+          <label class="small muted">Unit.</label>
+          <input type="number" min="0" value="${unit}"
+            oninput="editDraft.combos[${idx}].unitPrice=Number(this.value||0); refreshEditToppingsUI(); recalcularTotalEdit();">
+        </div>
+
+        <div style="width:140px;">
+          <label class="small muted">Línea</label>
+          <input type="number" min="0" value="${cantidad*unit}" disabled>
+        </div>
+
+        <div style="width:110px;">
+          <button class="secondary mini" type="button" onclick="eliminarComboEdit(${idx})">Eliminar</button>
+        </div>
       </div>
-      <div style="width:120px;">
-        <label class="small muted">Cantidad</label>
-        <input type="number" min="0" value="${Number(c.cantidad||0)}" oninput="editDraft.combos[${idx}].cantidad=Number(this.value||0); recalcularTotalEdit();">
-      </div>
-      <div style="width:140px;">
-        <label class="small muted">Precio (línea)</label>
-        <input type="number" min="0" value="${Number(c.precio||0)}" oninput="editDraft.combos[${idx}].precio=Number(this.value||0); recalcularTotalEdit();">
-      </div>
-      <div style="width:110px;">
-        <button class="secondary mini" onclick="eliminarComboEdit(${idx})">Eliminar</button>
-      </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
+}
+
+function setComboEdit(idx, comboName){
+  const cat = COMBOS_CATALOGO.find(x => x.name === comboName);
+
+  if(cat){
+    editDraft.combos[idx].combo = cat.name;
+    editDraft.combos[idx].unitPrice = cat.price;
+    editDraft.combos[idx].toppingsIncluidos = cat.toppings;
+    if(!editDraft.combos[idx].cantidad) editDraft.combos[idx].cantidad = 1;
+  }else{
+    editDraft.combos[idx].combo = "";
+    editDraft.combos[idx].unitPrice = 0;
+    editDraft.combos[idx].toppingsIncluidos = 0;
+  }
+
+  renderCombosEdit();
+  refreshEditToppingsUI();
+  recalcularTotalEdit();
 }
 
 function agregarComboEdit(){
-  editDraft.combos.push({ combo:"", cantidad:1, precio:0 });
+  editDraft.combos.push({ combo:"", cantidad:1, unitPrice:0, toppingsIncluidos:0, precio:0 });
   renderCombosEdit();
+  refreshEditToppingsUI();
   recalcularTotalEdit();
 }
 
 function eliminarComboEdit(idx){
-  editDraft.combos.splice(idx,1);
+  editDraft.combos.splice(idx, 1);
+
+  // recortar toppings si bajó el requerido
+  const required = getRequiredToppingsCount();
+  if(Array.isArray(editDraft.tops)){
+    editDraft.tops = editDraft.tops.slice(0, required);
+  }
+
   renderCombosEdit();
+  refreshEditToppingsUI();
   recalcularTotalEdit();
 }
 
-/**
- * Recalcula total:
- * - suma combos.precio
- * - suma toppings: si el texto contiene "(RD$75)" lo detecta y suma 75, si no, suma 0
- * - suma delivery (eZonaCosto)
- */
 function recalcularTotalEdit(){
   let total = 0;
 
-  (editDraft.combos||[]).forEach(c=>{
-    total += Number(c.precio||0);
+  (editDraft.combos||[]).forEach((c, idx)=>{
+    const cant = Number(c.cantidad||0);
+    const unit = Number(c.unitPrice||0);
+    const line = cant * unit;
+    editDraft.combos[idx].precio = line;
+    total += line;
   });
 
-  // toppings: intenta sacar RD$ del texto
-  const topsText = (document.getElementById("eTops")?.value || "");
-  const tops = topsText.split("\n").map(x=>x.trim()).filter(Boolean);
-  editDraft.tops = tops;
+  // toppings
+  editDraft.tops = getEditToppingsSelected();
+  total += getEditToppingsTotal();
 
-  tops.forEach(t=>{
-    const m = t.match(/RD\$\s*(\d+)/i);
-    if(m && m[1]) total += Number(m[1]);
-  });
-
+  // delivery
   const tipo = document.getElementById("eTipo")?.value || "pickup";
   if(tipo==="delivery"){
     const dz = Number(document.getElementById("eZonaCosto")?.value || 0);
@@ -561,36 +1235,31 @@ function recalcularTotalEdit(){
 }
 
 async function guardarEdit(){
-  if(!editId || !editDraft){ return; }
+  if(!editId || !editDraft) return;
 
-  // tomar inputs
-  editDraft.nombre = document.getElementById("eNombre").value.trim();
-  editDraft.telefono = document.getElementById("eTelefono").value.trim();
-  editDraft.direccion = document.getElementById("eDireccion").value.trim();
-  editDraft.fecha = document.getElementById("eFecha").value;
-  editDraft.hora = document.getElementById("eHora").value;
-  editDraft.tipo = document.getElementById("eTipo").value;
-  editDraft.estado = document.getElementById("eEstado").value;
-  editDraft.pago = document.getElementById("ePago").value;
-  editDraft.pagoEstado = document.getElementById("ePagoEstado").value;
-  editDraft.motivoNoPago = document.getElementById("eMotivoNoPago").value.trim();
-  editDraft.notas = document.getElementById("eNotas").value;
+  editDraft.nombre = (document.getElementById("eNombre")?.value || "").trim();
+  editDraft.telefono = (document.getElementById("eTelefono")?.value || "").trim();
+  editDraft.direccion = (document.getElementById("eDireccion")?.value || "").trim();
+  editDraft.fecha = document.getElementById("eFecha")?.value || "";
+  editDraft.hora = document.getElementById("eHora")?.value || "";
+  editDraft.tipo = document.getElementById("eTipo")?.value || "pickup";
 
-  // regla: teléfono obligatorio si delivery
+  editDraft.estado = document.getElementById("eEstado")?.value || "pendiente";
+  editDraft.pago = document.getElementById("ePago")?.value || "Efectivo";
+  editDraft.pagoEstado = document.getElementById("ePagoEstado")?.value || "pendiente";
+  editDraft.motivoNoPago = (document.getElementById("eMotivoNoPago")?.value || "").trim();
+  editDraft.notas = document.getElementById("eNotas")?.value || "";
+
   if(editDraft.tipo === "delivery"){
     const soloDig = (editDraft.telefono||"").replace(/\D/g,"");
     if(!soloDig || soloDig.length < 10){
-      setEditMsg("📞 Para delivery el teléfono es obligatorio y debe tener al menos 10 dígitos.");
+      setEditMsg("📞 Para delivery el teléfono es obligatorio (10+ dígitos).");
       return;
     }
-
-const topsEditados = getEditToppings();
-patch.tops = topsEditados;
   }
 
   recalcularTotalEdit();
 
-  // marca auditoría
   const patch = {
     nombre: editDraft.nombre,
     telefono: editDraft.telefono || "",
@@ -599,14 +1268,17 @@ patch.tops = topsEditados;
     hora: editDraft.hora,
     tipo: editDraft.tipo,
     zonaCosto: Number(editDraft.zonaCosto||0),
+
     estado: editDraft.estado,
     pago: editDraft.pago,
     pagoEstado: editDraft.pagoEstado,
     motivoNoPago: editDraft.motivoNoPago || "",
+
     notas: editDraft.notas || "",
     combos: editDraft.combos || [],
     tops: editDraft.tops || [],
     total: Number(editDraft.total||0),
+
     editadoEn: firebase.firestore.FieldValue.serverTimestamp(),
     editadoPor: (auth.currentUser && auth.currentUser.email) ? auth.currentUser.email : "admin"
   };
@@ -617,425 +1289,18 @@ patch.tops = topsEditados;
     setEditMsg("✅ Guardado.");
     setTimeout(cerrarEdit, 400);
   }catch(e){
-    setEditMsg("Error: " + e.message);
-  }
-}
-/** 1) CONFIG **/
-const firebaseConfig = {
-  apiKey: "AIzaSyBIc3oJMmSTnOg4EaFsCLOkhyLoGXEWj6c",
-  authDomain: "minidonas-d5e36.firebaseapp.com",
-  projectId: "minidonas-d5e36",
-  storageBucket: "minidonas-d5e36.firebasestorage.app",
-  messagingSenderId: "311892742337",
-  appId: "1:311892742337:web:29c1a95fba484cf4578440"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-/** 2) Estado local **/
-let pedidosCache = [];
-let unsubPedidos = null;
-
-/** 3) Catálogo de toppings **/
-const TOPPINGS_CATALOGO = [
-  {name:"Kisses",price:55},
-  {name:"Hershey’s blanco",price:50},
-  {name:"Hershey’s negro",price:50},
-  {name:"Almendras",price:50},
-  {name:"M&M",price:50},
-  {name:"Oreo",price:35},
-  {name:"Chispas de colores",price:30},
-  {name:"Crema Dubai",price:75},
-  {name:"Twix",price:65},
-  {name:"Canela",price:10},
-  {name:"Azúcar glass",price:25},
-  {name:"Crema pastelera",price:55}
-];
-
-/** 3) Auth UI **/
-function setLoginMsg(msg){ document.getElementById("loginMsg").innerText = msg || ""; }
-
-async function login(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  if(!email || !password){
-    setLoginMsg("Pon email y contraseña.");
-    return;
-  }
-
-  try{
-    setLoginMsg("Entrando...");
-    await auth.signInWithEmailAndPassword(email, password);
-    setLoginMsg("");
-  }catch(e){
-    setLoginMsg("Error: " + (e.message || e));
+    setEditMsg("Error: " + (e.message || e));
   }
 }
 
-async function logout(){
-  await auth.signOut();
-}
-
-/** 4) Verificar ADMIN con custom claims **/
-async function assertAdmin(user){
-  const tokenResult = await user.getIdTokenResult(true);
-  const isAdmin = !!(tokenResult && tokenResult.claims && tokenResult.claims.admin);
-
-  if(!isAdmin){
-    await auth.signOut();
-    throw new Error("Este usuario NO es admin. (No tiene el claim admin=true)");
-  }
-}
-
-/** 5) Firestore: escuchar pedidos **/
-function listenPedidos(){
-  if(unsubPedidos) unsubPedidos();
-
-  unsubPedidos = db.collection("pedidos")
-    .orderBy("creado", "desc")
-    .onSnapshot((snap)=>{
-      pedidosCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
-      actualizarKPIs();
-      renderFiltrado();
-    }, (err)=>{
-      alert("Error leyendo pedidos: " + err.message);
-    });
-}
-
-/** Helpers **/
-function safe(v){ return (v===undefined || v===null) ? "" : String(v); }
-
-function fmtFecha(ts){
-  try{
-    if(!ts) return "";
-    if(typeof ts.toDate === "function") return ts.toDate().toLocaleString();
-    if(ts instanceof Date) return ts.toLocaleString();
-    return String(ts);
-  }catch(_){ return ""; }
-}
-
-function escapeHtml(str){
-  return String(str || "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-/**
- * Normaliza teléfono a formato wa.me
- * - Acepta: "8091234567", "829-123-4567", "+1 8091234567", "1 8091234567"
- * - Devuelve: "18091234567" (sin +)
- */
-function normalizarTelefonoWa(tel){
-  const digits = String(tel || "").replace(/\D/g, "");
-  if(!digits) return "";
-
-  // Si viene con +1 o 1 delante (11 dígitos) => ok
-  if(digits.length === 11 && digits.startsWith("1")) return digits;
-
-  // Si viene 10 dígitos (RD típico: 809/829/849 + 7) => le ponemos 1
-  if(digits.length === 10) return "1" + digits;
-
-  // Si viene 12+ raro, lo dejamos como está (pero probablemente mal)
-  return digits;
-}
-
-/** 6) KPIs **/
-function actualizarKPIs(){
-  const total = pedidosCache.length;
-  const pend = pedidosCache.filter(p => (p.estado || "pendiente") === "pendiente").length;
-  const noPag = pedidosCache.filter(p => (p.pagoEstado || "pendiente") === "no_pagado").length;
-
-  document.getElementById("kTotal").innerText = total;
-  document.getElementById("kPend").innerText = pend;
-  document.getElementById("kNoPag").innerText = noPag;
-}
-
-/** 7) Render **/
-function renderFiltrado(){
-  const fEstado = document.getElementById("fEstado").value;
-  const fPago = document.getElementById("fPago").value;
-  const fBuscar = document.getElementById("fBuscar").value.trim().toLowerCase();
-
-  let list = [...pedidosCache];
-
-  if(fEstado !== "todos"){
-    list = list.filter(p => (p.estado || "pendiente") === fEstado);
-  }
-  if(fPago !== "todos"){
-    list = list.filter(p => (p.pagoEstado || "pendiente") === fPago);
-  }
-  if(fBuscar){
-    list = list.filter(p => {
-      const a = (p.nombre || "").toLowerCase();
-      const b = (p.direccion || "").toLowerCase();
-      return a.includes(fBuscar) || b.includes(fBuscar);
-    });
-  }
-
-  const tbody = document.getElementById("tablaPedidos");
-  tbody.innerHTML = "";
-
-  if(list.length === 0){
-    tbody.innerHTML = `<tr><td colspan="4" class="muted" style="padding:14px;">No hay pedidos con esos filtros.</td></tr>`;
-    return;
-  }
-
-  list.forEach(p=>{
-    const estado = p.estado || "pendiente";
-    const pagoEstado = p.pagoEstado || "pendiente";
-    const motivoNoPago = p.motivoNoPago || "";
-    const notas = p.notas || "";
-
-    const combos = Array.isArray(p.combos)
-      ? p.combos.map(c => `• ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("<br>")
-      : "";
-    const tops = Array.isArray(p.tops)
-      ? p.tops.map(t => `• ${t}`).join("<br>")
-      : "";
-
-    const entrega = (p.tipo === "delivery") ? "🚚 Delivery" : "📍 Pickup";
-    const total = safe(p.total);
-    const creado = fmtFecha(p.creado);
-
-    const telRaw = p.telefono || p.tel || p.phone || ""; // por si algún día lo guardas con otro nombre
-    const telWa = normalizarTelefonoWa(telRaw);
-    const tieneTel = !!telWa;
-
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>
-
-        <strong>${safe(p.nombre)}</strong><br>
-        <span class="small muted">${safe(p.direccion)}</span><br>
-        ${telRaw ? `<span class="small">📞 <b>${escapeHtml(telRaw)}</b></span><br>` : `<span class="small muted">📞 (sin teléfono)</span><br>`}
-        <span class="small">${entrega} • Pago: <b>${safe(p.pago)}</b></span><br>
-        <span class="small muted">Fecha/Hora: ${safe(p.fecha)} ${safe(p.hora)}</span><br>
-        <span class="small muted">Creado: ${safe(creado)}</span>
-        ${p.ultimaRespuestaTipo ? `<br><span class="small muted">Última resp.: <b>${escapeHtml(p.ultimaRespuestaTipo)}</b> (${fmtFecha(p.ultimaRespuestaFecha)})</span>` : ``}
-      </td>
-
-      <td>
-        <div><b>Combos</b></div>
-        <div class="small">${combos || "<span class='muted'>-</span>"}</div>
-        <div style="margin-top:8px;"><b>Toppings</b></div>
-        <div class="small">${tops || "<span class='muted'>-</span>"}</div>
-        <div style="margin-top:10px;"><span class="pill">TOTAL RD$${total}</span></div>
-      </td>
-
-      <td>
-        <label class="small muted">Estado del pedido</label>
-        <select onchange="updatePedido('${p.id}', {estado:this.value})">
-          <option value="pendiente" ${estado==='pendiente'?'selected':''}>Pendiente</option>
-          <option value="realizado" ${estado==='realizado'?'selected':''}>Realizado</option>
-          <option value="cancelado" ${estado==='cancelado'?'selected':''}>Cancelado</option>
-        </select>
-
-        <label class="small muted">Estado del pago</label>
-        <select onchange="updatePedido('${p.id}', {pagoEstado:this.value})">
-          <option value="pendiente" ${pagoEstado==='pendiente'?'selected':''}>Pendiente</option>
-          <option value="pagado" ${pagoEstado==='pagado'?'selected':''}>Pagado</option>
-          <option value="no_pagado" ${pagoEstado==='no_pagado'?'selected':''}>No pagado</option>
-        </select>
-
-        <label class="small muted">Motivo (si no pagó)</label>
-        <input value="${escapeHtml(motivoNoPago)}" placeholder="Ej: no respondió"
-               onblur="updatePedido('${p.id}', {motivoNoPago:this.value})"/>
-
-        <label class="small muted">Notas internas</label>
-        <textarea placeholder="Notas..." onblur="updatePedido('${p.id}', {notas:this.value})">${escapeHtml(notas)}</textarea>
-      </td>
-
-<td class="actionCol">
-  <div class="miniGrid">
-    <button class="iconBtn" title="Editar"
-      onclick="abrirEdit('${p.id}')">✏️</button>
-
-    <button class="iconBtn" title="Enviar: Pedido recibido"
-      onclick="enviarPlantilla('${p.id}','recibido')">✅</button>
-
-    <button class="iconBtn fullWidth" title="Enviar: Pedido listo"
-      onclick="enviarPlantilla('${p.id}','listo')">📦</button>
-  </div>
-</td>
-    `;
-    tbody.appendChild(row);
-  });
-}
-
-/** 8) Actualizar pedido **/
-async function updatePedido(id, patch){
-  try{
-    await db.collection("pedidos").doc(id).set(patch, { merge:true });
-  }catch(e){
-    alert("Error actualizando: " + e.message);
-  }
-}
-
-function normalizarTel(tel){
-  tel = String(tel || "").replace(/\D/g,"");
-  // Si el cliente pone 829..., 809..., etc. asumimos RD +1
-  if(tel.length === 10) tel = "1" + tel;
-  return tel;
-}
-
-function getPedidoById(id){
-  return pedidosCache.find(p => p.id === id);
-}
-
-function armarResumenPedido(p){
-  const combos = Array.isArray(p.combos)
-    ? p.combos.map(c => `- ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("\n")
-    : "- (sin combos)";
-
-  const tops = Array.isArray(p.tops) && p.tops.length
-    ? p.tops.map(t => `- ${t}`).join("\n")
-    : "- (sin toppings)";
-
-  const entrega = (p.tipo === "delivery") ? "Delivery" : "Recoger en tienda (Licey al Medio)";
-  const zonaTxt = p.zonaTexto ? `\nZona: ${p.zonaTexto}` : "";
-
-  return `PEDIDO:\n${combos}\n\nTOPPINGS:\n${tops}\n\nEntrega: ${entrega}${zonaTxt}\nDirección: ${p.direccion || ""}\nFecha/Hora: ${p.fecha || ""} ${p.hora || ""}\nTOTAL: RD$${p.total || 0}`;
-}
-
-function enviarPlantilla(id, tipo){
-  const p = getPedidoById(id);
-  if(!p){
-    alert("No encontré ese pedido.");
-    return;
-  }
-
-  const tel = normalizarTel(p.telefono);
-  if(!tel){
-    alert("Este pedido no tiene teléfono guardado. (Agrega el campo Teléfono en la tienda para próximos pedidos)");
-    return;
-  }
-
-  const resumen = armarResumenPedido(p);
-
-  let msg = "";
-  if(tipo === "recibido"){
-    msg =
-`Hola ${p.nombre || ""} 👋
-Hemos recibido tu pedido ✅
-
-${resumen}
-
-En un momento te confirmamos el tiempo estimado.`;
-  }else if(tipo === "listo"){
-    msg =
-`Hola $ { p.nombre || ""} 👋
-Tu pedido está listo! 📦✨
-
-Por favor revisa y confirma estos datos (o corrige si algo está mal):
-
-${resumen}
-
-Responde con:
-✅ "Confirmo"
-o
-✏️ "Corregir:" y tu dirección correcta.`;
-  }else{
-    alert("Tipo de plantilla inválido.");
-    return;
-  }
-
-  // WhatsApp al CLIENTE
-  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, "_blank");
-}
-
-/** 9) Acciones WhatsApp **/
-function abrirWhatsAppNegocio(mensajeEnc){
-  const msg = decodeURIComponent(mensajeEnc || "");
-  if(!msg){
-    alert("Este pedido no tiene mensaje guardado.");
-    return;
-  }
-  // Esto abre WhatsApp hacia TU número del negocio con el texto (como antes).
-  window.open("https://wa.me/18297096223?text=" + encodeURIComponent(msg));
-}
-
-async function copiarTexto(mensajeEnc){
-  const msg = decodeURIComponent(mensajeEnc || "");
-  try{
-    await navigator.clipboard.writeText(msg);
-    alert("Copiado ✅");
-  }catch(_){
-    alert("No pude copiar (permiso del navegador).");
-  }
-}
-
-/** 10) Respuestas rápidas al cliente **/
-function construirMensaje(p, tipo){
-  const nombre = safe(p.nombre);
-  const fecha = safe(p.fecha);
-  const hora  = safe(p.hora);
-  const direccion = safe(p.direccion);
-  const total = safe(p.total);
-  const pago = safe(p.pago);
-  const entrega = (p.tipo === "delivery") ? "Delivery" : "Recoger en tienda";
-
-  if(tipo === "recibido"){
-    return `Hola ${nombre} 👋\n\n✅ Hemos recibido tu pedido.\nEn cuanto esté listo te notificaremos por aquí.\n\nGracias por preferirnos 🩷`;
-  }
-
-  if(tipo === "listo"){
-    return `Hola ${nombre} 🍩\n\n✅ Tu pedido del ${fecha} a las ${hora} está listo.\n\n📍 Dirección registrada:\n${direccion}\n\nSi hay que corregir algo, respóndeme con la dirección correcta.\n\nTotal: RD$${total} • Pago: ${pago} • ${entrega}\n\nGracias 🩷`;
-  }
-
-  return "";
-}
-
-async function enviarRespuesta(pedidoId, tipo){
-  const p = pedidosCache.find(x => x.id === pedidoId);
-  if(!p){
-    alert("No encontré ese pedido en memoria (recarga la página).");
-    return;
-  }
-
-  const telRaw = p.telefono || p.tel || p.phone || "";
-  const telWa = normalizarTelefonoWa(telRaw);
-  if(!telWa){
-    alert("Este pedido no tiene teléfono. (No puedo abrir WhatsApp al cliente)");
-    return;
-  }
-
-  const msg = construirMensaje(p, tipo);
-  if(!msg){
-    alert("Mensaje vacío (tipo inválido).");
-    return;
-  }
-
-  // 1) Guardar en Firestore que se envió respuesta
-  try{
-    await db.collection("pedidos").doc(pedidoId).set({
-      ultimaRespuestaTipo: tipo,
-      ultimaRespuestaMensaje: msg,
-      ultimaRespuestaFecha: firebase.firestore.FieldValue.serverTimestamp(),
-      respondido: true
-    }, { merge:true });
-  }catch(e){
-    alert("Guardando estado de respuesta falló: " + e.message);
-    // igual abrimos WhatsApp, pero te aviso
-  }
-
-  // 2) Abrir WhatsApp hacia el cliente
-  const url = "https://wa.me/" + telWa + "?text=" + encodeURIComponent(msg);
-  window.open(url);
-}
-
-/** 11) Boot **/
+/** Boot **/
 auth.onAuthStateChanged(async (user)=>{
   const loginBox = document.getElementById("loginBox");
   const appBox = document.getElementById("appBox");
 
   if(!user){
     if(unsubPedidos) unsubPedidos();
+	if(unsubProductos) unsubProductos();
     pedidosCache = [];
     loginBox.classList.remove("hidden");
     appBox.classList.add("hidden");
@@ -1045,11 +1310,9 @@ auth.onAuthStateChanged(async (user)=>{
 
   try{
     await assertAdmin(user);
-
     document.getElementById("userEmail").innerText = user.email || "(sin email)";
     loginBox.classList.add("hidden");
     appBox.classList.remove("hidden");
-
     listenPedidos();
   }catch(e){
     alert(e.message);
