@@ -191,8 +191,9 @@ tr.pedidoRow{ cursor:pointer; }
     <h2>🔐 Iniciar sesión</h2>
     <div class="row">
       <div style="flex:1; min-width:220px;">
-        <label>Email</label>
-        <input id="email" type="email" placeholder="tucorreo@gmail.com" />
+       
+        <label>Usuario</label>
+<input id="email" type="text" placeholder="Usuario" />
       </div>
       <div style="flex:1; min-width:220px;">
         <label>Contraseña</label>
@@ -265,9 +266,12 @@ tr.pedidoRow{ cursor:pointer; }
     <div class="topbar" style="margin-top:10px;">
       <div class="row" style="gap:8px;">
         <button type="button" onclick="mostrarSeccion('pedidos')">📦 Pedidos</button>
-        <button type="button" class="secondary" onclick="mostrarSeccion('tienda')">🏪 Editar tienda</button>
+        <button id="btnEditarTienda" type="button" class="secondary" onclick="mostrarSeccion('tienda')">🏪 Editar tienda</button>
+
       </div>
+
     </div>
+
 
     <!-- SECCION TIENDA -->
     <div id="tiendaBox" class="hidden">
@@ -445,9 +449,49 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+/** LOGIN POR USUARIO **/
+const USER_LOGIN_MAP = {
+  "enmanuel.francisco": "enmanuel.francisco@panel.local",
+  "ana.camila": "ana.camila@panel.local",
+  "empleado1": "empleado1@panel.local"
+};
+
+const ADMIN_USERNAMES = [
+  "enmanuel.francisco",
+  "ana.camila"
+];
+
+const EMPLOYEE_USERNAMES = [
+  "empleado1"
+];
+
+function normalizeUsername(v){
+  return String(v || "").trim().toLowerCase();
+}
+
+function resolveLoginEmail(username){
+  const u = normalizeUsername(username);
+  return USER_LOGIN_MAP[u] || null;
+}
+
+function resolveUsernameFromEmail(email){
+  email = String(email || "").trim().toLowerCase();
+
+  for (const [username, mappedEmail] of Object.entries(USER_LOGIN_MAP)) {
+    if (String(mappedEmail).toLowerCase() === email) return username;
+  }
+
+  return email.replace("@panel.local", "");
+}
+
 /** Estado local **/
 let pedidosCache = [];
 let unsubPedidos = null;
+
+/* ===== ROLES DE USUARIO ===== */
+let currentRole = "empleado";
+let isAdminUser = false;
+
 
 /** Catálogos **/
 const COMBOS_CATALOGO = [
@@ -501,22 +545,68 @@ function setLoginMsg(msg){
 }
 
 async function login(){
-  const email = (document.getElementById("email")?.value || "").trim();
-  const password = document.getElementById("password")?.value || "";
+  const usernameInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const loginBtn = document.querySelector('#loginBox button[type="button"]');
 
-  if(!email || !password){
-    setLoginMsg("Pon email y contraseña.");
+  const username = normalizeUsername(usernameInput?.value || "");
+  const password = passwordInput?.value || "";
+
+  if(!username || !password){
+    setLoginMsg("Pon usuario y contraseña.");
+    return;
+  }
+
+  const email = resolveLoginEmail(username);
+
+  if(!email){
+    setLoginMsg("Ese usuario no está autorizado.");
     return;
   }
 
   try{
+    if(loginBtn) loginBtn.disabled = true;
     setLoginMsg("Entrando...");
+
     await auth.signInWithEmailAndPassword(email, password);
+
     setLoginMsg("");
   }catch(e){
-    setLoginMsg("Error: " + (e.message || e));
+    console.error("Error login:", e);
+
+    const code = e && e.code ? e.code : "";
+
+    if(code === "auth/user-not-found"){
+      setLoginMsg("Ese usuario no existe.");
+    }else if(code === "auth/wrong-password"){
+      setLoginMsg("Contraseña incorrecta.");
+    }else if(code === "auth/invalid-login-credentials"){
+      setLoginMsg("Usuario o contraseña incorrectos.");
+    }else if(code === "auth/invalid-email"){
+      setLoginMsg("Usuario inválido.");
+    }else if(code === "auth/too-many-requests"){
+      setLoginMsg("Demasiados intentos. Espera un momento.");
+    }else{
+      setLoginMsg("Usuario o contraseña incorrectos.");
+    }
+  }finally{
+    if(loginBtn) loginBtn.disabled = false;
   }
 }
+
+
+document.addEventListener("keydown", function(e){
+  const loginBox = document.getElementById("loginBox");
+  const appBox = document.getElementById("appBox");
+
+  if(!loginBox || loginBox.classList.contains("hidden")) return;
+  if(appBox && !appBox.classList.contains("hidden")) return;
+
+  if(e.key === "Enter"){
+    e.preventDefault();
+    login();
+  }
+});
 
 async function logout(){ await auth.signOut(); }
 
@@ -733,14 +823,6 @@ function syncCatalogosParaEditarPedidos(rows){
 }
 
 /** Admin **/
-async function assertAdmin(user){
-  const tokenResult = await user.getIdTokenResult(true);
-  const isAdmin = !!(tokenResult && tokenResult.claims && tokenResult.claims.admin);
-  if(!isAdmin){
-    await auth.signOut();
-    throw new Error("Este usuario NO es admin. (No tiene el claim admin=true)");
-  }
-}
 
 /* ===========================
    ✅ AVISO + SONIDO (OPCION 5)
@@ -1649,6 +1731,15 @@ async function guardarEdit(){
   }
 }
 
+function aplicarPermisosUI(){
+  const btnEditarTienda = document.getElementById("btnEditarTienda");
+
+  if(btnEditarTienda){
+    btnEditarTienda.disabled = !isAdminUser;
+    btnEditarTienda.style.opacity = isAdminUser ? "1" : ".45";
+    btnEditarTienda.style.pointerEvents = isAdminUser ? "auto" : "none";
+  }
+}
 
 
 /** Boot **/
@@ -1660,6 +1751,8 @@ auth.onAuthStateChanged(async (user)=>{
     if(unsubPedidos) unsubPedidos();
     if(unsubProductos) unsubProductos();
     pedidosCache = [];
+    currentRole = "empleado";
+    isAdminUser = false;
     loginBox.classList.remove("hidden");
     appBox.classList.add("hidden");
     document.getElementById("userEmail").innerText = "-";
@@ -1667,15 +1760,22 @@ auth.onAuthStateChanged(async (user)=>{
   }
 
   try{
-    await assertAdmin(user);
-    document.getElementById("userEmail").innerText = user.email || "(sin email)";
+    const roleDoc = await db.collection("roles").doc(user.uid).get();
+    isAdminUser = roleDoc.exists && roleDoc.data().admin === true;
+    currentRole = isAdminUser ? "admin" : "empleado";
+
+    const shownUser = (user.email || "").replace("@panel.local", "");
+    document.getElementById("userEmail").innerText = shownUser || "(sin usuario)";
     loginBox.classList.add("hidden");
     appBox.classList.remove("hidden");
+
+    aplicarPermisosUI();
     listenPedidos();
   }catch(e){
     alert(e.message);
   }
 });
+
 </script>
 
 </body>
