@@ -48,10 +48,10 @@ h2{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin:8px 0;
-  padding:6px;
+  gap:12px;
+  margin:10px 0;
+  padding:12px 0;
   border-bottom:1px dotted #f3b5cc;
-  gap:10px;
 }
 
 input,select,textarea{
@@ -193,6 +193,163 @@ button.secondary{
   font-size:12px;
   color:#777;
 }
+
+
+.productBadge{
+  display:inline-block;
+  margin-left:8px;
+  background:linear-gradient(45deg,#ff5fa2,#ff8cc6);
+  color:white;
+  padding:2px 8px;
+  font-size:10px;
+  font-weight:700;
+  border-radius:999px;
+}
+
+.productCard{
+  position:relative;
+}
+
+
+.productCard{
+  position:relative;
+}
+
+.productBadge{
+  display:inline-flex;
+  align-items:center;
+  margin-left:8px;
+  padding:2px 8px;
+  border-radius:999px;
+  background:linear-gradient(45deg,#ff5fa2,#ff8cc6);
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  line-height:1;
+  vertical-align:middle;
+  box-shadow:none;
+}
+
+
+
+.productBadge{
+  display:inline-block;
+  margin-left:8px;
+  background:linear-gradient(45deg,#ff5fa2,#ff8cc6);
+  color:white;
+  padding:2px 8px;
+  font-size:10px;
+  font-weight:700;
+  border-radius:999px;
+  vertical-align:middle;
+}
+
+
+.productInfo{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  flex:1;
+  min-width:0;
+}
+
+.productTopLine{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.productName{
+  font-size:18px;
+  font-weight:600;
+  color:#111;
+  line-height:1.2;
+}
+
+.productMeta{
+  font-size:13px;
+  color:#8a7a84;
+  line-height:1.2;
+}
+
+.productBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:3px 9px;
+  border-radius:999px;
+  background:#ffd9ea;
+  color:#c2185b;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  border:1px solid #f3b5cc;
+}
+
+.qty.comboQty{
+  width:72px;
+  min-width:72px;
+  text-align:center;
+  font-weight:600;
+}
+
+.toppingRowOnly .productName{
+  font-size:16px;
+}
+
+.toppingRowOnly .productMeta{
+  display:none;
+}
+
+
+#glaseadosContainer{
+  width:100%;
+  margin-top:10px;
+}
+
+#glaseadosContainer select{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border-radius:10px;
+  border:1px solid #ddd;
+  background:#fff7fb;
+  font-family:inherit;
+}
+.tituloSeccion{
+  font-family:'Pacifico', cursive;
+  color:#c2185b;
+  font-size:28px;
+  text-align:center;
+  margin:18px 0 10px;
+}
+
+.glaseadosPreview{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+
+.glaseadoChip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:#fff7fb;
+  border:1px solid #f3b5cc;
+  color:#c2185b;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:600;
+}
+
+.glaseadoChipIcon{
+  font-size:16px;
+}
+
 </style>
 </head>
 
@@ -230,11 +387,15 @@ button.secondary{
       </div>
     </div>
 
-    <label style="margin-top:10px; display:block;">Referencia / Nº de comprobante (opcional)</label>
-    <input id="refTransfer" placeholder="Ej: 839201 / captura / etc.">
+<label style="margin-top:10px; display:block;">Referencia / Nº de comprobante (opcional)</label>
+<input id="refTransfer" placeholder="Ej: 839201 / captura / etc.">
 
-    <label style="margin-top:10px; display:block;">Nota para tu pedido (opcional)</label>
-    <input id="notaPedidoTransfer" placeholder="Ej: más chocolate, sin azúcar glass...">
+<label style="margin-top:10px; display:block;">Foto del comprobante</label>
+<input id="fotoComprobante" type="file" accept="image/*">
+
+<label style="margin-top:10px; display:block;">Nota para tu pedido (opcional)</label>
+<input id="notaPedidoTransfer" placeholder="Ej: más chocolate, sin azúcar glass...">
+
 
     <div style="display:flex; gap:10px; margin-top:14px;">
       <button class="secondary" type="button" onclick="cerrarTransfer()">Cancelar</button>
@@ -278,8 +439,13 @@ button.secondary{
   <div id="combosList"></div>
 
   <h2 id="toppingsTitle">✨ Toppings</h2>
-  <div id="toppingsList"></div>
-  <div id="toppingsContainer"></div>
+ <div id="toppingsContainer"></div>
+<h2>🍫 Glaseados</h2>
+<div id="glaseadosContainer"></div>
+<div id="glaseadosPreview" class="glaseadosPreview"></div>
+<div id="toppingsList" style="display:none;"></div>
+
+
 
 <h2>🚚 Tipo de entrega</h2>
 
@@ -343,6 +509,7 @@ button.secondary{
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -356,6 +523,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 function escapeHtml(str=""){
   return String(str).replace(/[&<>"']/g, m => ({
@@ -397,6 +565,18 @@ let toppings = [
   {name:"Crema pastelera",price:55}
 ];
 
+let glaseados = [
+  {name:"Chocolate Negro", icon:"🍫"},
+  {name:"Chocolate Blanco", icon:"🤍"},
+  {name:"Nutella", icon:"🌰"},
+  {name:"Dulce de leche", icon:"🍯"},
+  {name:"Avellana", icon:"🥜"},
+  {name:"Crema pastelera", icon:"🎂"},
+  {name:"Glaseado Dubai", icon:"✨"},
+  {name:"Mermelada de fresa", icon:"🍓"},
+  {name:"Mermelada de piña", icon:"🍍"}
+];
+
 function toggleDelivery(){
   const tipo = document.getElementById("tipoEntrega").value;
   document.getElementById("zonaContainer").style.display = (tipo==="delivery") ? "block" : "none";
@@ -406,25 +586,38 @@ function toggleDelivery(){
 function calcular(){
   let total = 0;
   let maxToppings = 0;
+  let maxGlaseados = 0;
 
+  // SOLO combos
   document.querySelectorAll(".comboQty").forEach(c=>{
-    const q = parseInt(c.value) || 0;
-    total += q * (parseInt(c.dataset.price) || 0);
-    maxToppings += q * (parseInt(c.dataset.toppings) || 0);
+    let q = parseInt(c.value) || 0;
+    total += q * parseInt(c.dataset.price);
+    maxToppings += q * parseInt(c.dataset.toppings);
+    maxGlaseados += q; // 1 glaseado por combo/unidad
   });
 
   actualizarToppings(maxToppings);
+  actualizarGlaseados(maxGlaseados);
 
+  // sumar toppings seleccionados
   document.querySelectorAll(".toppingSelect").forEach(s=>{
     total += parseInt(s.value) || 0;
   });
 
+  // sumar glaseados seleccionados
+ document.querySelectorAll(".glaseadoSelect").forEach(s=>{
+  const opt = s.options[s.selectedIndex];
+  total += parseInt(opt?.dataset?.price || 0) || 0;
+});
+
+  // delivery
   if(document.getElementById("tipoEntrega").value==="delivery"){
     total += parseInt(document.getElementById("zona").value) || 0;
   }
 
-  document.getElementById("total").innerText = "TOTAL: RD$" + total;
+  document.getElementById("total").innerText = "TOTAL: RD$"+total;
 }
+
 
 function actualizarToppings(max){
   const cont = document.getElementById("toppingsContainer");
@@ -459,6 +652,65 @@ function actualizarToppings(max){
   }
 }
 
+function actualizarGlaseados(max){
+  const cont = document.getElementById("glaseadosContainer");
+  const seleccionados = [];
+
+  document.querySelectorAll(".glaseadoSelect").forEach(s=>seleccionados.push(s.value));
+  cont.innerHTML = "";
+
+  if(max <= 0){
+    cont.innerHTML = "<p style='color:#999;font-size:14px'>Selecciona un combo para elegir glaseados</p>";
+    renderGlaseadosPreview();
+    return;
+  }
+
+  for(let i=0; i<max; i++){
+    const s = document.createElement("select");
+    s.className = "glaseadoSelect";
+    s.onchange = () => {
+      calcular();
+      renderGlaseadosPreview();
+    };
+
+    const o = document.createElement("option");
+    o.value = "";
+    o.text = "Selecciona glaseado " + (i+1);
+    s.appendChild(o);
+
+    glaseados.forEach(g=>{
+      const op = document.createElement("option");
+      op.value = g.name;
+      op.dataset.price = g.price || 0;
+      op.text = `${g.icon} ${g.name}${Number(g.price||0) > 0 ? ` (RD$${g.price})` : ""}`;
+      s.appendChild(op);
+    });
+
+    if(seleccionados[i]) s.value = seleccionados[i];
+    cont.appendChild(s);
+  }
+
+  renderGlaseadosPreview();
+}
+
+function renderGlaseadosPreview(){
+  const cont = document.getElementById("glaseadosPreview");
+  if(!cont) return;
+
+  cont.innerHTML = "";
+
+  const elegidos = [];
+
+  document.querySelectorAll(".glaseadoSelect").forEach(sel=>{
+    if(sel.value){
+      const g = glaseados.find(x => x.name === sel.value);
+      if(g) elegidos.push(g);
+    }
+  });
+}
+
+
+
 function renderCombosFS(combosDocs){
   const cont = document.getElementById("combosList");
   cont.innerHTML = "";
@@ -471,18 +723,32 @@ function renderCombosFS(combosDocs){
   combosDocs.forEach(c=>{
     const div = document.createElement("div");
     div.className = "item";
+
+    const toppingsIncl = Number(c.toppingsIncluded || 0);
+    const price = Number(c.price || 0);
+
     div.innerHTML = `
-      <span>${escapeHtml(c.name)}${Number(c.toppingsIncluded||0)>0 ? ` + ${Number(c.toppingsIncluded)} topping(s)` : ""} – RD$${Number(c.price||0)}</span>
+      <div class="productInfo">
+        <div class="productTopLine">
+          <span class="productName">${escapeHtml(c.name)}</span>
+          ${c.badge ? `<span class="productBadge">${escapeHtml(c.badge)}</span>` : ""}
+        </div>
+        <div class="productMeta">
+          ${toppingsIncl > 0 ? `${toppingsIncl} topping${toppingsIncl > 1 ? "s" : ""} incluido${toppingsIncl > 1 ? "s" : ""}` : "Sin toppings incluidos"} · RD$${price}
+        </div>
+      </div>
+
       <input
         type="number"
         min="0"
         value="0"
         class="qty comboQty"
         data-name="${escapeAttr(c.name)}"
-        data-price="${Number(c.price||0)}"
-        data-toppings="${Number(c.toppingsIncluded||0)}"
+        data-price="${price}"
+        data-toppings="${toppingsIncl}"
       >
     `;
+
     const input = div.querySelector("input");
     input.addEventListener("input", calcular);
     cont.appendChild(div);
@@ -491,7 +757,8 @@ function renderCombosFS(combosDocs){
 
 function renderToppingsFS(toppingsDocs){
   const cont = document.getElementById("toppingsList");
-  cont.innerHTML = "";
+  if(cont) cont.innerHTML = "";
+
 
   if(!toppingsDocs.length){
     cont.innerHTML = `<div class="smallMuted" style="text-align:center;padding:8px;">No hay toppings activos ahora mismo.</div>`;
@@ -500,11 +767,22 @@ function renderToppingsFS(toppingsDocs){
 
   toppingsDocs.forEach(t=>{
     const div = document.createElement("div");
-    div.className = "item";
-    div.innerHTML = `<span>${escapeHtml(t.name)} – RD$${Number(t.price||0)}</span>`;
+    div.className = "item toppingRowOnly";
+
+    div.innerHTML = `
+      <div class="productInfo">
+        <div class="productTopLine">
+          <span class="productName">${escapeHtml(t.name)}</span>
+          ${t.badge ? `<span class="productBadge">${escapeHtml(t.badge)}</span>` : ""}
+        </div>
+        <div class="productMeta">RD$${Number(t.price || 0)}</div>
+      </div>
+    `;
+
     cont.appendChild(div);
   });
 }
+
 
 function escucharTiendaEnVivo(){
   db.collection("store_settings").doc("main").onSnapshot((snap)=>{
@@ -614,6 +892,24 @@ function enviar(){
     });
   }
 
+const glas = [];
+document.querySelectorAll(".glaseadoSelect").forEach(s=>{
+  if(s.selectedIndex > 0){
+    const opt = s.options[s.selectedIndex];
+    glas.push(opt.text);
+    total += parseInt(opt.dataset.price || 0) || 0;
+  }
+});
+
+if(glas.length){
+  resumen += "<br><b>Glaseados:</b><br>";
+  texto += "Glaseados:%0A";
+
+  glas.forEach(g=>{
+    resumen += `- ${g}<br>`;
+    texto += `- ${g}%0A`;
+  });
+}
   if(!nombre || !direccion || !fecha || !hora){
     alert("Completa tus datos (Nombre, Dirección, Fecha y Hora).");
     return;
@@ -647,20 +943,15 @@ function enviar(){
 
   const notaResumen = (document.getElementById("notaPedidoResumen").value || "").trim();
 
-  pedidoActual = {
-    nombre,
-    direccion,
-    telefono,
-    fecha,
-    hora,
-    pago,
-    tipo,
-    zonaCosto: (tipo==="delivery") ? Number(zona?.value||0) : 0,
-    combos,
-    tops,
-    total,
-    notaCliente: notaResumen
-  };
+  pedidoActual={
+  nombre,direccion,telefono,fecha,hora,pago,tipo,
+  zonaCosto: (tipo==="delivery") ? Number(zona?.value||0) : 0,
+  combos,
+  tops,
+  glaseados: glas,
+  total,
+  notaCliente: notaResumen
+};
 
   textoFinal = texto;
   document.getElementById("resumenContenido").innerHTML = resumen;
@@ -698,24 +989,56 @@ function abrirTransfer(){
   document.getElementById("transferMsg").innerText = "";
   document.getElementById("refTransfer").value = "";
   document.getElementById("notaPedidoTransfer").value = "";
+  document.getElementById("fotoComprobante").value = "";
   document.getElementById("transferModal").style.display = "flex";
 }
 
 function cerrarTransfer(){
   document.getElementById("transferModal").style.display = "none";
 }
+function fileToBase64(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
 
-function confirmarTransferencia(){
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+  });
+}
+
+async function confirmarTransferencia(){
   const ref = (document.getElementById("refTransfer").value || "").trim();
   const notaT = (document.getElementById("notaPedidoTransfer").value || "").trim();
+  const fileInput = document.getElementById("fotoComprobante");
+  const file = fileInput && fileInput.files ? fileInput.files[0] : null;
 
   pedidoActual.transferRef = ref;
+
   if(notaT){
     pedidoActual.notaCliente = (pedidoActual.notaCliente ? (pedidoActual.notaCliente + " | ") : "") + notaT;
   }
 
-  cerrarTransfer();
-  guardarPedidoFirestore();
+  try{
+    if(file){
+      // límite simple para no reventar Firestore
+      if(file.size > 450 * 1024){
+        alert("La foto es muy pesada. Usa una más liviana o hazle captura antes de subirla.");
+        return;
+      }
+
+      const base64 = await fileToBase64(file);
+      pedidoActual.comprobanteBase64 = base64;
+      pedidoActual.comprobanteNombre = file.name || "comprobante.jpg";
+    }
+
+    cerrarTransfer();
+    guardarPedidoFirestore();
+
+  }catch(e){
+    console.error("Error procesando comprobante:", e);
+    alert("Error procesando comprobante: " + e.message);
+  }
 }
 
 function guardarPedidoFirestore(){
@@ -731,6 +1054,7 @@ function guardarPedidoFirestore(){
   });
 }
 
+
 document.addEventListener("DOMContentLoaded", ()=>{
   toggleDelivery();
   escucharTiendaEnVivo();
@@ -739,5 +1063,4 @@ document.addEventListener("DOMContentLoaded", ()=>{
 </script>
 
 </body>
-
 </html>

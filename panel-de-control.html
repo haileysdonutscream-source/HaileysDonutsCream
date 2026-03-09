@@ -36,11 +36,7 @@ hr{border:none;border-top:1px dashed #f3b5cc;margin:14px 0;}
 .actionCol button{width:100%;}
 .actionCol .secondary{margin-top:8px;}
 .actionCol .mini{margin-top:8px;font-size:14px;padding:10px 12px;}
-.miniGrid{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
+.miniGrid{display:flex;gap:12px;flex-wrap:wrap;}
 
 .iconBtn{
   min-width:170px;
@@ -56,55 +52,24 @@ hr{border:none;border-top:1px dashed #f3b5cc;margin:14px 0;}
   cursor:pointer;
   transition:all .15s ease;
 }
+.iconBtn:hover{transform:scale(1.04);}
 
-
-
-.iconBtn:hover{
-  transform:scale(1.04);
-}
-
-/* Botones acciones pedidos */
-
-.btnEdit{
-  background:#ff8cc6;
-}
-
-.btnRec{
-  background:#38b000;
-}
-
-.btnReady{
-  background:#0077b6;
-}
-
-.btnDelete{
-  background:#ff3b3b;
-}
-
+.btnEdit{background:#ff8cc6;}
+.btnRec{background:#38b000;}
+.btnReady{background:#0077b6;}
+.btnDelete{background:#ff3b3b;}
 .btnEdit:hover{background:#ff5fa2;}
 .btnRec:hover{background:#2a9100;}
 .btnReady:hover{background:#005f8e;}
 .btnDelete:hover{background:#d62828;}
 
-/* ===========================
-   ✅ PEDIDOS CERRADOS (COLAPSAR/EXPANDIR)
-=========================== */
 tr.pedidoRow .colDetalle{ display:none; }
 tr.pedidoRow.open .colDetalle{ display:table-cell; }
 tr.pedidoRow{ cursor:pointer; }
 
-
-/* Split pedidos: lista izquierda + detalle derecha */
 .pedSplit{display:flex; gap:10px; flex-wrap:wrap;}
-.pedLeft{
-  flex:1.4;
-  min-width:340px;
-}
-
-.pedRight{
-  flex:1.6;
-  min-width:420px;
-}
+.pedLeft{flex:1.4; min-width:340px;}
+.pedRight{flex:1.6; min-width:420px;}
 
 .pedList{max-height:65vh; overflow:auto; padding:6px; border-radius:14px;}
 .pedItem{
@@ -131,7 +96,6 @@ tr.pedidoRow{ cursor:pointer; }
   font-size:12px;
   border:1px solid #f3b5cc;
 }
-
 .pedAtendido{
   display:inline-block;
   padding:5px 9px;
@@ -144,19 +108,150 @@ tr.pedidoRow{ cursor:pointer; }
   margin-left:6px;
 }
 
-
-
 .detalleGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
-
 @media (max-width: 760px){
-  .detalleGrid{
-    grid-template-columns: 1fr;
+  .detalleGrid{grid-template-columns: 1fr;}
+}
+
+.kpiGridCompact{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:10px;
+  margin-top:12px;
+}
+.kpiMini{
+  background:#fff7fb;
+  border:1px solid #f3b5cc;
+  border-radius:14px;
+  padding:12px;
+  min-height:78px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.kpiMiniLabel{
+  font-size:12px;
+  color:#777;
+  margin-bottom:4px;
+}
+.kpiMiniValue{
+  font-size:20px;
+  font-weight:800;
+  color:#c2185b;
+}
+.kpiMiniValue.money{font-size:18px;}
+
+@media (max-width: 900px){
+  .kpiGridCompact{grid-template-columns:repeat(2, 1fr);}
+}
+@media (max-width: 560px){
+  .kpiGridCompact{grid-template-columns:1fr;}
+}
+
+/* ===== MEJORA VISUAL TABLA PRODUCTOS ===== */
+.productsWrap{
+  width:100%;
+  overflow-x:auto;
+  overflow-y:auto;
+  max-height:45vh;
+  border-radius:14px;
+  border:1px solid #f3b5cc;
+  background:#fff7fb;
+}
+
+.productsTable{
+  width:100%;
+  min-width:980px; /* fuerza espacio real para columnas */
+  border-collapse:separate;
+  border-spacing:0;
+}
+
+.productsTable th,
+.productsTable td{
+  padding:10px 8px;
+  border-bottom:1px dotted #f3b5cc;
+  vertical-align:middle;
+  white-space:nowrap;
+}
+
+.productsTable th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:#fff3f8;
+  color:#c2185b;
+  font-size:14px;
+}
+
+.productsTable td:first-child,
+.productsTable th:first-child{
+  padding-left:14px;
+}
+
+.productsTable td:last-child,
+.productsTable th:last-child{
+  padding-right:14px;
+}
+
+.productsTable input,
+.productsTable select{
+  width:100%;
+  min-width:0;
+  margin:0;
+  padding:10px 12px;
+  font-size:14px;
+  height:44px;
+  background:#fff;
+}
+
+.productsTable .colTipo{min-width:110px;}
+.productsTable .colNombre{min-width:220px;}
+.productsTable .colPrecio{min-width:110px;}
+.productsTable .colIncl{min-width:90px;}
+.productsTable .colOrden{min-width:100px;}
+.productsTable .colActivo{min-width:110px;}
+.productsTable .colBadge{min-width:150px;}
+.productsTable .colAcciones{min-width:130px;}
+
+.productsTable .actionBtnCell{
+  text-align:center;
+}
+
+.productsTable .actionBtnCell button{
+  width:100%;
+  min-width:100px;
+  padding:10px 12px;
+  margin:0;
+}
+
+@media (max-width: 768px){
+  .productsWrap{
+    max-height:50vh;
+  }
+
+  .productsTable{
+    min-width:920px;
+  }
+
+  .productsTable th,
+  .productsTable td{
+    padding:8px 6px;
+  }
+
+  .productsTable input,
+  .productsTable select{
+    padding:8px 10px;
+    height:40px;
+    font-size:13px;
   }
 }
+
+
+
 </style>
 </head>
 
@@ -176,7 +271,7 @@ tr.pedidoRow{ cursor:pointer; }
   </div>
 </div>
 
-<!-- ✅ Toast pedido nuevo -->
+<!-- Toast pedido nuevo -->
 <div id="toastNew" class="hidden"
   style="position:fixed; right:14px; bottom:14px; background:white; border:1px solid #f3b5cc; padding:12px 14px; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,.18); z-index:99999;">
   <b style="color:#c2185b">🛎️ Pedido nuevo</b>
@@ -191,9 +286,8 @@ tr.pedidoRow{ cursor:pointer; }
     <h2>🔐 Iniciar sesión</h2>
     <div class="row">
       <div style="flex:1; min-width:220px;">
-       
         <label>Usuario</label>
-<input id="email" type="text" placeholder="Usuario" />
+        <input id="email" type="text" placeholder="Usuario" />
       </div>
       <div style="flex:1; min-width:220px;">
         <label>Contraseña</label>
@@ -211,7 +305,7 @@ tr.pedidoRow{ cursor:pointer; }
     <div class="topbar">
       <div>
         <span class="badge">👤 <span id="userEmail">-</span></span>
-        <span class="badge">🔑 Admin</span>
+        <span class="badge" id="roleBadge">🔑 Admin</span>
       </div>
       <div class="row" style="align-items:center;">
         <button class="secondary" type="button" onclick="logout()">Cerrar sesión</button>
@@ -242,43 +336,87 @@ tr.pedidoRow{ cursor:pointer; }
         <div class="small muted">Tip: usa el buscador para encontrar pedidos rápido.</div>
       </div>
 
-      <div class="card" style="flex:2; min-width:280px;">
+      <div class="card" style="flex:1; min-width:280px;">
         <strong>Resumen</strong>
-        <div class="row">
-          <div style="flex:1; min-width:180px;">
-            <div class="pill">Total pedidos: <span id="kTotal">0</span></div>
+
+        <div class="kpiGridCompact">
+          <div class="kpiMini">
+            <div class="kpiMiniLabel">Total pedidos</div>
+            <div class="kpiMiniValue" id="kTotal">0</div>
           </div>
-          <div style="flex:1; min-width:180px;">
-            <div class="pill">Pendientes: <span id="kPend">0</span></div>
+
+          <div class="kpiMini">
+            <div class="kpiMiniLabel">Pendientes</div>
+            <div class="kpiMiniValue" id="kPend">0</div>
           </div>
-          <div style="flex:1; min-width:180px;">
-            <div class="pill">No pagados: <span id="kNoPag">0</span></div>
+
+          <div class="kpiMini">
+            <div class="kpiMiniLabel">No pagados</div>
+            <div class="kpiMiniValue" id="kNoPag">0</div>
+          </div>
+
+          <div class="kpiMini">
+            <div class="kpiMiniLabel">Ventas hoy</div>
+            <div class="kpiMiniValue money" id="kVentasHoy">RD$0</div>
+          </div>
+
+          <div class="kpiMini">
+            <div class="kpiMiniLabel">Cobrado hoy</div>
+            <div class="kpiMiniValue money" id="kCobradoHoy">RD$0</div>
+          </div>
+
+          <div class="kpiMini">
+            <div class="kpiMiniLabel">Por cobrar</div>
+            <div class="kpiMiniValue money" id="kPorCobrarHoy">RD$0</div>
           </div>
         </div>
+
         <hr>
-        <div class="small muted">
-          Nota: Los pedidos viven en Firestore. Cambiar de computadora no daña nada:
-          solo vuelves a iniciar sesión y listo.
+
+        <div class="row" style="gap:16px;">
+          <div style="flex:1; min-width:220px;">
+            <div class="small muted" style="margin-bottom:4px;">🔥 Más vendido hoy</div>
+            <div id="topCombosHoy" class="small">Sin datos hoy.</div>
+          </div>
+
+          <div style="flex:1; min-width:220px;">
+            <div class="small muted" style="margin-bottom:4px;">✨ Toppings top</div>
+            <div id="topToppingsHoy" class="small">Sin datos hoy.</div>
+          </div>
         </div>
+
+        <hr>
+
+        <details>
+          <summary style="cursor:pointer; color:#c2185b; font-weight:700;">Ver métricas extras</summary>
+          <div class="row" style="margin-top:10px;">
+            <div style="flex:1; min-width:160px;">
+              <div class="pill">Pedidos hoy: <span id="kPedidosHoy">0</span></div>
+            </div>
+            <div style="flex:1; min-width:160px;">
+              <div class="pill">Ticket promedio: <span id="kTicketHoy">RD$0</span></div>
+            </div>
+            <div style="flex:1; min-width:160px;">
+              <div class="pill">Pagados hoy: <span id="kPagadosHoy">0</span></div>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
 
-    <div class="topbar" style="margin-top:10px;">
-      <div class="row" style="gap:8px;">
-        <button type="button" onclick="mostrarSeccion('pedidos')">📦 Pedidos</button>
+    <!-- NAVEGACIÓN -->
+    <div class="topbar" style="margin-top:14px;">
+      <div class="row" style="gap:10px;">
+        <button id="btnPedidos" type="button" onclick="mostrarSeccion('pedidos')">📦 Pedidos</button>
         <button id="btnEditarTienda" type="button" class="secondary" onclick="mostrarSeccion('tienda')">🏪 Editar tienda</button>
-
       </div>
-
     </div>
-
 
     <!-- SECCION TIENDA -->
     <div id="tiendaBox" class="hidden">
       <h2>🏪 Editar tienda</h2>
 
       <div class="row">
-        <!-- TEXTOS -->
         <div class="card" style="flex:1; min-width:280px;">
           <strong>Textos de la página</strong>
 
@@ -301,8 +439,7 @@ tr.pedidoRow{ cursor:pointer; }
           <div id="stMsg" class="small muted"></div>
         </div>
 
-        <!-- PRODUCTOS -->
-        <div class="card" style="flex:2; min-width:320px;">
+        <div class="card" style="flex:2; min-width:320px; overflow:hidden;">
           <strong>Productos (Combos / Toppings)</strong>
 
           <div class="row">
@@ -350,29 +487,29 @@ tr.pedidoRow{ cursor:pointer; }
             </div>
           </div>
 
-          <div class="row" style="justify-content:flex-end;">
-            <button type="button" onclick="crearProducto()">➕ Agregar</button>
-          </div>
+         <div class="row" style="justify-content:flex-end; align-items:flex-end; margin-top:8px;">
+  <button type="button" onclick="crearProducto()">➕ Agregar</button>
+</div>
 
           <hr>
 
-          <div style="max-height:45vh; overflow:auto; border-radius:14px;">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Tipo</th>
-                  <th>Nombre</th>
-                  <th>Precio</th>
-                  <th>Incl.</th>
-                  <th>Orden</th>
-                  <th>Activo</th>
-                  <th>Badge</th>
-                  <th style="width:120px;">Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tablaProductos"></tbody>
-            </table>
-          </div>
+      <div class="productsWrap">
+  <table class="table productsTable">
+    <thead>
+      <tr>
+        <th class="colTipo">Tipo</th>
+        <th class="colNombre">Nombre</th>
+        <th class="colPrecio">Precio</th>
+        <th class="colIncl">Incl.</th>
+        <th class="colOrden">Orden</th>
+        <th class="colActivo">Activo</th>
+        <th class="colBadge">Badge</th>
+        <th class="colAcciones">Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaProductos"></tbody>
+  </table>
+</div>
 
           <div id="prodMsg" class="small muted" style="margin-top:8px;"></div>
         </div>
@@ -381,52 +518,39 @@ tr.pedidoRow{ cursor:pointer; }
 
     <!-- SECCION PEDIDOS -->
     <div id="pedidosBox">
-  <h2>📦 Pedidos</h2>
+      <h2>📦 Pedidos</h2>
 
-  <div class="pedSplit">
+      <div class="pedSplit">
+        <div class="card pedLeft">
+          <div class="row" style="justify-content:space-between;align-items:center;">
+            <strong>Pedidos</strong>
+            <div class="pill"><span id="leftCount">0</span> pedido(s)</div>
+          </div>
+          <div id="listaPedidos" class="pedList"></div>
+        </div>
 
-    <!-- Izquierda: lista -->
-    <div class="card pedLeft">
-      <div class="row" style="justify-content:space-between;align-items:center;">
-        <strong>Pedidos</strong>
-        <div class="pill"><span id="leftCount">0</span> pedido(s)</div>
+        <div class="card pedRight">
+          <div class="row" style="justify-content:space-between;align-items:center;">
+            <strong>Detalle</strong>
+            <span id="detalleNuevo" class="pedTag hidden">Nuevo</span>
+          </div>
+
+          <div id="detalleContenido" class="muted" style="margin-top:8px;">
+            Selecciona un pedido a la izquierda.
+          </div>
+
+          <hr>
+
+          <div class="miniGrid" style="justify-items:stretch;">
+            <button id="dBtnEdit" class="iconBtn" disabled>✏️ Editar</button>
+            <button id="dBtnRec" class="iconBtn" disabled>✅ Pedido recibido</button>
+            <button id="dBtnLis" class="iconBtn" disabled>📦 Pedido listo</button>
+            <button id="dBtnDel" class="iconBtn" disabled>🗑 Eliminar</button>
+          </div>
+        </div>
       </div>
-      <div id="listaPedidos" class="pedList"></div>
     </div>
-
-    <!-- Derecha: detalle (misma info que tu foto) -->
-    <div class="card pedRight">
-      <div class="row" style="justify-content:space-between;align-items:center;">
-        <strong>Detalle</strong>
-        <span id="detalleNuevo" class="pedTag hidden">Nuevo</span>
-      </div>
-
-      <div id="detalleContenido" class="muted" style="margin-top:8px;">
-        Selecciona un pedido a la izquierda.
-      </div>
-
-      <hr>
-
-      <div class="miniGrid" style="justify-items:stretch;">
-<button id="dBtnEdit" class="iconBtn" disabled>
-✏️ Editar
-</button>
-
-<button id="dBtnRec" class="iconBtn" disabled>
-✅ Pedido recibido
-</button>
-
-<button id="dBtnLis" class="iconBtn" disabled>
-📦 Pedido listo
-</button>
-
-<button id="dBtnDel" class="iconBtn" disabled>
-🗑 Eliminar
-</button>      </div>
-    </div>
-
   </div>
-</div>
 </div>
 
 <!-- Firebase v8 -->
@@ -435,7 +559,6 @@ tr.pedidoRow{ cursor:pointer; }
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
-/** 1) CONFIG **/
 const firebaseConfig = {
   apiKey: "AIzaSyBIc3oJMmSTnOg4EaFsCLOkhyLoGXEWj6c",
   authDomain: "minidonas-d5e36.firebaseapp.com",
@@ -456,42 +579,29 @@ const USER_LOGIN_MAP = {
   "empleado1": "empleado1@panel.local"
 };
 
-const ADMIN_USERNAMES = [
-  "enmanuel.francisco",
-  "ana.camila"
-];
-
-const EMPLOYEE_USERNAMES = [
-  "empleado1"
-];
-
 function normalizeUsername(v){
   return String(v || "").trim().toLowerCase();
 }
-
 function resolveLoginEmail(username){
   const u = normalizeUsername(username);
   return USER_LOGIN_MAP[u] || null;
 }
-
 function resolveUsernameFromEmail(email){
   email = String(email || "").trim().toLowerCase();
-
   for (const [username, mappedEmail] of Object.entries(USER_LOGIN_MAP)) {
     if (String(mappedEmail).toLowerCase() === email) return username;
   }
-
   return email.replace("@panel.local", "");
 }
 
 /** Estado local **/
 let pedidosCache = [];
 let unsubPedidos = null;
-
-/* ===== ROLES DE USUARIO ===== */
+let unsubProductos = null;
+let firstPedidosLoad = true;
+let selectedPedidoId = null;
 let currentRole = "empleado";
 let isAdminUser = false;
-
 
 /** Catálogos **/
 const COMBOS_CATALOGO = [
@@ -519,7 +629,6 @@ const TOPPINGS_CATALOGO = [
 
 /** Helpers **/
 function safe(v){ return (v===undefined || v===null) ? "" : String(v); }
-
 function escapeHtml(str){
   return String(str || "")
     .replaceAll("&","&amp;")
@@ -528,7 +637,6 @@ function escapeHtml(str){
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
 }
-
 function fmtFecha(ts){
   try{
     if(!ts) return "";
@@ -536,6 +644,11 @@ function fmtFecha(ts){
     if(ts instanceof Date) return ts.toLocaleString();
     return String(ts);
   }catch(_){ return ""; }
+}
+function recortar(txt, n=32){
+  txt = String(txt||"");
+  if(txt.length <= n) return txt;
+  return txt.slice(0, n-1) + "…";
 }
 
 /** Auth UI **/
@@ -558,7 +671,6 @@ async function login(){
   }
 
   const email = resolveLoginEmail(username);
-
   if(!email){
     setLoginMsg("Ese usuario no está autorizado.");
     return;
@@ -567,15 +679,11 @@ async function login(){
   try{
     if(loginBtn) loginBtn.disabled = true;
     setLoginMsg("Entrando...");
-
     await auth.signInWithEmailAndPassword(email, password);
-
     setLoginMsg("");
   }catch(e){
     console.error("Error login:", e);
-
     const code = e && e.code ? e.code : "";
-
     if(code === "auth/user-not-found"){
       setLoginMsg("Ese usuario no existe.");
     }else if(code === "auth/wrong-password"){
@@ -594,14 +702,11 @@ async function login(){
   }
 }
 
-
 document.addEventListener("keydown", function(e){
   const loginBox = document.getElementById("loginBox");
   const appBox = document.getElementById("appBox");
-
   if(!loginBox || loginBox.classList.contains("hidden")) return;
   if(appBox && !appBox.classList.contains("hidden")) return;
-
   if(e.key === "Enter"){
     e.preventDefault();
     login();
@@ -610,40 +715,41 @@ document.addEventListener("keydown", function(e){
 
 async function logout(){ await auth.signOut(); }
 
-/* ===========================
-   TIENDA (EDITABLE)
-=========================== */
-let unsubProductos = null;
-
-function setStMsg(msg){ document.getElementById("stMsg").innerText = msg || ""; }
-function setProdMsg(msg){ document.getElementById("prodMsg").innerText = msg || ""; }
+/* TIENDA */
+function setStMsg(msg){ const el = document.getElementById("stMsg"); if(el) el.innerText = msg || ""; }
+function setProdMsg(msg){ const el = document.getElementById("prodMsg"); if(el) el.innerText = msg || ""; }
 
 function mostrarSeccion(which){
   const pedidosBox = document.getElementById("pedidosBox");
   const tiendaBox = document.getElementById("tiendaBox");
+  const btnPedidos = document.getElementById("btnPedidos");
+  const btnTienda = document.getElementById("btnEditarTienda");
+
   if(which === "tienda"){
+    if(!isAdminUser) return;
     pedidosBox.classList.add("hidden");
     tiendaBox.classList.remove("hidden");
+    if(btnPedidos) btnPedidos.classList.add("secondary");
+    if(btnTienda) btnTienda.classList.remove("secondary");
     cargarStoreSettings();
     listenProductos();
   }else{
     tiendaBox.classList.add("hidden");
     pedidosBox.classList.remove("hidden");
+    if(btnTienda) btnTienda.classList.add("secondary");
+    if(btnPedidos) btnPedidos.classList.remove("secondary");
   }
 }
 
-// Cargar textos
 async function cargarStoreSettings(){
   try{
     setStMsg("Cargando...");
     const snap = await db.collection("store_settings").doc("main").get();
     const d = snap.exists ? snap.data() : {};
-
     document.getElementById("stCombosTitle").value = d.combosTitle || "🍩 Combos";
     document.getElementById("stToppingsTitle").value = d.toppingsTitle || "✨ Toppings";
     document.getElementById("stThanks").value = d.thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
     document.getElementById("stTransfer").value = d.transferInfo || "";
-
     setStMsg("✅ Listo.");
   }catch(e){
     setStMsg("Error: " + e.message);
@@ -668,7 +774,6 @@ async function guardarStoreSettings(){
   }
 }
 
-// CRUD productos
 async function crearProducto(){
   const type = document.getElementById("pType").value;
   const name = (document.getElementById("pName").value || "").trim();
@@ -678,14 +783,8 @@ async function crearProducto(){
   const badge = (document.getElementById("pBadge").value || "").trim();
   const active = document.getElementById("pActive").value === "true";
 
-  if(!name){
-    setProdMsg("Pon un nombre.");
-    return;
-  }
-  if(price < 0){
-    setProdMsg("Precio inválido.");
-    return;
-  }
+  if(!name){ setProdMsg("Pon un nombre."); return; }
+  if(price < 0){ setProdMsg("Precio inválido."); return; }
 
   try{
     setProdMsg("Agregando...");
@@ -717,19 +816,16 @@ async function crearProducto(){
 
 function listenProductos(){
   if(unsubProductos) unsubProductos();
-
   unsubProductos = db.collection("store_products")
     .orderBy("sortOrder")
     .onSnapshot((snap)=>{
       const rows = snap.docs.map(d=>({ id:d.id, ...d.data() }));
-
       rows.sort((a,b)=>{
         const ta = (a.type||"").toLowerCase();
         const tb = (b.type||"").toLowerCase();
         if(ta === tb) return Number(a.sortOrder||0) - Number(b.sortOrder||0);
         return ta.localeCompare(tb);
       });
-
       renderProductos(rows);
       syncCatalogosParaEditarPedidos(rows);
       setProdMsg("✅ Listo.");
@@ -757,23 +853,33 @@ function renderProductos(list){
     const active = !!p.active;
     const badge = escapeHtml(p.badge || "");
 
-    row.innerHTML = `
-      <td>${escapeHtml(type)}</td>
-      <td><input value="${name}" onblur="updProd('${p.id}', {name:this.value})"></td>
-      <td><input type="number" min="0" value="${price}" onblur="updProd('${p.id}', {price:Number(this.value||0)})"></td>
-      <td><input type="number" min="0" value="${incl}" ${type==='combo'?'':'disabled'} onblur="updProd('${p.id}', {toppingsIncluded:Number(this.value||0)})"></td>
-      <td><input type="number" min="0" value="${sort}" onblur="updProd('${p.id}', {sortOrder:Number(this.value||0)})"></td>
-      <td>
-        <select onchange="updProd('${p.id}', {active:(this.value==='true')})">
-          <option value="true" ${active?'selected':''}>Sí</option>
-          <option value="false" ${!active?'selected':''}>No</option>
-        </select>
-      </td>
-      <td><input value="${badge}" onblur="updProd('${p.id}', {badge:this.value})"></td>
-      <td>
-        <button class="secondary mini" type="button" onclick="borrarProd('${p.id}')">Borrar</button>
-      </td>
-    `;
+row.innerHTML = `
+  <td class="colTipo">${escapeHtml(type)}</td>
+  <td class="colNombre">
+    <input value="${name}" onblur="updProd('${p.id}', {name:this.value})">
+  </td>
+  <td class="colPrecio">
+    <input type="number" min="0" value="${price}" onblur="updProd('${p.id}', {price:Number(this.value||0)})">
+  </td>
+  <td class="colIncl">
+    <input type="number" min="0" value="${incl}" ${type==='combo'?'':'disabled'} onblur="updProd('${p.id}', {toppingsIncluded:Number(this.value||0)})">
+  </td>
+  <td class="colOrden">
+    <input type="number" min="0" value="${sort}" onblur="updProd('${p.id}', {sortOrder:Number(this.value||0)})">
+  </td>
+  <td class="colActivo">
+    <select onchange="updProd('${p.id}', {active:(this.value==='true')})">
+      <option value="true" ${active?'selected':''}>Sí</option>
+      <option value="false" ${!active?'selected':''}>No</option>
+    </select>
+  </td>
+  <td class="colBadge">
+    <input value="${badge}" onblur="updProd('${p.id}', {badge:this.value})">
+  </td>
+  <td class="colAcciones actionBtnCell">
+    <button class="secondary mini" type="button" onclick="borrarProd('${p.id}')">Borrar</button>
+  </td>
+`;
     tbody.appendChild(row);
   });
 }
@@ -800,20 +906,16 @@ async function borrarProd(id){
 }
 
 function syncCatalogosParaEditarPedidos(rows){
-  const combos = rows
-    .filter(x => x.type === "combo")
-    .map(x => ({
-      name: x.name,
-      price: Number(x.price || 0),
-      toppings: Number(x.toppingsIncluded || 0)
-    }));
+  const combos = rows.filter(x => x.type === "combo").map(x => ({
+    name: x.name,
+    price: Number(x.price || 0),
+    toppings: Number(x.toppingsIncluded || 0)
+  }));
 
-  const tops = rows
-    .filter(x => x.type === "topping")
-    .map(x => ({
-      name: x.name,
-      price: Number(x.price || 0)
-    }));
+  const tops = rows.filter(x => x.type === "topping").map(x => ({
+    name: x.name,
+    price: Number(x.price || 0)
+  }));
 
   COMBOS_CATALOGO.length = 0;
   combos.forEach(c => COMBOS_CATALOGO.push(c));
@@ -822,29 +924,21 @@ function syncCatalogosParaEditarPedidos(rows){
   tops.forEach(t => TOPPINGS_CATALOGO.push(t));
 }
 
-/** Admin **/
-
-/* ===========================
-   ✅ AVISO + SONIDO (OPCION 5)
-=========================== */
+/* Avisos */
 function playNewOrderSound(){
   try{
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     const ctx = new AudioCtx();
     const o = ctx.createOscillator();
     const g = ctx.createGain();
-
     o.type = "sine";
     o.frequency.value = 880;
     g.gain.value = 0.0001;
-
     o.connect(g);
     g.connect(ctx.destination);
-
     o.start();
     g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02);
     g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25);
-
     o.stop(ctx.currentTime + 0.28);
     setTimeout(()=> ctx.close(), 400);
   }catch(e){}
@@ -854,25 +948,20 @@ function showToastNew(p){
   const toast = document.getElementById("toastNew");
   const text = document.getElementById("toastText");
   if(!toast || !text) return;
-
   const nombre = (p.nombre || "Cliente").toString();
   const total = Number(p.total || 0);
   text.textContent = `${nombre} • RD$${total}`;
-
   toast.classList.remove("hidden");
   setTimeout(()=> toast.classList.add("hidden"), 3500);
 }
 
-/** Firestore listen **/
-let firstPedidosLoad = true;
-
+/* Pedidos */
 function listenPedidos(){
   if(unsubPedidos) unsubPedidos();
 
   unsubPedidos = db.collection("pedidos")
     .orderBy("creado", "desc")
     .onSnapshot((snap)=>{
-
       if(!firstPedidosLoad){
         const added = snap.docChanges().filter(c => c.type === "added");
         if(added.length){
@@ -885,27 +974,100 @@ function listenPedidos(){
       pedidosCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
       actualizarKPIs();
       renderFiltrado();
-
       firstPedidosLoad = false;
     }, (err)=>{
       alert("Error leyendo pedidos: " + err.message);
     });
 }
 
-/** KPIs **/
 function actualizarKPIs(){
   const total = pedidosCache.length;
-  const pend = pedidosCache.filter(p => (p.estado || "pendiente") === "pendiente").length;
-  const noPag = pedidosCache.filter(p => (p.pagoEstado || "pendiente") === "no_pagado").length;
+  const pendientes = pedidosCache.filter(p => (p.estado || "pendiente") === "pendiente").length;
+  const noPagados = pedidosCache.filter(p => (p.pagoEstado || "pendiente") === "no_pagado").length;
 
-  document.getElementById("kTotal").innerText = total;
-  document.getElementById("kPend").innerText = pend;
-  document.getElementById("kNoPag").innerText = noPag;
+  const elTotal = document.getElementById("kTotal");
+  const elPend = document.getElementById("kPend");
+  const elNoPag = document.getElementById("kNoPag");
+  if(elTotal) elTotal.innerText = total;
+  if(elPend) elPend.innerText = pendientes;
+  if(elNoPag) elNoPag.innerText = noPagados;
+
+  const hoy = new Date();
+  const y = hoy.getFullYear();
+  const m = hoy.getMonth();
+  const d = hoy.getDate();
+
+  function esHoy(p){
+    try{
+      let fecha = null;
+      if(p.creado && typeof p.creado.toDate === "function") fecha = p.creado.toDate();
+      else if(p.creado instanceof Date) fecha = p.creado;
+      else if(typeof p.creado === "string" || typeof p.creado === "number") fecha = new Date(p.creado);
+
+      if(!fecha || isNaN(fecha.getTime())) return false;
+
+      return fecha.getFullYear() === y && fecha.getMonth() === m && fecha.getDate() === d;
+    }catch(_){
+      return false;
+    }
+  }
+
+  const pedidosHoy = pedidosCache.filter(esHoy);
+  const ventasHoy = pedidosHoy.reduce((acc, p) => acc + Number(p.total || 0), 0);
+  const cobradosHoy = pedidosHoy.filter(p => (p.pagoEstado || "") === "pagado").reduce((acc, p) => acc + Number(p.total || 0), 0);
+  const porCobrarHoy = pedidosHoy.filter(p => (p.pagoEstado || "") !== "pagado").reduce((acc, p) => acc + Number(p.total || 0), 0);
+  const pedidosHoyCount = pedidosHoy.length;
+  const ticketHoy = pedidosHoyCount > 0 ? Math.round(ventasHoy / pedidosHoyCount) : 0;
+  const pagadosHoy = pedidosHoy.filter(p => (p.pagoEstado || "") === "pagado").length;
+
+  const elVentasHoy = document.getElementById("kVentasHoy");
+  const elCobradoHoy = document.getElementById("kCobradoHoy");
+  const elPorCobrarHoy = document.getElementById("kPorCobrarHoy");
+  const elPedidosHoy = document.getElementById("kPedidosHoy");
+  const elTicketHoy = document.getElementById("kTicketHoy");
+  const elPagadosHoy = document.getElementById("kPagadosHoy");
+
+  if(elVentasHoy) elVentasHoy.innerText = `RD$${ventasHoy}`;
+  if(elCobradoHoy) elCobradoHoy.innerText = `RD$${cobradosHoy}`;
+  if(elPorCobrarHoy) elPorCobrarHoy.innerText = `RD$${porCobrarHoy}`;
+  if(elPedidosHoy) elPedidosHoy.innerText = pedidosHoyCount;
+  if(elTicketHoy) elTicketHoy.innerText = `RD$${ticketHoy}`;
+  if(elPagadosHoy) elPagadosHoy.innerText = pagadosHoy;
+
+  const combosMap = {};
+  pedidosHoy.forEach(p => {
+    (p.combos || []).forEach(c => {
+      const nombre = c.combo || "Sin nombre";
+      combosMap[nombre] = (combosMap[nombre] || 0) + Number(c.cantidad || 0);
+    });
+  });
+
+  const topCombos = Object.entries(combosMap).sort((a,b) => b[1] - a[1]).slice(0, 3);
+  const topCombosEl = document.getElementById("topCombosHoy");
+  if(topCombosEl){
+    topCombosEl.innerHTML = topCombos.length
+      ? topCombos.map(([nombre, qty]) => `• ${escapeHtml(nombre)} — ${qty}`).join("<br>")
+      : "Sin datos hoy.";
+  }
+
+  const topsMap = {};
+  pedidosHoy.forEach(p => {
+    (p.tops || []).forEach(t => {
+      const limpio = String(t || "").replace(/\s*\(RD\$\d+\)\s*/gi, "").trim();
+      if(!limpio) return;
+      topsMap[limpio] = (topsMap[limpio] || 0) + 1;
+    });
+  });
+
+  const topTops = Object.entries(topsMap).sort((a,b) => b[1] - a[1]).slice(0, 3);
+  const topToppingsEl = document.getElementById("topToppingsHoy");
+  if(topToppingsEl){
+    topToppingsEl.innerHTML = topTops.length
+      ? topTops.map(([nombre, qty]) => `• ${escapeHtml(nombre)} — ${qty}`).join("<br>")
+      : "Sin datos hoy.";
+  }
 }
 
-/* ===========================
-   ✅ ELIMINAR PEDIDO (BOTON EXTRA)
-=========================== */
 async function borrarPedido(id){
   const p = pedidosCache.find(x => x.id === id);
   if(!p){ alert("No encontré el pedido."); return; }
@@ -920,26 +1082,17 @@ async function borrarPedido(id){
   }
 }
 
-/** Render tabla (✅ colapsado por defecto) **/
-let selectedPedidoId = null;
-
-function recortar(txt, n=32){
-  txt = String(txt||"");
-  if(txt.length <= n) return txt;
-  return txt.slice(0, n-1) + "…";
-}
-
 function renderFiltrado(){
   const fEstado = document.getElementById("fEstado").value;
   const fPago = document.getElementById("fPago").value;
   const fBuscar = document.getElementById("fBuscar").value.trim().toLowerCase();
 
   let list = [...pedidosCache];
-list.sort((a,b)=>{
-  const ea = a.estado === "realizado" ? 1 : 0;
-  const eb = b.estado === "realizado" ? 1 : 0;
-  return ea - eb;
-});
+  list.sort((a,b)=>{
+    const ea = a.estado === "realizado" ? 1 : 0;
+    const eb = b.estado === "realizado" ? 1 : 0;
+    return ea - eb;
+  });
 
   if(fEstado !== "todos") list = list.filter(p => (p.estado || "pendiente") === fEstado);
   if(fPago !== "todos") list = list.filter(p => (p.pagoEstado || "pendiente") === fPago);
@@ -952,16 +1105,13 @@ list.sort((a,b)=>{
     });
   }
 
-  // contador
   const cEl = document.getElementById("leftCount");
   if(cEl) cEl.innerText = list.length;
 
-  // selección estable
   if(selectedPedidoId && !list.find(x => x.id === selectedPedidoId)) selectedPedidoId = null;
   if(!selectedPedidoId && list.length) selectedPedidoId = list[0].id;
 
   renderListaIzquierda(list);
-
   const sel = list.find(x => x.id === selectedPedidoId) || null;
   renderDetalleDerecha(sel);
 }
@@ -984,10 +1134,8 @@ function renderListaIzquierda(list){
     const total = Number(p.total || 0);
     const creado = fmtFecha(p.creado);
     const dir = recortar(p.direccion || "", 34);
-
-    // "Nuevo" (por ahora): pendiente
     const esNuevo = (p.estado || "pendiente") === "pendiente";
-const atendido = (p.estado === "realizado");
+    const atendido = (p.estado === "realizado");
 
     item.innerHTML = `
       <div class="pedTop">
@@ -998,7 +1146,7 @@ const atendido = (p.estado === "realizado");
         </div>
         <div style="text-align:right;">
           ${esNuevo ? `<span class="pedTag">Nuevo</span>` : ``}
-${atendido ? `<span class="pedAtendido">Atendido</span>` : ``}
+          ${atendido ? `<span class="pedAtendido">Atendido</span>` : ``}
           <div class="pedMoney" style="margin-top:8px;">RD$${total}</div>
         </div>
       </div>
@@ -1024,10 +1172,10 @@ function renderDetalleDerecha(p){
   const bDel  = document.getElementById("dBtnDel");
 
   function disableAll(){
-  [bEdit,bRec,bLis,bDel].forEach(b=>{ if(b){ b.disabled=true; } });
-}
+    [bEdit,bRec,bLis,bDel].forEach(b=>{ if(b) b.disabled=true; });
+  }
 
-  if(!box){ return; }
+  if(!box) return;
 
   if(!p){
     if(badge) badge.classList.add("hidden");
@@ -1053,21 +1201,18 @@ function renderDetalleDerecha(p){
   const total = safe(p.total);
   const creado = fmtFecha(p.creado);
   const telRaw = p.telefono || "";
-
-  // Badge "Nuevo"
   const esNuevo = (p.estado || "pendiente") === "pendiente";
-const atendido = (p.estado === "realizado");
+
   if(badge){
     if(esNuevo) badge.classList.remove("hidden");
     else badge.classList.add("hidden");
   }
 
-  // ✅ MISMA info que tu foto (Cliente / Pedido / Estados)
   box.innerHTML = `
   <div class="card" style="padding:14px; margin-bottom:10px;">
     <div class="row" style="justify-content:space-between; align-items:center;">
-  <strong>Información del cliente</strong>
-</div>
+      <strong>Información del cliente</strong>
+    </div>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
       <div>
@@ -1093,6 +1238,17 @@ const atendido = (p.estado === "realizado");
       <div>
         <div class="small muted">Método de pago</div>
         <div><b>${escapeHtml(p.pago || "—")}</b></div>
+
+        ${p.comprobanteBase64 ? `
+        <div>
+          <div class="small muted">Comprobante</div>
+          <div style="margin-top:6px;">
+            <a href="${p.comprobanteBase64}" target="_blank" rel="noopener noreferrer">
+              <img src="${p.comprobanteBase64}" style="max-width:150px;border-radius:12px;border:1px solid #f3b5cc;">
+            </a>
+          </div>
+        </div>
+        ` : ``}
       </div>
 
       <div>
@@ -1127,40 +1283,43 @@ const atendido = (p.estado === "realizado");
     </div>
   </div>
 
-  <div class="card" style="padding:14px;">
-    <strong style="display:block; margin-bottom:8px;">Gestión del pedido</strong>
+  <details class="card" style="padding:14px;">
+    <summary style="cursor:pointer; font-weight:700; color:#c2185b; font-size:16px;">
+      ⚙️ Gestión del pedido
+    </summary>
 
-<div style="margin-top:4px;">
-  <label class="small muted">Estado del pedido</label>
-  <select onchange="updatePedido('${p.id}', {estado:this.value})">
-      <option value="pendiente" ${estado==='pendiente'?'selected':''}>Pendiente</option>
-      <option value="realizado" ${estado==='realizado'?'selected':''}>Realizado</option>
-      <option value="cancelado" ${estado==='cancelado'?'selected':''}>Cancelado</option>
-    </select>
+    <div style="margin-top:10px;">
+      <label class="small muted">Estado del pedido</label>
+      <select onchange="updatePedido('${p.id}', {estado:this.value})">
+        <option value="pendiente" ${estado==='pendiente'?'selected':''}>Pendiente</option>
+        <option value="realizado" ${estado==='realizado'?'selected':''}>Realizado</option>
+        <option value="cancelado" ${estado==='cancelado'?'selected':''}>Cancelado</option>
+      </select>
 
-    <label class="small muted">Estado del pago</label>
-    <select onchange="updatePedido('${p.id}', {pagoEstado:this.value})">
-      <option value="pendiente" ${pagoEstado==='pendiente'?'selected':''}>Pendiente</option>
-      <option value="pagado" ${pagoEstado==='pagado'?'selected':''}>Pagado</option>
-      <option value="no_pagado" ${pagoEstado==='no_pagado'?'selected':''}>No pagado</option>
-    </select>
+      <label class="small muted">Estado del pago</label>
+      <select onchange="updatePedido('${p.id}', {pagoEstado:this.value})">
+        <option value="pendiente" ${pagoEstado==='pendiente'?'selected':''}>Pendiente</option>
+        <option value="pagado" ${pagoEstado==='pagado'?'selected':''}>Pagado</option>
+        <option value="no_pagado" ${pagoEstado==='no_pagado'?'selected':''}>No pagado</option>
+      </select>
 
-    <label class="small muted">Motivo (si no pagó)</label>
-    <input value="${escapeHtml(motivoNoPago)}" placeholder="Ej: no respondió"
-           onblur="updatePedido('${p.id}', {motivoNoPago:this.value})"/>
+      <label class="small muted">Motivo (si no pagó)</label>
+      <input value="${escapeHtml(motivoNoPago)}" placeholder="Ej: no respondió"
+             onblur="updatePedido('${p.id}', {motivoNoPago:this.value})"/>
 
-    <label class="small muted">Notas internas</label>
-    <textarea placeholder="Notas..." onblur="updatePedido('${p.id}', {notas:this.value})">${escapeHtml(notas)}</textarea>
-  </div>
-`;
-  // Botones: MISMO comportamiento + agregar eliminar
+      <label class="small muted">Notas internas</label>
+      <textarea placeholder="Notas..." onblur="updatePedido('${p.id}', {notas:this.value})">${escapeHtml(notas)}</textarea>
+    </div>
+  </details>
+  `;
+
   [bEdit,bRec,bLis,bDel].forEach(b=>{ if(b) b.disabled=false; });
-
   if(bEdit) bEdit.onclick = ()=> abrirEdit(p.id);
   if(bRec)  bRec.onclick  = ()=> enviarPlantilla(p.id,'recibido');
-if(bLis)  bLis.onclick  = ()=> marcarPedidoListo(p.id);
+  if(bLis)  bLis.onclick  = ()=> marcarPedidoListo(p.id);
   if(bDel)  bDel.onclick  = ()=> borrarPedido(p.id);
-}/** Actualizar pedido **/
+}
+
 async function updatePedido(id, patch){
   try{
     await db.collection("pedidos").doc(id).set(patch, { merge:true });
@@ -1175,9 +1334,7 @@ function normalizarTel(tel){
   if(tel.length === 10) tel = "1" + tel;
   return tel;
 }
-
 function getPedidoById(id){ return pedidosCache.find(p => p.id === id); }
-
 function armarResumenPedido(p){
   const combos = Array.isArray(p.combos)
     ? p.combos.map(c => `- ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("\n")
@@ -1231,25 +1388,16 @@ o
   window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
-
 async function marcarPedidoListo(id){
-
-  // enviar mensaje de pedido listo
   enviarPlantilla(id,'listo');
-
   try{
-    await db.collection("pedidos").doc(id).set({
-      estado:"realizado"
-    },{merge:true});
-  }
-  catch(e){
+    await db.collection("pedidos").doc(id).set({ estado:"realizado" },{merge:true});
+  }catch(e){
     alert("Error actualizando estado: " + e.message);
   }
-
 }
-/* ===========================
-   EDIT MODAL (FUNCIONA)
-=========================== */
+
+/* EDIT MODAL */
 let editId = null;
 let editDraft = null;
 
@@ -1257,7 +1405,6 @@ function setEditMsg(msg){
   const el = document.getElementById("editMsg");
   if(el) el.innerText = msg || "";
 }
-
 function parseToppingTextToObj(txt){
   const s = String(txt || "").trim();
   if(!s) return null;
@@ -1271,14 +1418,12 @@ function parseToppingTextToObj(txt){
   if(name) return {name, price: 0};
   return null;
 }
-
 function toppingObjToText(obj){
   if(!obj) return "";
   const n = obj.name || "";
   const p = Number(obj.price || 0);
   return `${n} (RD$${p})`;
 }
-
 function getRequiredToppingsCount(){
   let count = 0;
   (editDraft.combos || []).forEach(c=>{
@@ -1288,7 +1433,6 @@ function getRequiredToppingsCount(){
   });
   return count;
 }
-
 function buildEditToppingSelect(label, selectedText){
   const wrap = document.createElement("div");
   wrap.style.margin = "6px 0";
@@ -1318,7 +1462,6 @@ function buildEditToppingSelect(label, selectedText){
   wrap.appendChild(sel);
   return wrap;
 }
-
 function getEditToppingsSelected(){
   const arr = [];
   document.querySelectorAll(".toppingSelectEdit").forEach(sel=>{
@@ -1329,7 +1472,6 @@ function getEditToppingsSelected(){
   });
   return arr;
 }
-
 function getEditToppingsTotal(){
   let sum = 0;
   document.querySelectorAll(".toppingSelectEdit").forEach(sel=>{
@@ -1340,7 +1482,6 @@ function getEditToppingsTotal(){
   });
   return sum;
 }
-
 function refreshEditToppingsUI(){
   const cont = document.getElementById("editToppingsContainer");
   const hint = document.getElementById("editToppingsHint");
@@ -1348,7 +1489,6 @@ function refreshEditToppingsUI(){
 
   const prev = getEditToppingsSelected();
   const required = getRequiredToppingsCount();
-
   cont.innerHTML = "";
 
   if(required <= 0){
@@ -1363,17 +1503,14 @@ function refreshEditToppingsUI(){
     cont.appendChild(buildEditToppingSelect(`Selecciona topping ${i+1}`, prev[i] || (editDraft.tops?.[i] || "")));
   }
 
-  // mantener draft sincronizado
   editDraft.tops = getEditToppingsSelected();
 }
-
 function addEditTopping(){
   const cont = document.getElementById("editToppingsContainer");
   if(!cont) return;
   cont.appendChild(buildEditToppingSelect(`Topping extra ${cont.children.length+1}`, ""));
   recalcularTotalEdit();
 }
-
 function clearEditToppings(){
   document.querySelectorAll(".toppingSelectEdit").forEach(sel => sel.value = "");
   recalcularTotalEdit();
@@ -1395,7 +1532,6 @@ function abrirEdit(id){
   editDraft.motivoNoPago = editDraft.motivoNoPago || "";
   editDraft.zonaCosto = Number(editDraft.zonaCosto || 0);
 
-  // Normalizar combos a estructura consistente
   editDraft.combos = editDraft.combos.map(c=>{
     const cat = COMBOS_CATALOGO.find(x => x.name === c.combo);
     const cantidad = Number(c.cantidad || 0);
@@ -1415,14 +1551,12 @@ function abrirEdit(id){
   refreshEditToppingsUI();
   recalcularTotalEdit();
 }
-
 function cerrarEdit(){
   editId = null;
   editDraft = null;
   setEditMsg("");
   document.getElementById("editModal").classList.add("hidden");
 }
-
 function renderEdit(){
   const p = editDraft;
   const el = document.getElementById("editBody");
@@ -1535,13 +1669,11 @@ function renderEdit(){
   refreshEditToppingsUI();
   recalcularTotalEdit();
 }
-
 function toggleZonaEdit(){
   const tipo = document.getElementById("eTipo").value;
   document.getElementById("zonaEditBox").style.display = (tipo==="delivery") ? "block" : "none";
   recalcularTotalEdit();
 }
-
 function renderCombosEdit(){
   const box = document.getElementById("combosEdit");
   const combos = editDraft.combos || [];
@@ -1601,7 +1733,6 @@ function renderCombosEdit(){
     `;
   }).join("");
 }
-
 function setComboEdit(idx, comboName){
   const cat = COMBOS_CATALOGO.find(x => x.name === comboName);
 
@@ -1620,28 +1751,22 @@ function setComboEdit(idx, comboName){
   refreshEditToppingsUI();
   recalcularTotalEdit();
 }
-
 function agregarComboEdit(){
   editDraft.combos.push({ combo:"", cantidad:1, unitPrice:0, toppingsIncluidos:0, precio:0 });
   renderCombosEdit();
   refreshEditToppingsUI();
   recalcularTotalEdit();
 }
-
 function eliminarComboEdit(idx){
   editDraft.combos.splice(idx, 1);
-
-  // recortar toppings si bajó el requerido
   const required = getRequiredToppingsCount();
   if(Array.isArray(editDraft.tops)){
     editDraft.tops = editDraft.tops.slice(0, required);
   }
-
   renderCombosEdit();
   refreshEditToppingsUI();
   recalcularTotalEdit();
 }
-
 function recalcularTotalEdit(){
   let total = 0;
 
@@ -1653,11 +1778,9 @@ function recalcularTotalEdit(){
     total += line;
   });
 
-  // toppings
   editDraft.tops = getEditToppingsSelected();
   total += getEditToppingsTotal();
 
-  // delivery
   const tipo = document.getElementById("eTipo")?.value || "pickup";
   if(tipo==="delivery"){
     const dz = Number(document.getElementById("eZonaCosto")?.value || 0);
@@ -1671,7 +1794,6 @@ function recalcularTotalEdit(){
   const totalEl = document.getElementById("eTotal");
   if(totalEl) totalEl.innerText = total;
 }
-
 async function guardarEdit(){
   if(!editId || !editDraft) return;
 
@@ -1706,17 +1828,14 @@ async function guardarEdit(){
     hora: editDraft.hora,
     tipo: editDraft.tipo,
     zonaCosto: Number(editDraft.zonaCosto||0),
-
     estado: editDraft.estado,
     pago: editDraft.pago,
     pagoEstado: editDraft.pagoEstado,
     motivoNoPago: editDraft.motivoNoPago || "",
-
     notas: editDraft.notas || "",
     combos: editDraft.combos || [],
     tops: editDraft.tops || [],
     total: Number(editDraft.total||0),
-
     editadoEn: firebase.firestore.FieldValue.serverTimestamp(),
     editadoPor: (auth.currentUser && auth.currentUser.email) ? auth.currentUser.email : "admin"
   };
@@ -1733,14 +1852,17 @@ async function guardarEdit(){
 
 function aplicarPermisosUI(){
   const btnEditarTienda = document.getElementById("btnEditarTienda");
+  const roleBadge = document.getElementById("roleBadge");
 
   if(btnEditarTienda){
     btnEditarTienda.disabled = !isAdminUser;
     btnEditarTienda.style.opacity = isAdminUser ? "1" : ".45";
     btnEditarTienda.style.pointerEvents = isAdminUser ? "auto" : "none";
   }
+  if(roleBadge){
+    roleBadge.textContent = isAdminUser ? "🔑 Admin" : "👷 Empleado";
+  }
 }
-
 
 /** Boot **/
 auth.onAuthStateChanged(async (user)=>{
@@ -1753,6 +1875,8 @@ auth.onAuthStateChanged(async (user)=>{
     pedidosCache = [];
     currentRole = "empleado";
     isAdminUser = false;
+    selectedPedidoId = null;
+    firstPedidosLoad = true;
     loginBox.classList.remove("hidden");
     appBox.classList.add("hidden");
     document.getElementById("userEmail").innerText = "-";
@@ -1764,18 +1888,18 @@ auth.onAuthStateChanged(async (user)=>{
     isAdminUser = roleDoc.exists && roleDoc.data().admin === true;
     currentRole = isAdminUser ? "admin" : "empleado";
 
-    const shownUser = (user.email || "").replace("@panel.local", "");
+    const shownUser = resolveUsernameFromEmail(user.email || "");
     document.getElementById("userEmail").innerText = shownUser || "(sin usuario)";
     loginBox.classList.add("hidden");
     appBox.classList.remove("hidden");
 
     aplicarPermisosUI();
+    mostrarSeccion("pedidos");
     listenPedidos();
   }catch(e){
     alert(e.message);
   }
 });
-
 </script>
 
 </body>
