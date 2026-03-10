@@ -424,10 +424,13 @@ tr.pedidoRow{ cursor:pointer; }
           <input id="stCombosTitle" placeholder="🍩 Combos">
 
           <label>Título Toppings</label>
-          <input id="stToppingsTitle" placeholder="✨ Toppings">
+<input id="stToppingsTitle" placeholder="✨ Toppings">
 
-          <label>Mensaje de gracias</label>
-          <textarea id="stThanks" placeholder="✅ ¡Gracias por tu pedido! En breve te contactaremos."></textarea>
+<label>Título Glaseados</label>
+<input id="stGlaseadosTitle" placeholder="🍫 Glaseados">
+
+<label>Mensaje de gracias</label>
+<textarea id="stThanks" placeholder="✅ ¡Gracias por tu pedido! En breve te contactaremos."></textarea>
 
           <label>Texto Transferencia (datos bancarios)</label>
           <textarea id="stTransfer" placeholder="Banco..., Cuenta..., Nombre..., etc."></textarea>
@@ -445,10 +448,11 @@ tr.pedidoRow{ cursor:pointer; }
           <div class="row">
             <div style="flex:1; min-width:160px;">
               <label>Tipo</label>
-              <select id="pType">
-                <option value="combo">Combo</option>
-                <option value="topping">Topping</option>
-              </select>
+            <select id="pType" onchange="toggleCamposProducto()">
+  <option value="combo">Combo</option>
+  <option value="topping">Topping</option>
+  <option value="glaseado">Glaseado</option>
+</select>
             </div>
 
             <div style="flex:2; min-width:220px;">
@@ -463,10 +467,10 @@ tr.pedidoRow{ cursor:pointer; }
           </div>
 
           <div class="row">
-            <div style="width:180px;">
-              <label>Toppings incluidos (solo combos)</label>
-              <input id="pTopsIncl" type="number" min="0" value="0">
-            </div>
+            <div id="pTopsInclWrap" style="width:180px;">
+  <label>Toppings incluidos (solo combos)</label>
+  <input id="pTopsIncl" type="number" min="0" value="0">
+</div>
 
             <div style="width:160px;">
               <label>Orden</label>
@@ -627,6 +631,8 @@ const TOPPINGS_CATALOGO = [
   {name:"Crema pastelera",price:55}
 ];
 
+const GLASEADOS_CATALOGO = [];
+
 /** Helpers **/
 function safe(v){ return (v===undefined || v===null) ? "" : String(v); }
 function escapeHtml(str){
@@ -733,6 +739,7 @@ function mostrarSeccion(which){
     if(btnTienda) btnTienda.classList.remove("secondary");
     cargarStoreSettings();
     listenProductos();
+toggleCamposProducto();
   }else{
     tiendaBox.classList.add("hidden");
     pedidosBox.classList.remove("hidden");
@@ -746,24 +753,29 @@ async function cargarStoreSettings(){
     setStMsg("Cargando...");
     const snap = await db.collection("store_settings").doc("main").get();
     const d = snap.exists ? snap.data() : {};
+
     document.getElementById("stCombosTitle").value = d.combosTitle || "🍩 Combos";
     document.getElementById("stToppingsTitle").value = d.toppingsTitle || "✨ Toppings";
+    document.getElementById("stGlaseadosTitle").value = d.glaseadosTitle || "🍫 Glaseados";
     document.getElementById("stThanks").value = d.thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
     document.getElementById("stTransfer").value = d.transferInfo || "";
+
     setStMsg("✅ Listo.");
   }catch(e){
     setStMsg("Error: " + e.message);
   }
 }
 
+
 async function guardarStoreSettings(){
   try{
     setStMsg("Guardando...");
     const data = {
-      combosTitle: (document.getElementById("stCombosTitle").value || "").trim(),
-      toppingsTitle: (document.getElementById("stToppingsTitle").value || "").trim(),
-      thanksMessage: (document.getElementById("stThanks").value || "").trim(),
-      transferInfo: (document.getElementById("stTransfer").value || "").trim(),
+  combosTitle: (document.getElementById("stCombosTitle").value || "").trim(),
+  toppingsTitle: (document.getElementById("stToppingsTitle").value || "").trim(),
+  glaseadosTitle: (document.getElementById("stGlaseadosTitle").value || "").trim(),
+  thanksMessage: (document.getElementById("stThanks").value || "").trim(),
+  transferInfo: (document.getElementById("stTransfer").value || "").trim(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedBy: auth.currentUser?.email || "admin"
     };
@@ -771,6 +783,15 @@ async function guardarStoreSettings(){
     setStMsg("✅ Guardado.");
   }catch(e){
     setStMsg("Error: " + e.message);
+  }
+}
+
+function toggleCamposProducto(){
+  const type = document.getElementById("pType").value;
+  const topsWrap = document.getElementById("pTopsInclWrap");
+
+  if(topsWrap){
+    topsWrap.style.display = (type === "combo") ? "block" : "none";
   }
 }
 
@@ -917,12 +938,21 @@ function syncCatalogosParaEditarPedidos(rows){
     price: Number(x.price || 0)
   }));
 
+  const gls = rows.filter(x => x.type === "glaseado").map(x => ({
+    name: x.name,
+    price: Number(x.price || 0)
+  }));
+
   COMBOS_CATALOGO.length = 0;
   combos.forEach(c => COMBOS_CATALOGO.push(c));
 
   TOPPINGS_CATALOGO.length = 0;
   tops.forEach(t => TOPPINGS_CATALOGO.push(t));
+
+  GLASEADOS_CATALOGO.length = 0;
+  gls.forEach(g => GLASEADOS_CATALOGO.push(g));
 }
+
 
 /* Avisos */
 function playNewOrderSound(){
@@ -1052,12 +1082,60 @@ function actualizarKPIs(){
 
   const topsMap = {};
   pedidosHoy.forEach(p => {
-    (p.tops || []).forEach(t => {
+    const incluidos = Array.isArray(p.toppingsIncluidos) ? p.toppingsIncluidos : [];
+    const extras = Array.isArray(p.toppingsExtras) ? p.toppingsExtras : [];
+    const legacy = Array.isArray(p.tops) ? p.tops : [];
+
+    [...incluidos, ...extras, ...legacy].forEach(t => {
       const limpio = String(t || "").replace(/\s*\(RD\$\d+\)\s*/gi, "").trim();
       if(!limpio) return;
       topsMap[limpio] = (topsMap[limpio] || 0) + 1;
     });
   });
+
+  const topTops = Object.entries(topsMap).sort((a,b) => b[1] - a[1]).slice(0, 3);
+  const topToppingsEl = document.getElementById("topToppingsHoy");
+  if(topToppingsEl){
+    topToppingsEl.innerHTML = topTops.length
+      ? topTops.map(([nombre, qty]) => `• ${escapeHtml(nombre)} — ${qty}`).join("<br>")
+      : "Sin datos hoy.";
+  }
+
+  const glaseadosMap = {};
+  pedidosHoy.forEach(p => {
+    const gls = Array.isArray(p.glaseados) ? p.glaseados : [];
+    gls.forEach(g => {
+      const limpio = String(g || "").replace(/\s*\(RD\$\d+\)\s*/gi, "").trim();
+      if(!limpio) return;
+      glaseadosMap[limpio] = (glaseadosMap[limpio] || 0) + 1;
+    });
+  });
+
+  const topGlaseados = Object.entries(glaseadosMap).sort((a,b) => b[1] - a[1]).slice(0, 3);
+  const topGlaseadosEl = document.getElementById("topGlaseadosHoy");
+  if(topGlaseadosEl){
+    topGlaseadosEl.innerHTML = topGlaseados.length
+      ? topGlaseados.map(([nombre, qty]) => `• ${escapeHtml(nombre)} — ${qty}`).join("<br>")
+      : "Sin datos hoy.";
+  }
+}
+
+  }
+
+  const topsMap = {};
+pedidosHoy.forEach(p => {
+  const incluidos = Array.isArray(p.toppingsIncluidos) ? p.toppingsIncluidos : [];
+  const extras = Array.isArray(p.toppingsExtras) ? p.toppingsExtras : [];
+  const legacy = Array.isArray(p.tops) ? p.tops : [];
+
+  [...incluidos, ...extras, ...legacy].forEach(t => {
+    const limpio = String(t || "").replace(/\s*\(RD\$\d+\)\s*/gi, "").trim();
+    if(!limpio) return;
+    topsMap[limpio] = (topsMap[limpio] || 0) + 1;
+  });
+});
+
+
 
   const topTops = Object.entries(topsMap).sort((a,b) => b[1] - a[1]).slice(0, 3);
   const topToppingsEl = document.getElementById("topToppingsHoy");
@@ -1193,9 +1271,21 @@ function renderDetalleDerecha(p){
     ? p.combos.map(c => `• ${c.cantidad} x ${escapeHtml(c.combo)} (RD$${c.precio})`).join("<br>")
     : "";
 
-  const tops = Array.isArray(p.tops)
-    ? p.tops.map(t => `• ${escapeHtml(t)}`).join("<br>")
-    : "";
+  const topsIncluidos = Array.isArray(p.toppingsIncluidos)
+  ? p.toppingsIncluidos.map(t => `• ${escapeHtml(t)}`).join("<br>")
+  : "";
+
+const topsExtras = Array.isArray(p.toppingsExtras)
+  ? p.toppingsExtras.map(t => `• ${escapeHtml(t)}`).join("<br>")
+  : "";
+
+const topsLegacy = Array.isArray(p.tops)
+  ? p.tops.map(t => `• ${escapeHtml(t)}`).join("<br>")
+  : "";
+
+const glaseados = Array.isArray(p.glaseados)
+  ? p.glaseados.map(g => `• ${escapeHtml(g)}`).join("<br>")
+  : "";
 
   const entrega = (p.tipo === "delivery") ? "🚚 Delivery" : "📍 Pickup";
   const total = safe(p.total);
@@ -1267,20 +1357,44 @@ function renderDetalleDerecha(p){
     <strong>Resumen del pedido</strong>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:10px;">
-      <div>
-        <div><b>Combos</b></div>
-        <div class="small" style="margin-top:6px;">${combos || "<span class='muted'>-</span>"}</div>
-      </div>
+  <div>
+    <div><b>Combos</b></div>
+    <div class="small" style="margin-top:6px;">${combos || "<span class='muted'>-</span>"}</div>
+  </div>
 
-      <div>
-        <div><b>Toppings</b></div>
-        <div class="small" style="margin-top:6px;">${tops || "<span class='muted'>-</span>"}</div>
-      </div>
+  <div>
+    <div><b>Toppings incluidos</b></div>
+    <div class="small" style="margin-top:6px;">${topsIncluidos || topsLegacy || "<span class='muted'>-</span>"}</div>
+  </div>
 
-      <div style="grid-column:1 / -1;">
-        <span class="pill">TOTAL RD$${escapeHtml(total)}</span>
-      </div>
-    </div>
+  <div>
+    <div><b>Toppings extra</b></div>
+    <div class="small" style="margin-top:6px;">${topsExtras || "<span class='muted'>-</span>"}</div>
+  </div>
+
+  <div>
+    <div><b>Glaseados</b></div>
+    <div class="small" style="margin-top:6px;">${glaseados || "<span class='muted'>-</span>"}</div>
+  </div>
+
+  ${p.notaCliente ? `
+  <div style="grid-column:1 / -1;">
+    <div><b>Nota del cliente</b></div>
+    <div class="small" style="margin-top:6px;">${escapeHtml(p.notaCliente)}</div>
+  </div>
+  ` : ``}
+
+  ${p.transferRef ? `
+  <div style="grid-column:1 / -1;">
+    <div><b>Referencia transferencia</b></div>
+    <div class="small" style="margin-top:6px;">${escapeHtml(p.transferRef)}</div>
+  </div>
+  ` : ``}
+
+  <div style="grid-column:1 / -1;">
+    <span class="pill">TOTAL RD$${escapeHtml(total)}</span>
+  </div>
+</div>
   </div>
 
   <details class="card" style="padding:14px;">
@@ -1340,12 +1454,40 @@ function armarResumenPedido(p){
     ? p.combos.map(c => `- ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("\n")
     : "- (sin combos)";
 
-  const tops = Array.isArray(p.tops) && p.tops.length
+  const topsIncluidos = Array.isArray(p.toppingsIncluidos) && p.toppingsIncluidos.length
+    ? p.toppingsIncluidos.map(t => `- ${t}`).join("\n")
+    : "";
+
+  const topsExtras = Array.isArray(p.toppingsExtras) && p.toppingsExtras.length
+    ? p.toppingsExtras.map(t => `- ${t}`).join("\n")
+    : "";
+
+  const topsLegacy = Array.isArray(p.tops) && p.tops.length
     ? p.tops.map(t => `- ${t}`).join("\n")
-    : "- (sin toppings)";
+    : "";
+
+  const glaseados = Array.isArray(p.glaseados) && p.glaseados.length
+    ? p.glaseados.map(g => `- ${g}`).join("\n")
+    : "";
 
   const entrega = (p.tipo === "delivery") ? "Delivery" : "Recoger en tienda (Licey al Medio)";
-  return `PEDIDO:\n${combos}\n\nTOPPINGS:\n${tops}\n\nEntrega: ${entrega}\nDirección: ${p.direccion || ""}\nFecha/Hora: ${p.fecha || ""} ${p.hora || ""}\nTOTAL: RD$${p.total || 0}`;
+
+  return `PEDIDO:
+${combos}
+
+TOPPINGS INCLUIDOS:
+${topsIncluidos || topsLegacy || "- (sin toppings incluidos)"}
+
+TOPPINGS EXTRA:
+${topsExtras || "- (sin toppings extra)"}
+
+GLASEADOS:
+${glaseados || "- (sin glaseados)"}
+
+Entrega: ${entrega}
+Dirección: ${p.direccion || ""}
+Fecha/Hora: ${p.fecha || ""} ${p.hora || ""}
+TOTAL: RD$${p.total || 0}`;
 }
 
 function enviarPlantilla(id, tipo){
@@ -1397,6 +1539,7 @@ async function marcarPedidoListo(id){
   }
 }
 
+
 /* EDIT MODAL */
 let editId = null;
 let editDraft = null;
@@ -1405,25 +1548,16 @@ function setEditMsg(msg){
   const el = document.getElementById("editMsg");
   if(el) el.innerText = msg || "";
 }
-function parseToppingTextToObj(txt){
-  const s = String(txt || "").trim();
-  if(!s) return null;
-  const name = s.replace(/\(.*?\)/g, "").trim();
-  const m = s.match(/RD\$\s*(\d+)/i);
-  const price = m ? Number(m[1]) : null;
 
-  const cat = TOPPINGS_CATALOGO.find(t => t.name.toLowerCase() === name.toLowerCase());
-  if(cat) return {name: cat.name, price: cat.price};
-  if(name && price != null) return {name, price};
-  if(name) return {name, price: 0};
-  return null;
+function parsePrecioDesdeTexto(txt){
+  const m = String(txt || "").match(/RD\$\s*(\d+)/i);
+  return m ? Number(m[1]) : 0;
 }
-function toppingObjToText(obj){
-  if(!obj) return "";
-  const n = obj.name || "";
-  const p = Number(obj.price || 0);
-  return `${n} (RD$${p})`;
+
+function limpiarNombreDesdeTexto(txt){
+  return String(txt || "").replace(/\s*\(RD\$\d+\)\s*/gi, "").trim();
 }
+
 function getRequiredToppingsCount(){
   let count = 0;
   (editDraft.combos || []).forEach(c=>{
@@ -1433,12 +1567,21 @@ function getRequiredToppingsCount(){
   });
   return count;
 }
-function buildEditToppingSelect(label, selectedText){
+
+function getRequiredGlaseadosCount(){
+  let count = 0;
+  (editDraft.combos || []).forEach(c=>{
+    count += Number(c.cantidad || 0);
+  });
+  return count;
+}
+
+function buildSelectDesdeCatalogo(label, catalogo, className, selectedValue="", usePrice=false){
   const wrap = document.createElement("div");
   wrap.style.margin = "6px 0";
 
   const sel = document.createElement("select");
-  sel.className = "toppingSelectEdit";
+  sel.className = className;
   sel.onchange = () => recalcularTotalEdit();
 
   const opt0 = document.createElement("option");
@@ -1446,74 +1589,207 @@ function buildEditToppingSelect(label, selectedText){
   opt0.textContent = label;
   sel.appendChild(opt0);
 
-  TOPPINGS_CATALOGO.forEach(t=>{
+  catalogo.forEach(item=>{
     const op = document.createElement("option");
-    op.value = JSON.stringify(t);
-    op.textContent = `${t.name} (RD$${t.price})`;
+    op.value = item.name;
+    op.dataset.price = Number(item.price || 0);
+    op.textContent = usePrice ? `${item.name} (RD$${item.price || 0})` : item.name;
     sel.appendChild(op);
   });
 
-  const parsed = parseToppingTextToObj(selectedText);
-  if(parsed){
-    const cat = TOPPINGS_CATALOGO.find(t => t.name.toLowerCase() === parsed.name.toLowerCase());
-    if(cat) sel.value = JSON.stringify(cat);
+  if(selectedValue){
+    const limpio = limpiarNombreDesdeTexto(selectedValue);
+    sel.value = limpio;
   }
 
   wrap.appendChild(sel);
   return wrap;
 }
-function getEditToppingsSelected(){
+
+function getEditToppingsIncluidosSelected(){
   const arr = [];
-  document.querySelectorAll(".toppingSelectEdit").forEach(sel=>{
+  document.querySelectorAll(".toppingIncluidoEdit").forEach(sel=>{
+    if(sel.value) arr.push(sel.value);
+  });
+  return arr;
+}
+
+function getEditToppingsExtrasSelected(){
+  const arr = [];
+  document.querySelectorAll(".toppingExtraEdit").forEach(sel=>{
     if(sel.value){
-      const obj = JSON.parse(sel.value);
-      arr.push(toppingObjToText(obj));
+      const precio = Number(sel.options[sel.selectedIndex]?.dataset?.price || 0);
+      arr.push(`${sel.value} (RD$${precio})`);
     }
   });
   return arr;
 }
-function getEditToppingsTotal(){
-  let sum = 0;
-  document.querySelectorAll(".toppingSelectEdit").forEach(sel=>{
+
+function getEditGlaseadosSelected(){
+  const arr = [];
+  document.querySelectorAll(".glaseadoEdit").forEach(sel=>{
     if(sel.value){
-      const obj = JSON.parse(sel.value);
-      sum += Number(obj.price || 0);
+      const precio = Number(sel.options[sel.selectedIndex]?.dataset?.price || 0);
+      arr.push(precio > 0 ? `${sel.value} (RD$${precio})` : sel.value);
+    }
+  });
+  return arr;
+}
+
+function getEditGlaseadosTotal(){
+  let sum = 0;
+  document.querySelectorAll(".glaseadoEdit").forEach(sel=>{
+    if(sel.value){
+      sum += Number(sel.options[sel.selectedIndex]?.dataset?.price || 0);
     }
   });
   return sum;
 }
-function refreshEditToppingsUI(){
-  const cont = document.getElementById("editToppingsContainer");
-  const hint = document.getElementById("editToppingsHint");
+
+function getEditToppingsExtrasTotal(){
+  let sum = 0;
+  document.querySelectorAll(".toppingExtraEdit").forEach(sel=>{
+    if(sel.value){
+      sum += Number(sel.options[sel.selectedIndex]?.dataset?.price || 0);
+    }
+  });
+  return sum;
+}
+
+function refreshEditToppingsIncluidosUI(){
+  const cont = document.getElementById("editToppingsIncluidosContainer");
+  const hint = document.getElementById("editToppingsIncluidosHint");
   if(!cont || !hint) return;
 
-  const prev = getEditToppingsSelected();
+  const prev = Array.isArray(editDraft.toppingsIncluidos) ? editDraft.toppingsIncluidos : [];
   const required = getRequiredToppingsCount();
+
   cont.innerHTML = "";
 
   if(required <= 0){
-    hint.textContent = "Elige combos para habilitar toppings.";
-    editDraft.tops = [];
+    hint.textContent = "Elige combos para habilitar toppings incluidos.";
+    editDraft.toppingsIncluidos = [];
     return;
   }
 
-  hint.textContent = `Toppings incluidos: ${required}`;
+  hint.textContent = `Toppings incluidos requeridos: ${required}`;
 
   for(let i=0; i<required; i++){
-    cont.appendChild(buildEditToppingSelect(`Selecciona topping ${i+1}`, prev[i] || (editDraft.tops?.[i] || "")));
+    cont.appendChild(
+      buildSelectDesdeCatalogo(
+        `Selecciona topping incluido ${i+1}`,
+        TOPPINGS_CATALOGO,
+        "toppingIncluidoEdit",
+        prev[i] || ""
+      )
+    );
   }
 
-  editDraft.tops = getEditToppingsSelected();
+  editDraft.toppingsIncluidos = getEditToppingsIncluidosSelected();
 }
-function addEditTopping(){
-  const cont = document.getElementById("editToppingsContainer");
+
+function renderEditToppingsExtrasUI(){
+  const cont = document.getElementById("editToppingsExtrasContainer");
   if(!cont) return;
-  cont.appendChild(buildEditToppingSelect(`Topping extra ${cont.children.length+1}`, ""));
+
+  const prev = Array.isArray(editDraft.toppingsExtras) ? editDraft.toppingsExtras : [];
+  cont.innerHTML = "";
+
+  prev.forEach(t=>{
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.style.gap = "8px";
+    row.style.alignItems = "center";
+    row.style.marginBottom = "6px";
+
+    const selectWrap = buildSelectDesdeCatalogo(
+      "Selecciona topping extra",
+      TOPPINGS_CATALOGO,
+      "toppingExtraEdit",
+      t,
+      true
+    );
+    selectWrap.style.flex = "1";
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "secondary mini";
+    btn.textContent = "Quitar";
+    btn.onclick = ()=>{
+      row.remove();
+      recalcularTotalEdit();
+    };
+
+    row.appendChild(selectWrap.firstChild);
+    row.appendChild(btn);
+    cont.appendChild(row);
+  });
+}
+
+function addEditToppingExtra(valor = ""){
+  const cont = document.getElementById("editToppingsExtrasContainer");
+  if(!cont) return;
+
+  const row = document.createElement("div");
+  row.style.display = "flex";
+  row.style.gap = "8px";
+  row.style.alignItems = "center";
+  row.style.marginBottom = "6px";
+
+  const selectWrap = buildSelectDesdeCatalogo(
+    "Selecciona topping extra",
+    TOPPINGS_CATALOGO,
+    "toppingExtraEdit",
+    valor,
+    true
+  );
+  selectWrap.style.flex = "1";
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "secondary mini";
+  btn.textContent = "Quitar";
+  btn.onclick = ()=>{
+    row.remove();
+    recalcularTotalEdit();
+  };
+
+  row.appendChild(selectWrap.firstChild);
+  row.appendChild(btn);
+  cont.appendChild(row);
   recalcularTotalEdit();
 }
-function clearEditToppings(){
-  document.querySelectorAll(".toppingSelectEdit").forEach(sel => sel.value = "");
-  recalcularTotalEdit();
+
+function refreshEditGlaseadosUI(){
+  const cont = document.getElementById("editGlaseadosContainer");
+  const hint = document.getElementById("editGlaseadosHint");
+  if(!cont || !hint) return;
+
+  const prev = Array.isArray(editDraft.glaseados) ? editDraft.glaseados : [];
+  const required = getRequiredGlaseadosCount();
+
+  cont.innerHTML = "";
+
+  if(required <= 0){
+    hint.textContent = "Elige combos para habilitar glaseados.";
+    editDraft.glaseados = [];
+    return;
+  }
+
+  hint.textContent = `Glaseados requeridos: ${required}`;
+
+  for(let i=0; i<required; i++){
+    cont.appendChild(
+      buildSelectDesdeCatalogo(
+        `Selecciona glaseado ${i+1}`,
+        GLASEADOS_CATALOGO,
+        "glaseadoEdit",
+        prev[i] || ""
+      )
+    );
+  }
+
+  editDraft.glaseados = getEditGlaseadosSelected();
 }
 
 function abrirEdit(id){
@@ -1524,10 +1800,12 @@ function abrirEdit(id){
   editDraft = JSON.parse(JSON.stringify(p));
 
   editDraft.combos = Array.isArray(editDraft.combos) ? editDraft.combos : [];
-  editDraft.tops   = Array.isArray(editDraft.tops) ? editDraft.tops : [];
-  editDraft.tipo   = editDraft.tipo || "pickup";
+  editDraft.toppingsIncluidos = Array.isArray(editDraft.toppingsIncluidos) ? editDraft.toppingsIncluidos : (Array.isArray(editDraft.tops) ? editDraft.tops : []);
+  editDraft.toppingsExtras = Array.isArray(editDraft.toppingsExtras) ? editDraft.toppingsExtras : [];
+  editDraft.glaseados = Array.isArray(editDraft.glaseados) ? editDraft.glaseados : [];
+  editDraft.tipo = editDraft.tipo || "pickup";
   editDraft.estado = editDraft.estado || "pendiente";
-  editDraft.pago   = editDraft.pago || "Efectivo";
+  editDraft.pago = editDraft.pago || "Efectivo";
   editDraft.pagoEstado = editDraft.pagoEstado || "pendiente";
   editDraft.motivoNoPago = editDraft.motivoNoPago || "";
   editDraft.zonaCosto = Number(editDraft.zonaCosto || 0);
@@ -1548,15 +1826,19 @@ function abrirEdit(id){
 
   renderEdit();
   document.getElementById("editModal").classList.remove("hidden");
-  refreshEditToppingsUI();
+  refreshEditToppingsIncluidosUI();
+  renderEditToppingsExtrasUI();
+  refreshEditGlaseadosUI();
   recalcularTotalEdit();
 }
+
 function cerrarEdit(){
   editId = null;
   editDraft = null;
   setEditMsg("");
   document.getElementById("editModal").classList.add("hidden");
 }
+
 function renderEdit(){
   const p = editDraft;
   const el = document.getElementById("editBody");
@@ -1638,24 +1920,31 @@ function renderEdit(){
       </div>
 
       <div class="card" style="flex:1; min-width:260px;">
-        <strong>Toppings</strong>
-        <div class="small muted">Incluidos = combos × cantidad. Extras opcionales.</div>
+        <strong>Toppings incluidos</strong>
+        <div id="editToppingsIncluidosContainer"></div>
+        <div class="small muted" id="editToppingsIncluidosHint"></div>
 
-        <div id="editToppingsContainer"></div>
-        <div class="small muted" id="editToppingsHint"></div>
+        <hr>
 
+        <strong>Toppings extra</strong>
+        <div id="editToppingsExtrasContainer"></div>
         <div style="display:flex; gap:8px; margin-top:6px;">
-          <button class="secondary" type="button" onclick="addEditTopping()">+ Topping</button>
-          <button class="secondary" type="button" onclick="clearEditToppings()">Limpiar</button>
+          <button class="secondary" type="button" onclick="addEditToppingExtra()">+ Topping extra</button>
         </div>
       </div>
     </div>
 
     <div class="row">
+      <div class="card" style="flex:1; min-width:260px;">
+        <strong>Glaseados</strong>
+        <div id="editGlaseadosContainer"></div>
+        <div class="small muted" id="editGlaseadosHint"></div>
+      </div>
+
       <div class="card" style="flex:1; min-width:240px;">
         <strong>Total</strong>
         <div class="pill">TOTAL RD$ <span id="eTotal">${safe(p.total||0)}</span></div>
-        <div class="small muted" style="margin-top:8px;">Total = combos + toppings + delivery.</div>
+        <div class="small muted" style="margin-top:8px;">Total = combos + toppings extra + delivery.</div>
       </div>
 
       <div class="card" style="flex:2; min-width:280px;">
@@ -1666,14 +1955,18 @@ function renderEdit(){
   `;
 
   renderCombosEdit();
-  refreshEditToppingsUI();
+  refreshEditToppingsIncluidosUI();
+  renderEditToppingsExtrasUI();
+  refreshEditGlaseadosUI();
   recalcularTotalEdit();
 }
+
 function toggleZonaEdit(){
   const tipo = document.getElementById("eTipo").value;
   document.getElementById("zonaEditBox").style.display = (tipo==="delivery") ? "block" : "none";
   recalcularTotalEdit();
 }
+
 function renderCombosEdit(){
   const box = document.getElementById("combosEdit");
   const combos = editDraft.combos || [];
@@ -1712,13 +2005,13 @@ function renderCombosEdit(){
         <div style="width:110px;">
           <label class="small muted">Cant.</label>
           <input type="number" min="0" value="${cantidad}"
-            oninput="editDraft.combos[${idx}].cantidad=Number(this.value||0); refreshEditToppingsUI(); recalcularTotalEdit();">
+            oninput="editDraft.combos[${idx}].cantidad=Number(this.value||0); refreshEditToppingsIncluidosUI(); refreshEditGlaseadosUI(); recalcularTotalEdit();">
         </div>
 
         <div style="width:120px;">
           <label class="small muted">Unit.</label>
           <input type="number" min="0" value="${unit}"
-            oninput="editDraft.combos[${idx}].unitPrice=Number(this.value||0); refreshEditToppingsUI(); recalcularTotalEdit();">
+            oninput="editDraft.combos[${idx}].unitPrice=Number(this.value||0); refreshEditToppingsIncluidosUI(); refreshEditGlaseadosUI(); recalcularTotalEdit();">
         </div>
 
         <div style="width:140px;">
@@ -1733,6 +2026,7 @@ function renderCombosEdit(){
     `;
   }).join("");
 }
+
 function setComboEdit(idx, comboName){
   const cat = COMBOS_CATALOGO.find(x => x.name === comboName);
 
@@ -1748,25 +2042,37 @@ function setComboEdit(idx, comboName){
   }
 
   renderCombosEdit();
-  refreshEditToppingsUI();
+  refreshEditToppingsIncluidosUI();
+  refreshEditGlaseadosUI();
   recalcularTotalEdit();
 }
+
 function agregarComboEdit(){
   editDraft.combos.push({ combo:"", cantidad:1, unitPrice:0, toppingsIncluidos:0, precio:0 });
   renderCombosEdit();
-  refreshEditToppingsUI();
+  refreshEditToppingsIncluidosUI();
+  refreshEditGlaseadosUI();
   recalcularTotalEdit();
 }
+
 function eliminarComboEdit(idx){
   editDraft.combos.splice(idx, 1);
-  const required = getRequiredToppingsCount();
-  if(Array.isArray(editDraft.tops)){
-    editDraft.tops = editDraft.tops.slice(0, required);
+  const reqTops = getRequiredToppingsCount();
+  const reqGls = getRequiredGlaseadosCount();
+
+  if(Array.isArray(editDraft.toppingsIncluidos)){
+    editDraft.toppingsIncluidos = editDraft.toppingsIncluidos.slice(0, reqTops);
   }
+  if(Array.isArray(editDraft.glaseados)){
+    editDraft.glaseados = editDraft.glaseados.slice(0, reqGls);
+  }
+
   renderCombosEdit();
-  refreshEditToppingsUI();
+  refreshEditToppingsIncluidosUI();
+  refreshEditGlaseadosUI();
   recalcularTotalEdit();
 }
+
 function recalcularTotalEdit(){
   let total = 0;
 
@@ -1778,8 +2084,12 @@ function recalcularTotalEdit(){
     total += line;
   });
 
-  editDraft.tops = getEditToppingsSelected();
-  total += getEditToppingsTotal();
+editDraft.toppingsIncluidos = getEditToppingsIncluidosSelected();
+editDraft.toppingsExtras = getEditToppingsExtrasSelected();
+editDraft.glaseados = getEditGlaseadosSelected();
+
+total += getEditToppingsExtrasTotal();
+total += getEditGlaseadosTotal();
 
   const tipo = document.getElementById("eTipo")?.value || "pickup";
   if(tipo==="delivery"){
@@ -1794,6 +2104,7 @@ function recalcularTotalEdit(){
   const totalEl = document.getElementById("eTotal");
   if(totalEl) totalEl.innerText = total;
 }
+
 async function guardarEdit(){
   if(!editId || !editDraft) return;
 
@@ -1834,7 +2145,10 @@ async function guardarEdit(){
     motivoNoPago: editDraft.motivoNoPago || "",
     notas: editDraft.notas || "",
     combos: editDraft.combos || [],
-    tops: editDraft.tops || [],
+    toppingsIncluidos: editDraft.toppingsIncluidos || [],
+    toppingsExtras: editDraft.toppingsExtras || [],
+    glaseados: editDraft.glaseados || [],
+    tops: firebase.firestore.FieldValue.delete(),
     total: Number(editDraft.total||0),
     editadoEn: firebase.firestore.FieldValue.serverTimestamp(),
     editadoPor: (auth.currentUser && auth.currentUser.email) ? auth.currentUser.email : "admin"
@@ -1866,6 +2180,7 @@ function aplicarPermisosUI(){
 
 /** Boot **/
 auth.onAuthStateChanged(async (user)=>{
+toggleCamposProducto();
   const loginBox = document.getElementById("loginBox");
   const appBox = document.getElementById("appBox");
 

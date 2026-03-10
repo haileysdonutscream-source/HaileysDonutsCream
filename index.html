@@ -350,6 +350,87 @@ button.secondary{
   font-size:16px;
 }
 
+details summary{
+  list-style:none;
+}
+
+details summary::-webkit-details-marker{
+  display:none;
+}
+
+
+.accordionSummary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.accordionSummary::after{
+  content:"▾";
+  font-size:18px;
+  transition:transform .2s ease;
+}
+
+details[open] .accordionSummary::after{
+  transform:rotate(180deg);
+}
+
+.accordionSummary{
+  font-family:'Pacifico',cursive;
+  font-size:26px;
+  color:#c2185b;
+  text-align:center;
+  cursor:pointer;
+  border-bottom:2px dashed #f3b5cc;
+  padding-bottom:6px;
+  padding-top:4px;
+  list-style:none;
+}
+
+.accordionSummary::-webkit-details-marker{
+  display:none;
+}
+
+
+.accordionSummary::after{
+  content:"▾";
+  margin-left:8px;
+  font-size:18px;
+  transition:transform .2s ease;
+}
+
+details[open] .accordionSummary::after{
+  transform:rotate(180deg);
+}
+
+
+.accordionSummary{
+  display:block;
+  width:100%;
+  text-align:center;
+  font-family:'Pacifico',cursive;
+  font-size:26px;
+  color:#c2185b;
+  cursor:pointer;
+  border-bottom:2px dashed #f3b5cc;
+  padding:6px 0;
+  list-style:none;
+}
+
+.accordionSummary::-webkit-details-marker{
+  display:none;
+}
+
+.accordionSummary::after{
+  content:" ▾";
+  font-size:18px;
+  vertical-align:middle;
+}
+
+details[open] .accordionSummary::after{
+  content:" ▴";
+}
 </style>
 </head>
 
@@ -468,28 +549,35 @@ button.secondary{
     </select>
   </div>
 
-  <h2>👤 Tus datos</h2>
+<details id="datosClienteBox" style="margin-top:14px;">
+  <summary class="accordionSummary">
+    👤 Tus datos
+  </summary>
 
-  <label>Nombre:</label>
-  <input id="nombre">
+  <div style="padding-top:10px;">
+    <label>Nombre:</label>
+    <input id="nombre">
 
-  <label>Dirección:</label>
-  <input id="direccion">
+    <label>Dirección:</label>
+    <input id="direccion">
 
-  <label>Teléfono (WhatsApp):</label>
-  <input id="telefono" placeholder="Ej: 8091234567">
+    <label>Teléfono (WhatsApp):</label>
+    <input id="telefono" placeholder="Ej: 8091234567">
 
-  <label>Método de pago:</label>
-  <select id="pago">
-    <option>Efectivo</option>
-    <option>Transferencia</option>
-  </select>
+    <label>Método de pago:</label>
+    <select id="pago">
+      <option>Efectivo</option>
+      <option>Transferencia</option>
+    </select>
 
-  <label>Fecha:</label>
-  <input type="date" id="fecha">
+    <label>Fecha:</label>
+    <input type="date" id="fecha">
 
-  <label>Hora:</label>
-  <input type="time" id="hora">
+    <label>Hora:</label>
+    <input type="time" id="hora">
+  </div>
+</details>
+
 
   <div id="thanksMsg" class="success">
     ✅ Gracias por tu pedido. Lo recibimos y te escribiremos desde el negocio en breve. 🩷
@@ -547,6 +635,8 @@ function cerrarZoom(){
 let textoFinal = "";
 let pedidoActual = {};
 let unsubStoreProducts = null;
+let ultimoMaxToppings = -1;
+let ultimoMaxGlaseados = -1;
 
 window.__thanksMessage = "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
 
@@ -588,29 +678,32 @@ function calcular(){
   let maxToppings = 0;
   let maxGlaseados = 0;
 
-  // SOLO combos
   document.querySelectorAll(".comboQty").forEach(c=>{
     let q = parseInt(c.value) || 0;
     total += q * parseInt(c.dataset.price);
     maxToppings += q * parseInt(c.dataset.toppings);
-    maxGlaseados += q; // 1 glaseado por combo/unidad
+    maxGlaseados += q;
   });
 
-  actualizarToppings(maxToppings);
-  actualizarGlaseados(maxGlaseados);
+  if(maxToppings !== ultimoMaxToppings){
+    actualizarToppings(maxToppings);
+    ultimoMaxToppings = maxToppings;
+  }
 
-  // sumar toppings seleccionados
-  document.querySelectorAll(".toppingSelect").forEach(s=>{
+  if(maxGlaseados !== ultimoMaxGlaseados){
+    actualizarGlaseados(maxGlaseados);
+    ultimoMaxGlaseados = maxGlaseados;
+  }
+
+  document.querySelectorAll(".toppingExtra").forEach(s=>{
     total += parseInt(s.value) || 0;
   });
 
-  // sumar glaseados seleccionados
- document.querySelectorAll(".glaseadoSelect").forEach(s=>{
-  const opt = s.options[s.selectedIndex];
-  total += parseInt(opt?.dataset?.price || 0) || 0;
-});
+  document.querySelectorAll(".glaseadoSelect").forEach(s=>{
+    const opt = s.options[s.selectedIndex];
+    total += parseInt(opt?.dataset?.price || 0) || 0;
+  });
 
-  // delivery
   if(document.getElementById("tipoEntrega").value==="delivery"){
     total += parseInt(document.getElementById("zona").value) || 0;
   }
@@ -619,10 +712,24 @@ function calcular(){
 }
 
 
+
+
+
+
+
+
 function actualizarToppings(max){
   const cont = document.getElementById("toppingsContainer");
-  const seleccionados = [];
-  document.querySelectorAll(".toppingSelect").forEach(s => seleccionados.push(s.value));
+
+  const anteriores = [];
+  document.querySelectorAll(".toppingSelect").forEach(s=>{
+    anteriores.push({
+      value: s.value,
+      selectedName: s.dataset.selectedName || "",
+      kind: s.dataset.kind || "included"
+    });
+  });
+
   cont.innerHTML = "";
 
   if(max <= 0){
@@ -630,27 +737,121 @@ function actualizarToppings(max){
     return;
   }
 
+  // Toppings incluidos
+  const tituloIncluidos = document.createElement("div");
+  tituloIncluidos.innerHTML = `
+    <div style="font-weight:600; color:#c2185b; margin:6px 0 2px;">
+      Toppings incluidos
+    </div>
+    <div class="smallMuted" style="margin-bottom:8px;">
+      Estos no tienen costo porque ya vienen con tu combo.
+    </div>
+  `;
+  cont.appendChild(tituloIncluidos);
+
   for(let i=0; i<max; i++){
     const s = document.createElement("select");
-    s.className = "toppingSelect";
-    s.onchange = calcular;
+    s.className = "toppingSelect toppingIncluded";
+    s.dataset.kind = "included";
+    s.onchange = function(){
+      const txt = s.options[s.selectedIndex]?.text || "";
+      s.dataset.selectedName = txt.replace(" (Incluido)", "").trim();
+      calcular();
+    };
 
     const o = document.createElement("option");
-    o.value = 0;
-    o.text = "Selecciona topping " + (i+1);
+    o.value = "";
+    o.text = "Selecciona topping incluido " + (i+1);
     s.appendChild(o);
 
     toppings.forEach(t=>{
       const op = document.createElement("option");
-      op.value = t.price;
-      op.text = `${t.name} (RD$${t.price})`;
+      op.value = t.name;
+      op.text = `${t.name} (Incluido)`;
       s.appendChild(op);
     });
 
-    if(seleccionados[i]) s.value = seleccionados[i];
+    if(anteriores[i] && anteriores[i].kind === "included"){
+      s.value = anteriores[i].value;
+      s.dataset.selectedName = anteriores[i].selectedName || anteriores[i].value;
+    }
+
     cont.appendChild(s);
   }
+
+  // Bloque extras
+  const extrasWrap = document.createElement("div");
+  extrasWrap.style.marginTop = "14px";
+  extrasWrap.innerHTML = `
+    <div style="font-weight:600; color:#c2185b; margin:6px 0 2px;">
+      Toppings extra
+    </div>
+    <div class="smallMuted" style="margin-bottom:8px;">
+      Estos sí tienen costo adicional.
+    </div>
+    <div id="extraToppingsList"></div>
+    <button type="button" class="secondary" style="margin-top:8px;" <button type="button" class="secondary" style="margin-top:8px;" onclick="agregarToppingExtra(); calcular();">+ Agregar topping extra</button>
+  `;
+  cont.appendChild(extrasWrap);
+
+  anteriores
+    .filter(x => x && x.kind === "extra")
+    .forEach(x => agregarToppingExtra(x.value));
 }
+
+function agregarToppingExtra(valorPrevio = ""){
+  const list = document.getElementById("extraToppingsList");
+  if(!list) return;
+
+  const row = document.createElement("div");
+  row.style.display = "flex";
+  row.style.gap = "8px";
+  row.style.alignItems = "center";
+  row.style.marginBottom = "6px";
+
+  const s = document.createElement("select");
+  s.className = "toppingSelect toppingExtra";
+  s.dataset.kind = "extra";
+  s.style.flex = "1";
+  s.onchange = calcular;
+
+  const o = document.createElement("option");
+  o.value = "0";
+  o.text = "Selecciona topping extra";
+  s.appendChild(o);
+
+  toppings.forEach(t=>{
+    const op = document.createElement("option");
+    op.value = t.price;
+    op.dataset.name = t.name;
+    op.text = `${t.name} (RD$${t.price})`;
+    s.appendChild(op);
+  });
+
+  if(valorPrevio){
+    s.value = valorPrevio;
+  }
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "secondary";
+  btn.textContent = "✕";
+  btn.style.width = "44px";
+  btn.style.padding = "10px";
+  btn.onclick = ()=>{
+    row.remove();
+    calcular();
+  };
+
+    row.appendChild(s);
+  row.appendChild(btn);
+  list.appendChild(row);
+
+
+  calcular();
+}
+
+
 
 function actualizarGlaseados(max){
   const cont = document.getElementById("glaseadosContainer");
@@ -835,10 +1036,41 @@ function escucharTiendaEnVivo(){
   });
 }
 
+function abrirDatosSiFaltan(){
+  const nombre = document.getElementById("nombre").value.trim();
+  const direccion = document.getElementById("direccion").value.trim();
+  const fecha = document.getElementById("fecha").value;
+  const hora = document.getElementById("hora").value;
+  const telefono = document.getElementById("telefono").value.trim();
+
+  const datosBox = document.getElementById("datosClienteBox");
+  if(!datosBox) return false;
+
+  const faltanDatos = !nombre || !direccion || !fecha || !hora || !telefono;
+
+  if(faltanDatos){
+    datosBox.setAttribute("open", "open");
+    setTimeout(()=>{
+      const primerCampoVacio =
+        !nombre ? document.getElementById("nombre") :
+        !direccion ? document.getElementById("direccion") :
+        !telefono ? document.getElementById("telefono") :
+        !fecha ? document.getElementById("fecha") :
+        document.getElementById("hora");
+
+      if(primerCampoVacio) primerCampoVacio.focus();
+    }, 50);
+  }
+
+  return faltanDatos;
+}
+
+
 function enviar(){
   pedidoActual = {};
   textoFinal = "";
   document.getElementById("thanksMsg").style.display = "none";
+  abrirDatosSiFaltan();
 
   const nombre = document.getElementById("nombre").value.trim();
   const direccion = document.getElementById("direccion").value.trim();
@@ -875,22 +1107,40 @@ function enviar(){
     return;
   }
 
-  const tops = [];
-  document.querySelectorAll(".toppingSelect").forEach(s=>{
-    if(Number(s.value) > 0){
-      tops.push(s.options[s.selectedIndex].text);
-      total += parseInt(s.value) || 0;
-    }
-  });
-
-  if(tops.length){
-    resumen += "<br><b>Toppings:</b><br>";
-    texto += "Toppings:%0A";
-    tops.forEach(t=>{
-      resumen += `- ${t}<br>`;
-      texto += `- ${t}%0A`;
-    });
+  const topsIncluidos = [];
+document.querySelectorAll(".toppingIncluded").forEach(s=>{
+  if(s.value){
+    topsIncluidos.push(s.value);
   }
+});
+
+const topsExtras = [];
+document.querySelectorAll(".toppingExtra").forEach(s=>{
+  if(Number(s.value) > 0){
+    const nombre = s.options[s.selectedIndex]?.dataset?.name || s.options[s.selectedIndex]?.text || "";
+    const precio = parseInt(s.value) || 0;
+    topsExtras.push(`${nombre} (RD$${precio})`);
+    total += precio;
+  }
+});
+
+if(topsIncluidos.length){
+  resumen += "<br><b>Toppings incluidos:</b><br>";
+  texto += "Toppings incluidos:%0A";
+  topsIncluidos.forEach(t=>{
+    resumen += `- ${t}<br>`;
+    texto += `- ${t}%0A`;
+  });
+}
+
+if(topsExtras.length){
+  resumen += "<br><b>Toppings extra:</b><br>";
+  texto += "Toppings extra:%0A";
+  topsExtras.forEach(t=>{
+    resumen += `- ${t}<br>`;
+    texto += `- ${t}%0A`;
+  });
+}
 
 const glas = [];
 document.querySelectorAll(".glaseadoSelect").forEach(s=>{
@@ -910,20 +1160,29 @@ if(glas.length){
     texto += `- ${g}%0A`;
   });
 }
-  if(!nombre || !direccion || !fecha || !hora){
-    alert("Completa tus datos (Nombre, Dirección, Fecha y Hora).");
-    return;
-  }
+
+
+if(!nombre || !direccion || !fecha || !hora){
+  const datosBox = document.getElementById("datosClienteBox");
+  if(datosBox) datosBox.setAttribute("open", "open");
+  alert("Completa tus datos (Nombre, Dirección, Fecha y Hora).");
+  return;
+}
 
   const soloDigitos = telefono.replace(/\D/g,'');
-  if(!soloDigitos){
-    alert("El teléfono es obligatorio (WhatsApp).");
-    return;
-  }
-  if(soloDigitos.length < 10){
-    alert("Teléfono inválido. Ej: 8091234567");
-    return;
-  }
+if(!soloDigitos){
+  const datosBox = document.getElementById("datosClienteBox");
+  if(datosBox) datosBox.setAttribute("open", "open");
+  alert("El teléfono es obligatorio (WhatsApp).");
+  return;
+}
+if(soloDigitos.length < 10){
+  const datosBox = document.getElementById("datosClienteBox");
+  if(datosBox) datosBox.setAttribute("open", "open");
+  alert("Teléfono inválido. Ej: 8091234567");
+  return;
+}
+
 
   if(tipo === "delivery"){
     if(!zona || zona.value === "0"){
@@ -947,7 +1206,8 @@ if(glas.length){
   nombre,direccion,telefono,fecha,hora,pago,tipo,
   zonaCosto: (tipo==="delivery") ? Number(zona?.value||0) : 0,
   combos,
-  tops,
+  toppingsIncluidos: topsIncluidos,
+  toppingsExtras: topsExtras,
   glaseados: glas,
   total,
   notaCliente: notaResumen
@@ -1041,6 +1301,55 @@ async function confirmarTransferencia(){
   }
 }
 
+function limpiarFormulario(){
+  // combos
+  document.querySelectorAll(".comboQty").forEach(i=>{
+    i.value = 0;
+  });
+
+  // toppings y glaseados dinámicos
+  document.getElementById("toppingsContainer").innerHTML = "<p style='color:#999;font-size:14px'>Selecciona un combo para elegir toppings</p>";
+  document.getElementById("glaseadosContainer").innerHTML = "<p style='color:#999;font-size:14px'>Selecciona un combo para elegir glaseados</p>";
+  document.getElementById("glaseadosPreview").innerHTML = "";
+
+  // tipo de entrega y zona
+  document.getElementById("tipoEntrega").value = "pickup";
+  document.getElementById("zona").value = "0";
+  document.getElementById("zonaContainer").style.display = "none";
+
+  // datos del cliente
+  document.getElementById("nombre").value = "";
+  document.getElementById("direccion").value = "";
+  document.getElementById("telefono").value = "";
+  document.getElementById("pago").value = "Efectivo";
+  document.getElementById("fecha").value = "";
+  document.getElementById("hora").value = "";
+
+  // notas
+  document.getElementById("notaPedidoResumen").value = "";
+  document.getElementById("refTransfer").value = "";
+  document.getElementById("notaPedidoTransfer").value = "";
+  document.getElementById("fotoComprobante").value = "";
+
+  // reset internos
+  pedidoActual = {};
+  textoFinal = "";
+  ultimoMaxToppings = -1;
+  ultimoMaxGlaseados = -1;
+
+  // cerrar modales
+  document.getElementById("resumenModal").style.display = "none";
+  document.getElementById("transferModal").style.display = "none";
+
+  // cerrar "Tus datos"
+  const datosBox = document.getElementById("datosClienteBox");
+  if(datosBox) datosBox.removeAttribute("open");
+
+  calcular();
+}
+
+
+
 function guardarPedidoFirestore(){
   db.collection("pedidos").add({
     ...pedidoActual,
@@ -1048,7 +1357,7 @@ function guardarPedidoFirestore(){
     creado: new Date()
   }).then(()=>{
     alert(window.__thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.");
-    document.getElementById("resumenModal").style.display = "none";
+    limpiarFormulario();
   }).catch(e=>{
     alert("Error guardando pedido: " + e.message);
   });
