@@ -165,7 +165,7 @@ tr.pedidoRow{ cursor:pointer; }
 
 .productsTable{
   width:100%;
-  min-width:980px; /* fuerza espacio real para columnas */
+  min-width:980px;
   border-collapse:separate;
   border-spacing:0;
 }
@@ -250,14 +250,42 @@ tr.pedidoRow{ cursor:pointer; }
   }
 }
 
+.productsTable .colIcon{min-width:90px;}
 
+@media (max-width: 768px){
+  #tiendaBox .card > div[style*="display:grid"]{
+    grid-template-columns: 1fr !important;
+  }
+}
 
+.card details,
+details.card{
+  border-radius:14px;
+}
+
+details.card summary{
+  list-style:none;
+}
+
+details.card summary::-webkit-details-marker{
+  display:none;
+}
+
+details.card summary::after{
+  content:" ▾";
+  float:right;
+  font-size:18px;
+  color:#c2185b;
+}
+
+details.card[open] summary::after{
+  content:" ▴";
+}
 </style>
 </head>
 
 <body>
 
-<!-- MODAL EDITAR PEDIDO -->
 <div id="editModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:9999; display:flex; justify-content:center; align-items:center; padding:12px;">
   <div class="card" style="background:white; max-width:920px; width:100%; max-height:92vh; overflow:auto;">
     <h2>✏️ Editar pedido</h2>
@@ -271,7 +299,6 @@ tr.pedidoRow{ cursor:pointer; }
   </div>
 </div>
 
-<!-- Toast pedido nuevo -->
 <div id="toastNew" class="hidden"
   style="position:fixed; right:14px; bottom:14px; background:white; border:1px solid #f3b5cc; padding:12px 14px; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,.18); z-index:99999;">
   <b style="color:#c2185b">🛎️ Pedido nuevo</b>
@@ -281,7 +308,6 @@ tr.pedidoRow{ cursor:pointer; }
 <div class="container">
   <h1>Panel de control</h1>
 
-  <!-- LOGIN -->
   <div id="loginBox" class="card">
     <h2>🔐 Iniciar sesión</h2>
     <div class="row">
@@ -300,7 +326,6 @@ tr.pedidoRow{ cursor:pointer; }
     <div id="loginMsg" class="small muted"></div>
   </div>
 
-  <!-- APP -->
   <div id="appBox" class="hidden">
     <div class="topbar">
       <div>
@@ -374,16 +399,23 @@ tr.pedidoRow{ cursor:pointer; }
         <hr>
 
         <div class="row" style="gap:16px;">
-          <div style="flex:1; min-width:220px;">
-            <div class="small muted" style="margin-bottom:4px;">🔥 Más vendido hoy</div>
-            <div id="topCombosHoy" class="small">Sin datos hoy.</div>
-          </div>
+  <div style="flex:1; min-width:220px;">
+    <div class="small muted" style="margin-bottom:4px;">🔥 Más vendido hoy</div>
+    <div id="topCombosHoy" class="small">Sin datos hoy.</div>
+  </div>
 
-          <div style="flex:1; min-width:220px;">
-            <div class="small muted" style="margin-bottom:4px;">✨ Toppings top</div>
-            <div id="topToppingsHoy" class="small">Sin datos hoy.</div>
-          </div>
-        </div>
+<div style="flex:1; min-width:220px;">
+    <div class="small muted" style="margin-bottom:4px;">🍫 Glaseados top</div>
+    <div id="topGlaseadosHoy" class="small">Sin datos hoy.</div>
+  </div>
+
+  <div style="flex:1; min-width:220px;">
+    <div class="small muted" style="margin-bottom:4px;">✨ Toppings top</div>
+    <div id="topToppingsHoy" class="small">Sin datos hoy.</div>
+  </div>
+
+  
+</div>
 
         <hr>
 
@@ -404,7 +436,6 @@ tr.pedidoRow{ cursor:pointer; }
       </div>
     </div>
 
-    <!-- NAVEGACIÓN -->
     <div class="topbar" style="margin-top:14px;">
       <div class="row" style="gap:10px;">
         <button id="btnPedidos" type="button" onclick="mostrarSeccion('pedidos')">📦 Pedidos</button>
@@ -412,7 +443,6 @@ tr.pedidoRow{ cursor:pointer; }
       </div>
     </div>
 
-    <!-- SECCION TIENDA -->
     <div id="tiendaBox" class="hidden">
       <h2>🏪 Editar tienda</h2>
 
@@ -424,13 +454,13 @@ tr.pedidoRow{ cursor:pointer; }
           <input id="stCombosTitle" placeholder="🍩 Combos">
 
           <label>Título Toppings</label>
-<input id="stToppingsTitle" placeholder="✨ Toppings">
+          <input id="stToppingsTitle" placeholder="✨ Toppings">
 
-<label>Título Glaseados</label>
-<input id="stGlaseadosTitle" placeholder="🍫 Glaseados">
+          <label>Título Glaseados</label>
+          <input id="stGlaseadosTitle" placeholder="🍫 Glaseados">
 
-<label>Mensaje de gracias</label>
-<textarea id="stThanks" placeholder="✅ ¡Gracias por tu pedido! En breve te contactaremos."></textarea>
+          <label>Mensaje de gracias</label>
+          <textarea id="stThanks" placeholder="✅ ¡Gracias por tu pedido! En breve te contactaremos."></textarea>
 
           <label>Texto Transferencia (datos bancarios)</label>
           <textarea id="stTransfer" placeholder="Banco..., Cuenta..., Nombre..., etc."></textarea>
@@ -445,82 +475,92 @@ tr.pedidoRow{ cursor:pointer; }
         <div class="card" style="flex:2; min-width:320px; overflow:hidden;">
           <strong>Productos (Combos / Toppings)</strong>
 
-          <div class="row">
-            <div style="flex:1; min-width:160px;">
-              <label>Tipo</label>
-            <select id="pType" onchange="toggleCamposProducto()">
-  <option value="combo">Combo</option>
-  <option value="topping">Topping</option>
-  <option value="glaseado">Glaseado</option>
-</select>
-            </div>
+          
+     <div style="
+  display:grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  gap:14px;
+  align-items:end;
+  margin-top:12px;
+">
+  <div>
+    <label>Tipo</label>
+    <select id="pType" onchange="toggleCamposProducto(); autocompletarIconoProducto()">
+      <option value="combo">Combo</option>
+      <option value="topping">Topping</option>
+      <option value="glaseado">Glaseado</option>
+    </select>
+  </div>
 
-            <div style="flex:2; min-width:220px;">
-              <label>Nombre</label>
-              <input id="pName" placeholder="Ej: 6 Donitas / Oreo">
-            </div>
+  <div>
+    <label>Nombre</label>
+    <input id="pName" placeholder="Ej: 6 Donitas / Oreo" oninput="autocompletarIconoProducto()">
+  </div>
 
-            <div style="width:140px;">
-              <label>Precio</label>
-              <input id="pPrice" type="number" min="0" placeholder="0">
-            </div>
-          </div>
+  <div>
+    <label>Precio</label>
+    <input id="pPrice" type="number" min="0" placeholder="0">
+  </div>
 
-          <div class="row">
-            <div id="pTopsInclWrap" style="width:180px;">
-  <label>Toppings incluidos (solo combos)</label>
-  <input id="pTopsIncl" type="number" min="0" value="0">
-</div>
+  <div>
+    <label>Orden</label>
+    <input id="pSort" type="number" min="0" value="0">
+  </div>
 
-            <div style="width:160px;">
-              <label>Orden</label>
-              <input id="pSort" type="number" min="0" value="0">
-            </div>
+  <div>
+    <label>Ícono</label>
+    <input id="pIcon" placeholder="Ej: 🍓">
+  </div>
 
-            <div style="flex:1; min-width:180px;">
-              <label>Badge (opcional)</label>
-              <input id="pBadge" placeholder="OFERTA / NUEVO">
-            </div>
+  <div>
+    <label>Badge (opcional)</label>
+    <input id="pBadge" placeholder="OFERTA / NUEVO">
+  </div>
 
-            <div style="width:160px;">
-              <label>Activo</label>
-              <select id="pActive">
-                <option value="true">Sí</option>
-                <option value="false">No</option>
-              </select>
-            </div>
-          </div>
+  <div>
+    <label>Activo</label>
+    <select id="pActive">
+      <option value="true">Sí</option>
+      <option value="false">No</option>
+    </select>
+  </div>
 
-         <div class="row" style="justify-content:flex-end; align-items:flex-end; margin-top:8px;">
-  <button type="button" onclick="crearProducto()">➕ Agregar</button>
+  <div id="pTopsInclWrap">
+    <label>Toppings incluidos (solo combos)</label>
+    <input id="pTopsIncl" type="number" min="0" value="0">
+  </div>
+
+  <div style="display:flex; align-items:end; justify-content:flex-end;">
+    <button type="button" onclick="crearProducto()">➕ Agregar</button>
+  </div>
 </div>
 
           <hr>
 
-      <div class="productsWrap">
-  <table class="table productsTable">
-    <thead>
-      <tr>
-        <th class="colTipo">Tipo</th>
-        <th class="colNombre">Nombre</th>
-        <th class="colPrecio">Precio</th>
-        <th class="colIncl">Incl.</th>
-        <th class="colOrden">Orden</th>
-        <th class="colActivo">Activo</th>
-        <th class="colBadge">Badge</th>
-        <th class="colAcciones">Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="tablaProductos"></tbody>
-  </table>
-</div>
+          <div class="productsWrap">
+            <table class="table productsTable">
+              <thead>
+  <tr>
+    <th class="colTipo">Tipo</th>
+    <th class="colNombre">Nombre</th>
+    <th class="colPrecio">Precio</th>
+    <th class="colIncl">Incl.</th>
+    <th class="colOrden">Orden</th>
+    <th class="colActivo">Activo</th>
+    <th class="colIcon">Ícono</th>
+    <th class="colBadge">Badge</th>
+    <th class="colAcciones">Acciones</th>
+  </tr>
+</thead>
+              <tbody id="tablaProductos"></tbody>
+            </table>
+          </div>
 
           <div id="prodMsg" class="small muted" style="margin-top:8px;"></div>
         </div>
       </div>
     </div>
 
-    <!-- SECCION PEDIDOS -->
     <div id="pedidosBox">
       <h2>📦 Pedidos</h2>
 
@@ -557,7 +597,6 @@ tr.pedidoRow{ cursor:pointer; }
   </div>
 </div>
 
-<!-- Firebase v8 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -576,7 +615,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/** LOGIN POR USUARIO **/
 const USER_LOGIN_MAP = {
   "enmanuel.francisco": "enmanuel.francisco@panel.local",
   "ana.camila": "ana.camila@panel.local",
@@ -598,7 +636,6 @@ function resolveUsernameFromEmail(email){
   return email.replace("@panel.local", "");
 }
 
-/** Estado local **/
 let pedidosCache = [];
 let unsubPedidos = null;
 let unsubProductos = null;
@@ -606,8 +643,12 @@ let firstPedidosLoad = true;
 let selectedPedidoId = null;
 let currentRole = "empleado";
 let isAdminUser = false;
+let detallePanelsState = {
+  cliente: true,
+  resumen: true,
+  gestion: true
+};
 
-/** Catálogos **/
 const COMBOS_CATALOGO = [
   { name: "6 Donitas",  price: 160, toppings: 1 },
   { name: "12 Donitas", price: 300, toppings: 2 },
@@ -633,7 +674,6 @@ const TOPPINGS_CATALOGO = [
 
 const GLASEADOS_CATALOGO = [];
 
-/** Helpers **/
 function safe(v){ return (v===undefined || v===null) ? "" : String(v); }
 function escapeHtml(str){
   return String(str || "")
@@ -657,7 +697,6 @@ function recortar(txt, n=32){
   return txt.slice(0, n-1) + "…";
 }
 
-/** Auth UI **/
 function setLoginMsg(msg){
   const el = document.getElementById("loginMsg");
   if(el) el.innerText = msg || "";
@@ -721,7 +760,6 @@ document.addEventListener("keydown", function(e){
 
 async function logout(){ await auth.signOut(); }
 
-/* TIENDA */
 function setStMsg(msg){ const el = document.getElementById("stMsg"); if(el) el.innerText = msg || ""; }
 function setProdMsg(msg){ const el = document.getElementById("prodMsg"); if(el) el.innerText = msg || ""; }
 
@@ -739,7 +777,7 @@ function mostrarSeccion(which){
     if(btnTienda) btnTienda.classList.remove("secondary");
     cargarStoreSettings();
     listenProductos();
-toggleCamposProducto();
+    toggleCamposProducto();
   }else{
     tiendaBox.classList.add("hidden");
     pedidosBox.classList.remove("hidden");
@@ -766,16 +804,15 @@ async function cargarStoreSettings(){
   }
 }
 
-
 async function guardarStoreSettings(){
   try{
     setStMsg("Guardando...");
     const data = {
-  combosTitle: (document.getElementById("stCombosTitle").value || "").trim(),
-  toppingsTitle: (document.getElementById("stToppingsTitle").value || "").trim(),
-  glaseadosTitle: (document.getElementById("stGlaseadosTitle").value || "").trim(),
-  thanksMessage: (document.getElementById("stThanks").value || "").trim(),
-  transferInfo: (document.getElementById("stTransfer").value || "").trim(),
+      combosTitle: (document.getElementById("stCombosTitle").value || "").trim(),
+      toppingsTitle: (document.getElementById("stToppingsTitle").value || "").trim(),
+      glaseadosTitle: (document.getElementById("stGlaseadosTitle").value || "").trim(),
+      thanksMessage: (document.getElementById("stThanks").value || "").trim(),
+      transferInfo: (document.getElementById("stTransfer").value || "").trim(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedBy: auth.currentUser?.email || "admin"
     };
@@ -787,12 +824,53 @@ async function guardarStoreSettings(){
 }
 
 function toggleCamposProducto(){
-  const type = document.getElementById("pType").value;
+  const type = document.getElementById("pType")?.value || "";
   const topsWrap = document.getElementById("pTopsInclWrap");
+  const iconInput = document.getElementById("pIcon");
 
   if(topsWrap){
     topsWrap.style.display = (type === "combo") ? "block" : "none";
   }
+
+  if(iconInput && type !== "glaseado"){
+    iconInput.value = "";
+  }
+}
+
+
+function detectarIconoGlaseado(nombre){
+  const n = String(nombre || "").toLowerCase().trim();
+
+  if(n.includes("fresa")) return "🍓";
+  if(n.includes("piña") || n.includes("pina")) return "🍍";
+  if(n.includes("chocolate blanco")) return "🤍";
+  if(n.includes("chocolate negro")) return "🍫";
+  if(n.includes("chocolate")) return "🍫";
+  if(n.includes("nutella")) return "🌰";
+  if(n.includes("avellana")) return "🥜";
+  if(n.includes("dulce de leche")) return "🍯";
+  if(n.includes("crema pastelera")) return "🎂";
+  if(n.includes("dubai")) return "✨";
+
+  return "";
+}
+
+function autocompletarIconoProducto(){
+  const typeEl = document.getElementById("pType");
+  const nameEl = document.getElementById("pName");
+  const iconEl = document.getElementById("pIcon");
+
+  if(!typeEl || !nameEl || !iconEl) return;
+
+  const type = typeEl.value;
+  const nombre = nameEl.value;
+
+  if(type !== "glaseado"){
+    iconEl.value = "";
+    return;
+  }
+
+  iconEl.value = detectarIconoGlaseado(nombre);
 }
 
 async function crearProducto(){
@@ -802,25 +880,28 @@ async function crearProducto(){
   const topsIncl = Number(document.getElementById("pTopsIncl").value || 0);
   const sortOrder = Number(document.getElementById("pSort").value || 0);
   const badge = (document.getElementById("pBadge").value || "").trim();
-  const active = document.getElementById("pActive").value === "true";
+const icon = (document.getElementById("pIcon").value || "").trim();
+const active = document.getElementById("pActive").value === "true";
 
   if(!name){ setProdMsg("Pon un nombre."); return; }
   if(price < 0){ setProdMsg("Precio inválido."); return; }
 
   try{
     setProdMsg("Agregando...");
-    await db.collection("store_products").add({
-      type,
-      name,
-      price,
-      toppingsIncluded: (type==="combo") ? topsIncl : 0,
-      sortOrder,
-      badge,
-      active,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedBy: auth.currentUser?.email || "admin"
-    });
+await db.collection("store_products").add({
+  type,
+  name,
+  price,
+  icon,
+  toppingsIncluded: (type==="combo") ? topsIncl : 0,
+  sortOrder,
+  badge,
+  active,
+  salesCount: 0,
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  updatedBy: auth.currentUser?.email || "admin"
+});
 
     document.getElementById("pName").value = "";
     document.getElementById("pPrice").value = "";
@@ -828,6 +909,7 @@ async function crearProducto(){
     document.getElementById("pSort").value = "0";
     document.getElementById("pBadge").value = "";
     document.getElementById("pActive").value = "true";
+    document.getElementById("pIcon").value = "";
 
     setProdMsg("✅ Agregado.");
   }catch(e){
@@ -860,7 +942,7 @@ function renderProductos(list){
   tbody.innerHTML = "";
 
   if(!list.length){
-    tbody.innerHTML = `<tr><td colspan="8" class="muted" style="padding:14px;">No hay productos todavía.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="muted" style="padding:14px;">No hay productos todavía.</td></tr>`;
     return;
   }
 
@@ -873,37 +955,42 @@ function renderProductos(list){
     const sort = Number(p.sortOrder || 0);
     const active = !!p.active;
     const badge = escapeHtml(p.badge || "");
+    const icon = escapeHtml(p.icon || "");
 
-row.innerHTML = `
-  <td class="colTipo">${escapeHtml(type)}</td>
-  <td class="colNombre">
-    <input value="${name}" onblur="updProd('${p.id}', {name:this.value})">
-  </td>
-  <td class="colPrecio">
-    <input type="number" min="0" value="${price}" onblur="updProd('${p.id}', {price:Number(this.value||0)})">
-  </td>
-  <td class="colIncl">
-    <input type="number" min="0" value="${incl}" ${type==='combo'?'':'disabled'} onblur="updProd('${p.id}', {toppingsIncluded:Number(this.value||0)})">
-  </td>
-  <td class="colOrden">
-    <input type="number" min="0" value="${sort}" onblur="updProd('${p.id}', {sortOrder:Number(this.value||0)})">
-  </td>
-  <td class="colActivo">
-    <select onchange="updProd('${p.id}', {active:(this.value==='true')})">
-      <option value="true" ${active?'selected':''}>Sí</option>
-      <option value="false" ${!active?'selected':''}>No</option>
-    </select>
-  </td>
-  <td class="colBadge">
-    <input value="${badge}" onblur="updProd('${p.id}', {badge:this.value})">
-  </td>
-  <td class="colAcciones actionBtnCell">
-    <button class="secondary mini" type="button" onclick="borrarProd('${p.id}')">Borrar</button>
-  </td>
-`;
+    row.innerHTML = `
+      <td class="colTipo">${escapeHtml(type)}</td>
+      <td class="colNombre">
+        <input value="${name}" onblur="updProd('${p.id}', {name:this.value})">
+      </td>
+      <td class="colPrecio">
+        <input type="number" min="0" value="${price}" onblur="updProd('${p.id}', {price:Number(this.value||0)})">
+      </td>
+      <td class="colIncl">
+        <input type="number" min="0" value="${incl}" ${type==='combo'?'':'disabled'} onblur="updProd('${p.id}', {toppingsIncluded:Number(this.value||0)})">
+      </td>
+      <td class="colOrden">
+        <input type="number" min="0" value="${sort}" onblur="updProd('${p.id}', {sortOrder:Number(this.value||0)})">
+      </td>
+      <td class="colActivo">
+        <select onchange="updProd('${p.id}', {active:(this.value==='true')})">
+          <option value="true" ${active?'selected':''}>Sí</option>
+          <option value="false" ${!active?'selected':''}>No</option>
+        </select>
+      </td>
+      <td class="colIcon">
+        <input value="${icon}" onblur="updProd('${p.id}', {icon:this.value})">
+      </td>
+      <td class="colBadge">
+        <input value="${badge}" onblur="updProd('${p.id}', {badge:this.value})">
+      </td>
+      <td class="colAcciones actionBtnCell">
+        <button class="secondary mini" type="button" onclick="borrarProd('${p.id}')">Borrar</button>
+      </td>
+    `;
     tbody.appendChild(row);
   });
 }
+
 
 async function updProd(id, patch){
   try{
@@ -953,8 +1040,6 @@ function syncCatalogosParaEditarPedidos(rows){
   gls.forEach(g => GLASEADOS_CATALOGO.push(g));
 }
 
-
-/* Avisos */
 function playNewOrderSound(){
   try{
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -985,7 +1070,6 @@ function showToastNew(p){
   setTimeout(()=> toast.classList.add("hidden"), 3500);
 }
 
-/* Pedidos */
 function listenPedidos(){
   if(unsubPedidos) unsubPedidos();
 
@@ -1044,8 +1128,12 @@ function actualizarKPIs(){
 
   const pedidosHoy = pedidosCache.filter(esHoy);
   const ventasHoy = pedidosHoy.reduce((acc, p) => acc + Number(p.total || 0), 0);
-  const cobradosHoy = pedidosHoy.filter(p => (p.pagoEstado || "") === "pagado").reduce((acc, p) => acc + Number(p.total || 0), 0);
-  const porCobrarHoy = pedidosHoy.filter(p => (p.pagoEstado || "") !== "pagado").reduce((acc, p) => acc + Number(p.total || 0), 0);
+  const cobradosHoy = pedidosHoy
+    .filter(p => (p.pagoEstado || "") === "pagado")
+    .reduce((acc, p) => acc + Number(p.total || 0), 0);
+  const porCobrarHoy = pedidosHoy
+    .filter(p => (p.pagoEstado || "") !== "pagado")
+    .reduce((acc, p) => acc + Number(p.total || 0), 0);
   const pedidosHoyCount = pedidosHoy.length;
   const ticketHoy = pedidosHoyCount > 0 ? Math.round(ventasHoy / pedidosHoyCount) : 0;
   const pagadosHoy = pedidosHoy.filter(p => (p.pagoEstado || "") === "pagado").length;
@@ -1120,32 +1208,6 @@ function actualizarKPIs(){
   }
 }
 
-  }
-
-  const topsMap = {};
-pedidosHoy.forEach(p => {
-  const incluidos = Array.isArray(p.toppingsIncluidos) ? p.toppingsIncluidos : [];
-  const extras = Array.isArray(p.toppingsExtras) ? p.toppingsExtras : [];
-  const legacy = Array.isArray(p.tops) ? p.tops : [];
-
-  [...incluidos, ...extras, ...legacy].forEach(t => {
-    const limpio = String(t || "").replace(/\s*\(RD\$\d+\)\s*/gi, "").trim();
-    if(!limpio) return;
-    topsMap[limpio] = (topsMap[limpio] || 0) + 1;
-  });
-});
-
-
-
-  const topTops = Object.entries(topsMap).sort((a,b) => b[1] - a[1]).slice(0, 3);
-  const topToppingsEl = document.getElementById("topToppingsHoy");
-  if(topToppingsEl){
-    topToppingsEl.innerHTML = topTops.length
-      ? topTops.map(([nombre, qty]) => `• ${escapeHtml(nombre)} — ${qty}`).join("<br>")
-      : "Sin datos hoy.";
-  }
-}
-
 async function borrarPedido(id){
   const p = pedidosCache.find(x => x.id === id);
   if(!p){ alert("No encontré el pedido."); return; }
@@ -1183,6 +1245,22 @@ function renderFiltrado(){
     });
   }
 
+function bindDetallePanelsState(){
+  const map = [
+    ["detalleCliente", "cliente"],
+    ["detalleResumen", "resumen"],
+    ["detalleGestion", "gestion"]
+  ];
+
+  map.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+
+    el.addEventListener("toggle", () => {
+      detallePanelsState[key] = el.open;
+    });
+  });
+}
   const cEl = document.getElementById("leftCount");
   if(cEl) cEl.innerText = list.length;
 
@@ -1240,6 +1318,23 @@ function renderListaIzquierda(list){
   });
 }
 
+function bindDetallePanelsState(){
+  const map = [
+    ["detalleCliente", "cliente"],
+    ["detalleResumen", "resumen"],
+    ["detalleGestion", "gestion"]
+  ];
+
+  map.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+
+    el.addEventListener("toggle", () => {
+      detallePanelsState[key] = el.open;
+    });
+  });
+}
+
 function renderDetalleDerecha(p){
   const box = document.getElementById("detalleContenido");
   const badge = document.getElementById("detalleNuevo");
@@ -1272,20 +1367,20 @@ function renderDetalleDerecha(p){
     : "";
 
   const topsIncluidos = Array.isArray(p.toppingsIncluidos)
-  ? p.toppingsIncluidos.map(t => `• ${escapeHtml(t)}`).join("<br>")
-  : "";
+    ? p.toppingsIncluidos.map(t => `• ${escapeHtml(t)}`).join("<br>")
+    : "";
 
-const topsExtras = Array.isArray(p.toppingsExtras)
-  ? p.toppingsExtras.map(t => `• ${escapeHtml(t)}`).join("<br>")
-  : "";
+  const topsExtras = Array.isArray(p.toppingsExtras)
+    ? p.toppingsExtras.map(t => `• ${escapeHtml(t)}`).join("<br>")
+    : "";
 
-const topsLegacy = Array.isArray(p.tops)
-  ? p.tops.map(t => `• ${escapeHtml(t)}`).join("<br>")
-  : "";
+  const topsLegacy = Array.isArray(p.tops)
+    ? p.tops.map(t => `• ${escapeHtml(t)}`).join("<br>")
+    : "";
 
-const glaseados = Array.isArray(p.glaseados)
-  ? p.glaseados.map(g => `• ${escapeHtml(g)}`).join("<br>")
-  : "";
+  const glaseados = Array.isArray(p.glaseados)
+    ? p.glaseados.map(g => `• ${escapeHtml(g)}`).join("<br>")
+    : "";
 
   const entrega = (p.tipo === "delivery") ? "🚚 Delivery" : "📍 Pickup";
   const total = safe(p.total);
@@ -1299,12 +1394,12 @@ const glaseados = Array.isArray(p.glaseados)
   }
 
   box.innerHTML = `
-  <div class="card" style="padding:14px; margin-bottom:10px;">
-    <div class="row" style="justify-content:space-between; align-items:center;">
-      <strong>Información del cliente</strong>
-    </div>
+  <details id="detalleCliente" class="card" style="padding:14px; margin-bottom:10px;" ${detallePanelsState.cliente ? "open" : ""}>
+    <summary style="cursor:pointer; font-weight:800; color:#c2185b; font-size:18px;">
+      👤 Información del cliente
+    </summary>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
       <div>
         <div class="small muted">Cliente</div>
         <div><strong>${escapeHtml(p.nombre || "")}</strong></div>
@@ -1330,7 +1425,7 @@ const glaseados = Array.isArray(p.glaseados)
         <div><b>${escapeHtml(p.pago || "—")}</b></div>
 
         ${p.comprobanteBase64 ? `
-        <div>
+        <div style="margin-top:10px;">
           <div class="small muted">Comprobante</div>
           <div style="margin-top:6px;">
             <a href="${p.comprobanteBase64}" target="_blank" rel="noopener noreferrer">
@@ -1351,58 +1446,60 @@ const glaseados = Array.isArray(p.glaseados)
         <div>${escapeHtml(creado)}</div>
       </div>
     </div>
-  </div>
+  </details>
 
-  <div class="card" style="padding:14px; margin-bottom:10px;">
-    <strong>Resumen del pedido</strong>
+  <details id="detalleResumen" class="card" style="padding:14px; margin-bottom:10px;" ${detallePanelsState.resumen ? "open" : ""}>
+    <summary style="cursor:pointer; font-weight:800; color:#c2185b; font-size:18px;">
+      🧾 Resumen del pedido
+    </summary>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:10px;">
-  <div>
-    <div><b>Combos</b></div>
-    <div class="small" style="margin-top:6px;">${combos || "<span class='muted'>-</span>"}</div>
-  </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px;">
+      <div>
+        <div><b>Combos</b></div>
+        <div class="small" style="margin-top:6px;">${combos || "<span class='muted'>-</span>"}</div>
+      </div>
 
-  <div>
-    <div><b>Toppings incluidos</b></div>
-    <div class="small" style="margin-top:6px;">${topsIncluidos || topsLegacy || "<span class='muted'>-</span>"}</div>
-  </div>
+      <div>
+        <div><b>Toppings incluidos</b></div>
+        <div class="small" style="margin-top:6px;">${topsIncluidos || topsLegacy || "<span class='muted'>-</span>"}</div>
+      </div>
 
-  <div>
-    <div><b>Toppings extra</b></div>
-    <div class="small" style="margin-top:6px;">${topsExtras || "<span class='muted'>-</span>"}</div>
-  </div>
+      <div>
+        <div><b>Toppings extra</b></div>
+        <div class="small" style="margin-top:6px;">${topsExtras || "<span class='muted'>-</span>"}</div>
+      </div>
 
-  <div>
-    <div><b>Glaseados</b></div>
-    <div class="small" style="margin-top:6px;">${glaseados || "<span class='muted'>-</span>"}</div>
-  </div>
+      <div>
+        <div><b>Glaseados</b></div>
+        <div class="small" style="margin-top:6px;">${glaseados || "<span class='muted'>-</span>"}</div>
+      </div>
 
-  ${p.notaCliente ? `
-  <div style="grid-column:1 / -1;">
-    <div><b>Nota del cliente</b></div>
-    <div class="small" style="margin-top:6px;">${escapeHtml(p.notaCliente)}</div>
-  </div>
-  ` : ``}
+      ${p.notaCliente ? `
+      <div style="grid-column:1 / -1;">
+        <div><b>Nota del cliente</b></div>
+        <div class="small" style="margin-top:6px;">${escapeHtml(p.notaCliente)}</div>
+      </div>
+      ` : ``}
 
-  ${p.transferRef ? `
-  <div style="grid-column:1 / -1;">
-    <div><b>Referencia transferencia</b></div>
-    <div class="small" style="margin-top:6px;">${escapeHtml(p.transferRef)}</div>
-  </div>
-  ` : ``}
+      ${p.transferRef ? `
+      <div style="grid-column:1 / -1;">
+        <div><b>Referencia transferencia</b></div>
+        <div class="small" style="margin-top:6px;">${escapeHtml(p.transferRef)}</div>
+      </div>
+      ` : ``}
 
-  <div style="grid-column:1 / -1;">
-    <span class="pill">TOTAL RD$${escapeHtml(total)}</span>
-  </div>
-</div>
-  </div>
+      <div style="grid-column:1 / -1;">
+        <span class="pill">TOTAL RD$${escapeHtml(total)}</span>
+      </div>
+    </div>
+  </details>
 
-  <details class="card" style="padding:14px;">
-    <summary style="cursor:pointer; font-weight:700; color:#c2185b; font-size:16px;">
+  <details id="detalleGestion" class="card" style="padding:14px;" ${detallePanelsState.gestion ? "open" : ""}>
+    <summary style="cursor:pointer; font-weight:800; color:#c2185b; font-size:18px;">
       ⚙️ Gestión del pedido
     </summary>
 
-    <div style="margin-top:10px;">
+    <div style="margin-top:14px;">
       <label class="small muted">Estado del pedido</label>
       <select onchange="updatePedido('${p.id}', {estado:this.value})">
         <option value="pendiente" ${estado==='pendiente'?'selected':''}>Pendiente</option>
@@ -1427,12 +1524,19 @@ const glaseados = Array.isArray(p.glaseados)
   </details>
   `;
 
-  [bEdit,bRec,bLis,bDel].forEach(b=>{ if(b) b.disabled=false; });
-  if(bEdit) bEdit.onclick = ()=> abrirEdit(p.id);
-  if(bRec)  bRec.onclick  = ()=> enviarPlantilla(p.id,'recibido');
-  if(bLis)  bLis.onclick  = ()=> marcarPedidoListo(p.id);
-  if(bDel)  bDel.onclick  = ()=> borrarPedido(p.id);
+  try{
+  bindDetallePanelsState();
+}catch(e){
+  console.error("Error en bindDetallePanelsState:", e);
 }
+
+[bEdit,bRec,bLis,bDel].forEach(b=>{ if(b) b.disabled=false; });
+if(bEdit) bEdit.onclick = ()=> abrirEdit(p.id);
+if(bRec)  bRec.onclick  = ()=> enviarPlantilla(p.id,'recibido');
+if(bLis)  bLis.onclick  = ()=> marcarPedidoListo(p.id);
+if(bDel)  bDel.onclick  = ()=> borrarPedido(p.id);
+}
+
 
 async function updatePedido(id, patch){
   try{
@@ -1442,13 +1546,13 @@ async function updatePedido(id, patch){
   }
 }
 
-/** WhatsApp **/
 function normalizarTel(tel){
   tel = String(tel || "").replace(/\D/g,"");
   if(tel.length === 10) tel = "1" + tel;
   return tel;
 }
 function getPedidoById(id){ return pedidosCache.find(p => p.id === id); }
+
 function armarResumenPedido(p){
   const combos = Array.isArray(p.combos)
     ? p.combos.map(c => `- ${c.cantidad} x ${c.combo} (RD$${c.precio})`).join("\n")
@@ -1539,8 +1643,6 @@ async function marcarPedidoListo(id){
   }
 }
 
-
-/* EDIT MODAL */
 let editId = null;
 let editDraft = null;
 
@@ -2084,12 +2186,12 @@ function recalcularTotalEdit(){
     total += line;
   });
 
-editDraft.toppingsIncluidos = getEditToppingsIncluidosSelected();
-editDraft.toppingsExtras = getEditToppingsExtrasSelected();
-editDraft.glaseados = getEditGlaseadosSelected();
+  editDraft.toppingsIncluidos = getEditToppingsIncluidosSelected();
+  editDraft.toppingsExtras = getEditToppingsExtrasSelected();
+  editDraft.glaseados = getEditGlaseadosSelected();
 
-total += getEditToppingsExtrasTotal();
-total += getEditGlaseadosTotal();
+  total += getEditToppingsExtrasTotal();
+  total += getEditGlaseadosTotal();
 
   const tipo = document.getElementById("eTipo")?.value || "pickup";
   if(tipo==="delivery"){
@@ -2178,9 +2280,8 @@ function aplicarPermisosUI(){
   }
 }
 
-/** Boot **/
 auth.onAuthStateChanged(async (user)=>{
-toggleCamposProducto();
+  toggleCamposProducto();
   const loginBox = document.getElementById("loginBox");
   const appBox = document.getElementById("appBox");
 
@@ -2215,6 +2316,7 @@ toggleCamposProducto();
     alert(e.message);
   }
 });
+
 </script>
 
 </body>
