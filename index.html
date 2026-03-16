@@ -5,221 +5,266 @@
 <title>Hailey’s Donuts & Cream</title>
 
 <link rel="icon" type="image/png" href="logo.png">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --bg:#ffe6f0;
+  --card:#ffffff;
+  --soft:#fff7fb;
+  --soft-2:#fff1f7;
+  --line:#f3b5cc;
+  --line-2:#f8d7e4;
+  --main:#c2185b;
+  --main-2:#ff5fa2;
+  --main-3:#ff8cc6;
+  --text:#222;
+  --muted:#7f7280;
+  --success-bg:#d1e7dd;
+  --success-bd:#badbcc;
+  --success-tx:#0f5132;
+  --warning-bg:#fff3cd;
+  --warning-bd:#ffe69c;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  font-family:'Poppins',sans-serif;
+  color:var(--text);
+}
 
 body{
-  margin:0;
-  font-family:'Poppins',sans-serif;
-  background:#ffe6f0;
-  padding:10px;
+  min-height:100vh;
+}
+
+img{
+  max-width:100%;
+  display:block;
+}
+
+button,
+input,
+select,
+textarea{
+  font:inherit;
+}
+
+button{
+  border:none;
+  cursor:pointer;
+}
+
+.hidden{
+  display:none !important;
+}
+
+/* APP */
+.appShell{
+  width:100%;
+  max-width:460px;
+  min-height:100vh;
+  margin:0 auto;
+  background:var(--card);
+  position:relative;
+  overflow:hidden;
+  box-shadow:none;
+  padding-bottom:calc(22px + env(safe-area-inset-bottom));
 }
 
 .container{
-  max-width:500px;
-  margin:auto;
-  background:white;
-  padding:15px;
-  padding-top:26px;
-  border-radius:15px;
-  box-shadow:0 0 10px rgba(0,0,0,.15);
-  overflow:hidden;
+  padding:14px 12px 8px;
   position:relative;
+}
+
+.topActions{
+  position:absolute;
+  top:12px;
+  right:12px;
+  z-index:60;
+}
+
+.settingsWrap{
+  position:relative;
+}
+
+.settingsBtn{
+  width:48px;
+  height:48px;
+  border-radius:999px;
+  border:1.5px solid var(--line);
+  background:linear-gradient(180deg,#fffafb 0%,#fff2f8 100%);
+  color:var(--main);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  box-shadow:0 6px 18px rgba(194,24,91,.12);
+  transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.settingsBtn:active{
+  transform:scale(.96);
+}
+
+.settingsBtn.active{
+  transform:rotate(90deg);
+}
+
+.settingsSvg{
+  width:22px;
+  height:22px;
+  fill:currentColor;
+  display:block;
+}
+
+.settingsMenu{
+  position:absolute;
+  top:56px;
+  right:0;
+  width:232px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 14px 36px rgba(0,0,0,.14);
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(-8px) scale(.98);
+  pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease;
+}
+
+.settingsMenu.open{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  pointer-events:auto;
+}
+
+.settingsMenu button{
+  width:100%;
+  background:#fff;
+  color:#444;
+  text-align:left;
+  padding:15px 16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:14px;
+  font-weight:600;
+  min-height:auto;
+}
+
+.settingsMenu button + button{
+  border-top:1px solid var(--line-2);
+}
+
+.settingsMenu button:active{
+  background:var(--soft-2);
+}
+
+.settingsMenuIcon{
+  width:20px;
+  flex:0 0 20px;
+  text-align:center;
+}
+
+/* HERO */
+.logo{
+  text-align:center;
+  margin-top:2px;
+}
+
+.logo img{
+  width:164px;
+  margin:0 auto;
 }
 
 h1,h2{
   font-family:'Pacifico',cursive;
-  color:#c2185b;
+  color:var(--main);
+  margin:0;
+}
+
+h1{
+  font-size:31px;
+  line-height:1.06;
+  text-align:center;
+  margin:10px 34px 14px;
+}
+
+.heroMini{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:0 0 12px;
+}
+
+.miniChip{
+  background:var(--soft);
+  border:1px solid var(--line);
+  color:var(--main);
+  font-size:12px;
+  font-weight:700;
+  padding:7px 12px;
+  border-radius:999px;
+}
+
+/* SECTION */
+.sectionCard{
+  background:#fff;
+  border:1px solid #f9d7e4;
+  border-radius:18px;
+  padding:12px;
+  margin:12px 0;
+  box-shadow:0 4px 14px rgba(255,95,162,.06);
+}
+
+.sectionTitle{
+  margin-top:2px;
+  margin-bottom:10px;
+  border-bottom:2px dashed var(--line);
+  padding-bottom:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:28px;
   text-align:center;
 }
 
-h2{
-  margin-top:18px;
-  border-bottom:2px dashed #f3b5cc;
-  padding-bottom:4px;
+.iconDonut{
+  width:20px;
+  height:20px;
+  object-fit:contain;
+  flex-shrink:0;
+  display:inline-block;
 }
 
-.logo{text-align:center}
-.logo img{max-width:220px}
+.subHint{
+  font-size:12px;
+  color:var(--muted);
+  text-align:center;
+  margin:-2px 0 8px;
+}
 
+/* COMBOS */
 .item{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:12px;
-  margin:10px 0;
-  padding:12px 0;
-  border-bottom:1px dotted #f3b5cc;
-}
-
-input,select,textarea{
-  padding:10px;
-  margin:6px 0;
-  width:100%;
-  border-radius:10px;
-  border:1px solid #ddd;
-  background:#fff7fb;
-  font-family:inherit;
-}
-
-textarea{
-  resize:vertical;
-  min-height:80px;
-}
-
-.qty{width:60px}
-
-#toppingsContainer,
-#glaseadosContainer{
-  width:100%;
-}
-
-#toppingsContainer select,
-#glaseadosContainer select{
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-  border-radius:10px;
-  border:1px solid #ddd;
-  background:#fff7fb;
-  font-family:inherit;
-}
-
-button{
-  background:linear-gradient(45deg,#ff5fa2,#ff8cc6);
-  color:white;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  font-size:18px;
-  width:100%;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-button:hover{transform:scale(1.02)}
-
-button.secondary{
-  background:#eee;
-  color:#333;
-  font-weight:600;
-}
-
-.total{
-  font-size:18px;
-  text-align:center;
-  color:#c2185b;
-  font-weight:bold;
-  background:#ffe3ef;
-  padding:10px;
-  border-radius:12px;
-}
-
-.galeria{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:6px;
-  margin:10px 0;
-}
-
-.galeria img{
-  width:100%;
-  height:100px;
-  object-fit:cover;
-  border-radius:10px;
-  cursor:pointer;
-  transition:transform .2s;
-}
-
-.galeria img:hover{transform:scale(1.05)}
-
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.85);
-  justify-content:center;
-  align-items:center;
-  z-index:999;
-}
-
-.modal img{
-  max-width:90%;
-  max-height:90%;
-  border-radius:12px;
-}
-
-.aviso{
-  background:#fff3cd;
-  border:1px solid #ffeeba;
-  padding:10px;
-  border-radius:12px;
-  font-size:14px;
-  margin-bottom:10px;
-}
-
-.success{
-  background:#d1e7dd;
-  border:1px solid #badbcc;
-  color:#0f5132;
-  padding:10px;
-  border-radius:12px;
-  font-size:14px;
-  margin:10px 0;
-  display:none;
-}
-
-.stickyBar{
-  position:sticky;
-  bottom:0;
-  background:white;
-  padding:10px 0 0;
-  border-top:1px dashed #f3b5cc;
-  margin-top:12px;
-}
-
-.stickyBar .rowSticky{
-  display:flex;
   gap:10px;
-  align-items:center;
+  padding:14px 0;
+  border-bottom:1px dotted var(--line);
 }
 
-.stickyBar .rowSticky .total{
-  flex:1;
-  margin:0;
-}
-
-.stickyBar .rowSticky button{
-  width:auto;
-  white-space:nowrap;
-  padding:12px 14px;
-  font-size:16px;
-}
-
-.smallMuted{
-  font-size:12px;
-  color:#777;
-}
-
-.productBadge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  margin-left:8px;
-  padding:3px 9px;
-  border-radius:999px;
-  background:#ffd9ea;
-  color:#c2185b;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:.4px;
-  text-transform:uppercase;
-  border:1px solid #f3b5cc;
-  vertical-align:middle;
+.item:last-child{
+  border-bottom:none;
 }
 
 .productInfo{
@@ -238,57 +283,228 @@ button.secondary{
 }
 
 .productName{
-  font-size:18px;
-  font-weight:600;
+  font-size:17px;
+  font-weight:700;
   color:#111;
-  line-height:1.2;
+  line-height:1.15;
 }
 
 .productMeta{
   font-size:13px;
   color:#8a7a84;
-  line-height:1.2;
+  line-height:1.25;
 }
 
-.qty.comboQty{
-  width:72px;
-  min-width:72px;
-  text-align:center;
-  font-weight:600;
+.productBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:4px 10px;
+  border-radius:999px;
+  background:#ffd9ea;
+  color:var(--main);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  border:1px solid var(--line);
 }
 
-.toppingRowOnly .productName{
-  font-size:16px;
+.comboControl{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex:0 0 auto;
 }
 
-.toppingRowOnly .productMeta{
+.qtyBtn{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:var(--soft);
+  color:var(--main);
+  border:1px solid var(--line);
+  font-size:24px;
+  font-weight:700;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+
+.qtyBtn:active{
+  transform:scale(.94);
+}
+
+.qtyBox{
+  min-width:54px;
+  height:44px;
+  padding:0 10px;
+  border-radius:14px;
+  background:#f7eef3;
+  border:1px solid #e3d4dc;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:800;
+  color:#111;
+}
+
+.comboQty{
   display:none;
 }
 
-.glaseadosPreview{
+/* FIELDS */
+input,select,textarea{
+  width:100%;
+  padding:14px 12px;
+  margin:6px 0;
+  border-radius:14px;
+  border:1px solid #ddd;
+  background:var(--soft);
+  font-size:16px;
+  color:#222;
+  outline:none;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:#ea9fbe;
+  box-shadow:0 0 0 3px rgba(255,95,162,.09);
+}
+
+textarea{
+  resize:vertical;
+  min-height:86px;
+}
+
+.fieldLabel{
+  display:block;
+  margin-top:4px;
+  font-size:14px;
+  font-weight:600;
+  color:#5d4a56;
+}
+
+.stackLabel{
+  font-size:14px;
+  font-weight:700;
+  color:var(--main);
+  margin:6px 0 2px;
+}
+
+.smallMuted{
+  font-size:12px;
+  color:#777;
+}
+
+.extraRow{
   display:flex;
-  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  margin-bottom:6px;
+}
+
+.removeBtn{
+  width:46px;
+  min-width:46px;
+  height:48px;
+  border-radius:14px;
+  background:#f5edf1;
+  color:#444;
+  font-size:18px;
+  font-weight:700;
+  padding:0;
+}
+
+.secondary{
+  background:#efeff1;
+  color:#333;
+  font-weight:700;
+}
+
+/* GALLERY */
+.gallerySummary{
+  list-style:none;
+  user-select:none;
+  cursor:pointer;
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:var(--main);
+  font-weight:700;
+}
+
+.gallerySummary::-webkit-details-marker{
+  display:none;
+}
+
+.gallerySummary::after{
+  content:"▾";
+  font-size:16px;
+}
+
+details[open] .gallerySummary::after{
+  content:"▴";
+}
+
+.galeria{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
   gap:8px;
   margin-top:10px;
 }
 
-.glaseadoChip{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  background:#fff7fb;
-  border:1px solid #f3b5cc;
-  color:#c2185b;
-  padding:8px 12px;
-  border-radius:999px;
+.galeria img{
+  width:100%;
+  height:128px;
+  object-fit:cover;
+  border-radius:14px;
+  cursor:pointer;
+}
+
+/* INFO */
+.aviso{
+  background:var(--warning-bg);
+  border:1px solid var(--warning-bd);
+  padding:12px;
+  border-radius:14px;
+  font-size:13px;
+  margin-bottom:10px;
+  color:#5d5132;
+}
+
+.success{
+  background:var(--success-bg);
+  border:1px solid var(--success-bd);
+  color:var(--success-tx);
+  padding:12px;
+  border-radius:14px;
   font-size:14px;
-  font-weight:600;
+  margin:12px 0;
+  display:none;
 }
 
-.glaseadoChipIcon{
-  font-size:16px;
+.deliveryResume{
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  text-align:center;
+  font-size:14px;
+  color:#5d4a56;
 }
 
+.deliveryResume b{
+  color:var(--main);
+}
+
+/* ACCORDION */
 details summary{
   list-style:none;
 }
@@ -302,16 +518,11 @@ details summary::-webkit-details-marker{
   width:100%;
   text-align:center;
   font-family:'Pacifico',cursive;
-  font-size:26px;
-  color:#c2185b;
+  font-size:24px;
+  color:var(--main);
   cursor:pointer;
-  border-bottom:2px dashed #f3b5cc;
+  border-bottom:2px dashed var(--line);
   padding:6px 0;
-  list-style:none;
-}
-
-.accordionSummary::-webkit-details-marker{
-  display:none;
 }
 
 .accordionSummary::after{
@@ -324,145 +535,138 @@ details[open] .accordionSummary::after{
   content:" ▴";
 }
 
-/* BOTÓN CONFIGURACIÓN */
-.topActions{
-  position:absolute;
-  top:10px;
-  right:10px;
-  z-index:100;
+/* PREVIEW CHIPS */
+.glaseadosPreview{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
 }
 
-.settingsWrap{
-  position:relative;
+.glaseadoChip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--soft);
+  border:1px solid var(--line);
+  color:var(--main);
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
 }
 
-.settingsBtn{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  border:1px solid #f6c7da;
-  background:linear-gradient(180deg,#fffafb 0%,#fff1f7 100%);
-  color:#c2185b;
+.glaseadoChipIcon{
+  font-size:15px;
+}
+
+/* STICKY BAR */
+.stickyBar{
+  position:sticky;
+  bottom:0;
+  z-index:40;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(8px);
+  border-top:2px solid #ffd3e6;
+  padding:10px 12px calc(12px + env(safe-area-inset-bottom));
+  margin-top:14px;
+}
+
+.rowSticky{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.total{
+  flex:1;
+  min-height:54px;
   display:flex;
   align-items:center;
   justify-content:center;
-  cursor:pointer;
-  padding:0;
-  box-shadow:0 6px 18px rgba(194,24,91,.10);
-  transition:transform .2s ease, background .2s ease, box-shadow .2s ease;
-}
-
-.settingsBtn:hover{
-  transform:rotate(20deg) scale(1.04);
-  background:#ffeaf3;
-  box-shadow:0 8px 18px rgba(194,24,91,.18);
-}
-
-.settingsBtn.active{
-  transform:rotate(90deg);
-}
-
-.settingsSvg{
-  width:22px;
-  height:22px;
-  display:block;
-  fill:currentColor;
-}
-
-.settingsMenu{
-  position:absolute;
-  top:54px;
-  right:0;
-  width:230px;
-  background:#fff;
-  border:1px solid #f3b5cc;
-  border-radius:16px;
-  box-shadow:0 12px 30px rgba(0,0,0,.12);
-  overflow:hidden;
-  opacity:0;
-  transform:translateY(-10px) scale(.98);
-  pointer-events:none;
-  transition:opacity .22s ease, transform .22s ease;
-}
-
-.settingsMenu.open{
-  opacity:1;
-  transform:translateY(0) scale(1);
-  pointer-events:auto;
-}
-
-.settingsMenu button{
-  width:100%;
-  border:none;
-  border-radius:0;
-  background:white;
-  color:#444;
-  padding:14px 16px;
-  text-align:left;
-  font-size:14px;
-  font-weight:600;
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.settingsMenu button:hover{
-  background:#fff3f8;
-  transform:none;
-}
-
-.settingsMenu button + button{
-  border-top:1px solid #f8d7e4;
-}
-
-.settingsMenuIcon{
-  width:20px;
   text-align:center;
-  flex:0 0 20px;
+  color:var(--main);
+  font-weight:800;
+  background:#ffe3ef;
+  padding:12px 10px;
+  border-radius:14px;
+  font-size:16px;
 }
 
-/* MODALES */
+.primaryBtn{
+  width:auto;
+  white-space:nowrap;
+  min-width:150px;
+}
+
+button{
+  background:linear-gradient(45deg,var(--main-2),var(--main-3));
+  color:#fff;
+  padding:15px 16px;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:800;
+  min-height:54px;
+}
+
+button:active{
+  transform:scale(.98);
+}
+
+/* MODALS */
+.modal,
 .infoModal{
   display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.65);
-  z-index:4000;
+  background:rgba(0,0,0,.74);
+  z-index:999;
   justify-content:center;
   align-items:center;
   padding:16px;
 }
 
-.infoModalCard{
-  background:#fff;
+.modal img{
+  max-width:92%;
+  max-height:90%;
+  border-radius:14px;
+}
+
+.infoModal{
+  z-index:4000;
+}
+
+.infoModalCard,
+.sheetCard{
   width:100%;
-  max-width:460px;
-  border-radius:18px;
-  padding:20px;
-  max-height:85vh;
+  max-width:430px;
+  background:#fff;
+  border-radius:20px;
+  padding:18px;
+  max-height:88vh;
   overflow:auto;
-  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  box-shadow:0 18px 45px rgba(0,0,0,.22);
 }
 
 .infoModalTitle{
   font-family:'Pacifico',cursive;
-  color:#c2185b;
+  color:var(--main);
   text-align:center;
-  font-size:28px;
+  font-size:26px;
   margin:0 0 12px;
 }
 
 .infoBlock{
-  background:#fff7fb;
-  border:1px solid #f3b5cc;
-  border-radius:14px;
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:16px;
   padding:12px;
   margin:10px 0;
 }
 
 .infoBlock h3{
   margin:0 0 8px;
-  color:#c2185b;
+  color:var(--main);
   font-size:16px;
 }
 
@@ -478,10 +682,6 @@ details[open] .accordionSummary::after{
   padding:0;
 }
 
-.infoCloseBtn{
-  margin-top:14px;
-}
-
 .helpVisual{
   margin:6px 0 14px;
   text-align:center;
@@ -490,19 +690,40 @@ details[open] .accordionSummary::after{
 .helpVisual img{
   width:100%;
   max-width:340px;
-  height:auto;
-  display:block;
   margin:0 auto;
   border-radius:16px;
   background:#fff;
 }
 
-/* LOADER */
+.modalActions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
 
+.modalActions button{
+  flex:1;
+}
+
+.resumenTitle{
+  font-family:'Pacifico',cursive;
+  color:var(--main);
+  text-align:center;
+  font-size:26px;
+  margin:0 0 12px;
+}
+
+#resumenContenido{
+  font-size:14px;
+  color:#444;
+  line-height:1.5;
+}
+
+/* LOADER */
 #loader{
   position:fixed;
   inset:0;
-  background:#ffe6f0;
+  background:var(--bg);
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -511,45 +732,56 @@ details[open] .accordionSummary::after{
 }
 
 .donutLoader{
+  width:92px;
+  height:92px;
+  object-fit:contain;
+  animation:girarDonita 1.45s linear infinite;
+}
 
 .loaderText{
   margin-top:12px;
   font-family:'Pacifico',cursive;
-  color:#c2185b;
-  font-size:22px;
+  color:var(--main);
+  font-size:24px;
 }
 
 @keyframes girarDonita{
-  from{ transform:rotate(0deg); }
-  to{ transform:rotate(360deg); }
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
 }
 
-
-
+/* MOBILE TWEAKS */
+@media (max-width:380px){
+  h1{font-size:28px}
+  .sectionTitle{font-size:25px}
+  .productName{font-size:15px}
+  .productMeta{font-size:12px}
+  .qtyBox{min-width:48px}
+  .primaryBtn{min-width:132px}
+}
 </style>
 </head>
-
 <body>
 
 <div id="loader">
-  <img src="Carga.png" class="donutLoader">
+  <img src="Carga.png" class="donutLoader" alt="Cargando">
   <div class="loaderText">Cargando...</div>
 </div>
 
 <!-- MODAL RESUMEN -->
-<div id="resumenModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:2000; justify-content:center; align-items:center;">
-  <div style="background:white; padding:20px; border-radius:15px; max-width:420px; width:92%; max-height:85vh; overflow:auto;">
-    <h2>🧾 Resumen</h2>
+<div id="resumenModal" class="modal" onclick="cerrarResumenDesdeFondo(event)">
+  <div class="sheetCard" onclick="event.stopPropagation()">
+    <h2 class="resumenTitle">Resumen</h2>
 
     <div id="resumenContenido"></div>
 
     <div style="margin-top:10px;">
-      <label style="font-weight:600; color:#c2185b;">📝 Nota del pedido (opcional)</label>
+      <label class="fieldLabel" style="color:#c2185b;">📝 Nota del pedido (opcional)</label>
       <textarea id="notaPedidoResumen" placeholder="Ej: sin azúcar glass, más Oreo, bien cargado de crema, etc."></textarea>
       <div class="smallMuted">Esto se guardará en el pedido para que ustedes lo vean en el panel.</div>
     </div>
 
-    <div style="display:flex; gap:10px; margin-top:12px;">
+    <div class="modalActions">
       <button class="secondary" type="button" onclick="cerrarResumen()">Cancelar</button>
       <button type="button" onclick="confirmarEnvio()">Confirmar</button>
     </div>
@@ -557,32 +789,32 @@ details[open] .accordionSummary::after{
 </div>
 
 <!-- MODAL TRANSFERENCIA -->
-<div id="transferModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:3000; justify-content:center; align-items:center;">
-  <div style="background:white; padding:20px; border-radius:15px; max-width:420px; width:92%;">
-    <h2>🏦 Transferencia</h2>
+<div id="transferModal" class="modal" onclick="cerrarTransferDesdeFondo(event)">
+  <div class="sheetCard" onclick="event.stopPropagation()">
+    <h2 class="resumenTitle">Transferencia</h2>
 
-    <div class="aviso" style="margin-top:10px;">
+    <div class="aviso">
       <b>Datos bancarios:</b><br>
-      <div id="transferInfoBox" class="small muted" style="margin-top:6px;">
+      <div id="transferInfoBox" class="smallMuted" style="margin-top:6px;">
         Banco..., Cuenta..., Nombre..., etc.
       </div>
     </div>
 
-    <label style="margin-top:10px; display:block;">Referencia / Nº de comprobante (opcional)</label>
+    <label class="fieldLabel">Referencia / Nº de comprobante (opcional)</label>
     <input id="refTransfer" placeholder="Ej: 839201 / captura / etc.">
 
-    <label style="margin-top:10px; display:block;">Foto del comprobante</label>
+    <label class="fieldLabel">Foto del comprobante</label>
     <input id="fotoComprobante" type="file" accept="image/*">
 
-    <label style="margin-top:10px; display:block;">Nota para tu pedido (opcional)</label>
+    <label class="fieldLabel">Nota para tu pedido (opcional)</label>
     <input id="notaPedidoTransfer" placeholder="Ej: más chocolate, sin azúcar glass...">
 
-    <div style="display:flex; gap:10px; margin-top:14px;">
+    <div class="modalActions">
       <button class="secondary" type="button" onclick="cerrarTransfer()">Cancelar</button>
       <button type="button" onclick="confirmarTransferencia()">Listo, ya transferí</button>
     </div>
 
-    <div id="transferMsg" class="small muted" style="margin-top:10px;"></div>
+    <div id="transferMsg" class="smallMuted" style="margin-top:10px;"></div>
   </div>
 </div>
 
@@ -650,7 +882,7 @@ details[open] .accordionSummary::after{
       </select>
 
       <div id="zonaContainer" style="display:none; margin-top:10px;">
-        <label style="font-weight:600; color:#c2185b;">Zonas disponibles</label>
+        <label class="fieldLabel" style="color:#c2185b;">Zonas disponibles</label>
         <select id="zona" onchange="actualizarResumenEntrega(); calcular()">
           <option value="0">Selecciona tu zona</option>
           <option value="50">Zona 1 – Licey al Medio (RD$50)</option>
@@ -669,122 +901,141 @@ details[open] .accordionSummary::after{
   </div>
 </div>
 
-<div class="container">
+<div class="appShell">
+  <div class="container">
 
-  <div class="topActions">
-    <div class="settingsWrap">
-      <button type="button" id="settingsBtn" class="settingsBtn" onclick="toggleSettingsMenu(event)" aria-label="Abrir menú">
-        <svg class="settingsSvg" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.14 7.14 0 0 0-1.63-.94l-.36-2.54a.5.5 0 0 0-.49-.42h-3.84a.5.5 0 0 0-.49.42l-.36 2.54c-.58.23-1.12.54-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.83 14.52a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96c.51.4 1.05.71 1.63.94l.36 2.54a.5.5 0 0 0 .49.42h3.84a.5.5 0 0 0 .49-.42l.36-2.54c.58-.23 1.12-.54 1.63-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Z"/>
-        </svg>
-      </button>
-
-      <div id="settingsMenu" class="settingsMenu">
-        <button type="button" onclick="abrirAyudaDesdeMenu()">
-          <span class="settingsMenuIcon">ℹ️</span>
-          <span>¿Cómo pedir?</span>
+    <div class="topActions">
+      <div class="settingsWrap">
+        <button type="button" id="settingsBtn" class="settingsBtn" onclick="toggleSettingsMenu(event)" aria-label="Abrir menú">
+          <svg class="settingsSvg" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.14 7.14 0 0 0-1.63-.94l-.36-2.54a.5.5 0 0 0-.49-.42h-3.84a.5.5 0 0 0-.49.42l-.36 2.54c-.58.23-1.12.54-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.83 14.52a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96c.51.4 1.05.71 1.63.94l.36 2.54a.5.5 0 0 0 .49.42h3.84a.5.5 0 0 0 .49-.42l.36-2.54c.58-.23 1.12-.54 1.63-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Z"/>
+          </svg>
         </button>
 
-        <button type="button" onclick="abrirDeliveryDesdeMenu()">
-          <span class="settingsMenuIcon">🚚</span>
-          <span>Tipo de entrega</span>
-        </button>
+        <div id="settingsMenu" class="settingsMenu">
+          <button type="button" onclick="abrirAyudaDesdeMenu()">
+            <span class="settingsMenuIcon">ℹ️</span>
+            <span>¿Cómo pedir?</span>
+          </button>
 
-        <button type="button" onclick="scrollToFotos()">
-          <span class="settingsMenuIcon">📸</span>
-          <span>Hechas por nosotros</span>
-        </button>
+          <button type="button" onclick="abrirDeliveryDesdeMenu()">
+            <span class="settingsMenuIcon">🚚</span>
+            <span>Tipo de entrega</span>
+          </button>
 
-        <button type="button" onclick="scrollToDatos()">
-          <span class="settingsMenuIcon">👤</span>
-          <span>Tus datos</span>
-        </button>
+          <button type="button" onclick="scrollToFotos()">
+            <span class="settingsMenuIcon">📸</span>
+            <span>Hechas por nosotros</span>
+          </button>
+
+          <button type="button" onclick="scrollToDatos()">
+            <span class="settingsMenuIcon">👤</span>
+            <span>Tus datos</span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="logo">
-    <img src="logo.png" alt="Logo">
-  </div>
-
-  <h1>Hailey’s Donuts & Cream</h1>
-
-  <details id="fotosSection" style="margin-top:10px;">
-    <summary style="cursor:pointer; font-weight:700; color:#c2185b;">📸</summary>
-    <div class="galeria">
-      <img src="foto1.jpeg" onclick="zoom(this.src)">
-      <img src="foto2.jpeg" onclick="zoom(this.src)">
-      <img src="foto3.jpeg" onclick="zoom(this.src)">
-      <img src="foto4.jpeg" onclick="zoom(this.src)">
-      <img src="foto5.jpeg" onclick="zoom(this.src)">
-      <img src="foto6.jpeg" onclick="zoom(this.src)">
-      <img src="foto7.jpeg" onclick="zoom(this.src)">
-      <img src="foto8.jpeg" onclick="zoom(this.src)">
-      <img src="foto9.jpeg" onclick="zoom(this.src)">
+    <div class="logo">
+      <img src="logo.png" alt="Logo">
     </div>
-  </details>
 
-  <div class="modal" id="modal" onclick="cerrarZoom()">
-    <img id="imgGrande" alt="Imagen ampliada">
-  </div>
+    <h1>Hailey’s Donuts & Cream</h1>
 
-  <h2 id="combosTitle">🍩 Combos</h2>
-  <div id="combosList"></div>
-
-  <h2 id="glaseadosTitle">🍫 Glaseados</h2>
-  <div id="glaseadosContainer"></div>
-
-  <h2 id="toppingsTitle">✨ Toppings</h2>
-  <div id="toppingsContainer"></div>
-
-  <div id="glaseadosPreview" class="glaseadosPreview"></div>
-  <div id="toppingsList" style="display:none;"></div>
-
-  <div id="entregaResumenBox" class="aviso" style="margin-top:14px; text-align:center;">
-    🚚 Entrega seleccionada: <b id="entregaResumenMini">Recoger en tienda (Licey al Medio)</b>
-  </div>
-
-  <details id="datosClienteBox" style="margin-top:14px;">
-    <summary class="accordionSummary">
-      👤 Tus datos
-    </summary>
-
-    <div style="padding-top:10px;">
-      <label>Nombre:</label>
-      <input id="nombre">
-
-      <label>Dirección:</label>
-      <input id="direccion">
-
-      <label>Teléfono (WhatsApp):</label>
-      <input id="telefono" placeholder="Ej: 8091234567">
-
-      <label>Método de pago:</label>
-      <select id="pago">
-        <option>Efectivo</option>
-        <option>Transferencia</option>
-      </select>
-
-      <label>Fecha:</label>
-      <input type="date" id="fecha">
-
-      <label>Hora:</label>
-      <input type="time" id="hora">
+    <div class="heroMini">
+      <span class="miniChip">🍩 Mini donas frescas</span>
+      <span class="miniChip">✨ Personalízalas a tu gusto</span>
     </div>
-  </details>
 
-  <div id="thanksMsg" class="success">
-    ✅ Gracias por tu pedido. Lo recibimos y te escribiremos desde el negocio en breve. 🩷
+    <details id="fotosSection" class="sectionCard">
+      <summary class="gallerySummary">
+        <span>📸 Hechas por nosotros</span>
+      </summary>
+      <div class="galeria">
+        <img src="foto1.jpeg" onclick="zoom(this.src)" alt="Foto 1">
+        <img src="foto2.jpeg" onclick="zoom(this.src)" alt="Foto 2">
+        <img src="foto3.jpeg" onclick="zoom(this.src)" alt="Foto 3">
+        <img src="foto4.jpeg" onclick="zoom(this.src)" alt="Foto 4">
+        <img src="foto5.jpeg" onclick="zoom(this.src)" alt="Foto 5">
+        <img src="foto6.jpeg" onclick="zoom(this.src)" alt="Foto 6">
+        <img src="foto7.jpeg" onclick="zoom(this.src)" alt="Foto 7">
+        <img src="foto8.jpeg" onclick="zoom(this.src)" alt="Foto 8">
+        <img src="foto9.jpeg" onclick="zoom(this.src)" alt="Foto 9">
+      </div>
+    </details>
+
+    <div class="modal" id="modal" onclick="cerrarZoom()">
+      <img id="imgGrande" alt="Imagen ampliada">
+    </div>
+
+    <section class="sectionCard">
+      <h2 id="combosTitle" class="sectionTitle"><img src="Carga.png" class="iconDonut" alt="">Combos</h2>
+      <div class="subHint">Toca + o − para elegir cuántas quieres.</div>
+      <div id="combosList"></div>
+    </section>
+
+    <section class="sectionCard">
+      <h2 id="glaseadosTitle" class="sectionTitle"><img src="Carga.png" class="iconDonut" alt="">Glaseados</h2>
+      <div class="subHint">Primero eliges el baño de la dona.</div>
+      <div id="glaseadosContainer"></div>
+      <div id="glaseadosPreview" class="glaseadosPreview"></div>
+    </section>
+
+    <section class="sectionCard">
+      <h2 id="toppingsTitle" class="sectionTitle"><img src="Carga.png" class="iconDonut" alt="">Toppings</h2>
+      <div class="subHint">Luego le pones la corona. Aquí vive el sabor.</div>
+      <div id="toppingsContainer"></div>
+      <div id="toppingsList" class="hidden"></div>
+    </section>
+
+    <section class="sectionCard">
+      <div id="entregaResumenBox" class="deliveryResume">
+        🚚 Entrega seleccionada: <b id="entregaResumenMini">Recoger en tienda (Licey al Medio)</b>
+      </div>
+    </section>
+
+    <details id="datosClienteBox" class="sectionCard">
+      <summary class="accordionSummary">👤 Tus datos</summary>
+
+      <div style="padding-top:10px;">
+        <label class="fieldLabel">Nombre</label>
+        <input id="nombre">
+
+        <label class="fieldLabel">Dirección</label>
+        <input id="direccion">
+
+        <label class="fieldLabel">Teléfono (WhatsApp)</label>
+        <input id="telefono" placeholder="Ej: 8091234567" inputmode="numeric">
+
+        <label class="fieldLabel">Método de pago</label>
+        <select id="pago">
+          <option>Efectivo</option>
+          <option>Transferencia</option>
+        </select>
+
+        <label class="fieldLabel">Fecha</label>
+        <input type="date" id="fecha">
+
+        <label class="fieldLabel">Hora</label>
+        <input type="time" id="hora">
+      </div>
+    </details>
+
+    <div id="thanksMsg" class="success">
+      ✅ Gracias por tu pedido. Lo recibimos y te escribiremos desde el negocio en breve. 🩷
+    </div>
   </div>
 
   <div class="stickyBar">
     <div class="rowSticky">
       <div class="total" id="total">TOTAL: RD$0</div>
-      <button type="button" onclick="enviar()">🧾 Ver resumen</button>
+      <button type="button" class="primaryBtn" onclick="enviar()">Confirmar pedido</button>
     </div>
-  
-  </div>
 
+    <div class="smallMuted" style="text-align:center; margin-top:6px;">
+      Revisa tu pedido antes de guardarlo.
+    </div>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -968,6 +1219,23 @@ function toggleDelivery(){
   calcular();
 }
 
+function adjustCombo(btn, delta){
+  const row = btn.closest(".item");
+  if(!row) return;
+
+  const input = row.querySelector(".comboQty");
+  const view = row.querySelector(".qtyBox");
+  if(!input || !view) return;
+
+  let value = parseInt(input.value || "0") || 0;
+  value += delta;
+  if(value < 0) value = 0;
+
+  input.value = value;
+  view.textContent = value;
+  calcular();
+}
+
 function calcular(){
   let total = 0;
   let maxToppings = 0;
@@ -975,9 +1243,9 @@ function calcular(){
 
   document.querySelectorAll(".comboQty").forEach(c=>{
     let q = parseInt(c.value) || 0;
-    total += q * parseInt(c.dataset.price);
-    maxToppings += q * parseInt(c.dataset.toppings);
-    maxGlaseados += q * parseInt(c.dataset.toppings);
+    total += q * parseInt(c.dataset.price || 0);
+    maxToppings += q * parseInt(c.dataset.toppings || 0);
+    maxGlaseados += q * parseInt(c.dataset.toppings || 0);
   });
 
   if(maxToppings !== ultimoMaxToppings){
@@ -1023,18 +1291,14 @@ function actualizarToppings(max){
   cont.innerHTML = "";
 
   if(max <= 0){
-    cont.innerHTML = "<p style='color:#999;font-size:14px'>Selecciona un combo para elegir toppings</p>";
+    cont.innerHTML = "<p class='smallMuted' style='text-align:center;padding:4px 0;'>Selecciona un combo para elegir toppings</p>";
     return;
   }
 
   const tituloIncluidos = document.createElement("div");
   tituloIncluidos.innerHTML = `
-    <div style="font-weight:600; color:#c2185b; margin:6px 0 2px;">
-      Toppings incluidos
-    </div>
-    <div class="smallMuted" style="margin-bottom:8px;">
-      Estos no tienen costo porque ya vienen con tu combo.
-    </div>
+    <div class="stackLabel">Toppings incluidos</div>
+    <div class="smallMuted" style="margin-bottom:8px;">Estos no tienen costo porque ya vienen con tu combo.</div>
   `;
   cont.appendChild(tituloIncluidos);
 
@@ -1056,7 +1320,7 @@ function actualizarToppings(max){
     toppings.forEach(t=>{
       const op = document.createElement("option");
       op.value = t.name;
-      op.text = `${t.name}`;
+      op.text = t.name;
       s.appendChild(op);
     });
 
@@ -1071,12 +1335,8 @@ function actualizarToppings(max){
   const extrasWrap = document.createElement("div");
   extrasWrap.style.marginTop = "14px";
   extrasWrap.innerHTML = `
-    <div style="font-weight:600; color:#c2185b; margin:6px 0 2px;">
-      Toppings extra
-    </div>
-    <div class="smallMuted" style="margin-bottom:8px;">
-      Estos sí tienen costo adicional.
-    </div>
+    <div class="stackLabel">Toppings extra</div>
+    <div class="smallMuted" style="margin-bottom:8px;">Estos sí tienen costo adicional.</div>
     <div id="extraToppingsList"></div>
     <button type="button" class="secondary" style="margin-top:8px;" onclick="agregarToppingExtra(); calcular();">+ Agregar topping extra</button>
   `;
@@ -1092,10 +1352,7 @@ function agregarToppingExtra(valorPrevio = ""){
   if(!list) return;
 
   const row = document.createElement("div");
-  row.style.display = "flex";
-  row.style.gap = "8px";
-  row.style.alignItems = "center";
-  row.style.marginBottom = "6px";
+  row.className = "extraRow";
 
   const s = document.createElement("select");
   s.className = "toppingSelect toppingExtra";
@@ -1122,10 +1379,8 @@ function agregarToppingExtra(valorPrevio = ""){
 
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.className = "secondary";
+  btn.className = "removeBtn";
   btn.textContent = "✕";
-  btn.style.width = "44px";
-  btn.style.padding = "10px";
   btn.onclick = ()=>{
     row.remove();
     calcular();
@@ -1152,19 +1407,15 @@ function actualizarGlaseados(max){
   cont.innerHTML = "";
 
   if(max <= 0){
-    cont.innerHTML = "<p style='color:#999;font-size:14px'>Selecciona un combo para elegir glaseados</p>";
+    cont.innerHTML = "<p class='smallMuted' style='text-align:center;padding:4px 0;'>Selecciona un combo para elegir glaseados</p>";
     renderGlaseadosPreview();
     return;
   }
 
   const tituloIncluidos = document.createElement("div");
   tituloIncluidos.innerHTML = `
-    <div style="font-weight:600; color:#c2185b; margin:6px 0 2px;">
-      Glaseados incluidos
-    </div>
-    <div class="smallMuted" style="margin-bottom:8px;">
-      Estos no tienen costo porque ya vienen con tu combo.
-    </div>
+    <div class="stackLabel">Glaseados incluidos</div>
+    <div class="smallMuted" style="margin-bottom:8px;">Estos no tienen costo porque ya vienen con tu combo.</div>
   `;
   cont.appendChild(tituloIncluidos);
 
@@ -1200,12 +1451,8 @@ function actualizarGlaseados(max){
   const extrasWrap = document.createElement("div");
   extrasWrap.style.marginTop = "14px";
   extrasWrap.innerHTML = `
-    <div style="font-weight:600; color:#c2185b; margin:6px 0 2px;">
-      Glaseados extra
-    </div>
-    <div class="smallMuted" style="margin-bottom:8px;">
-      Estos sí tienen costo adicional.
-    </div>
+    <div class="stackLabel">Glaseados extra</div>
+    <div class="smallMuted" style="margin-bottom:8px;">Estos sí tienen costo adicional.</div>
     <div id="extraGlaseadosList"></div>
     <button type="button" class="secondary" style="margin-top:8px;" onclick="agregarGlaseadoExtra()">+ Agregar glaseado extra</button>
   `;
@@ -1223,10 +1470,7 @@ function agregarGlaseadoExtra(valorPrevio = ""){
   if(!list) return;
 
   const row = document.createElement("div");
-  row.style.display = "flex";
-  row.style.gap = "8px";
-  row.style.alignItems = "center";
-  row.style.marginBottom = "6px";
+  row.className = "extraRow";
 
   const s = document.createElement("select");
   s.className = "glaseadoSelect glaseadoExtra";
@@ -1256,10 +1500,8 @@ function agregarGlaseadoExtra(valorPrevio = ""){
 
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.className = "secondary";
+  btn.className = "removeBtn";
   btn.textContent = "✕";
-  btn.style.width = "44px";
-  btn.style.padding = "10px";
   btn.onclick = ()=>{
     row.remove();
     calcular();
@@ -1285,6 +1527,13 @@ function renderGlaseadosPreview(){
       if(g) elegidos.push(g);
     }
   });
+
+  elegidos.forEach(g=>{
+    const chip = document.createElement("div");
+    chip.className = "glaseadoChip";
+    chip.innerHTML = `<span class="glaseadoChipIcon">${g.icon || "🍫"}</span><span>${escapeHtml(g.name)}</span>`;
+    cont.appendChild(chip);
+  });
 }
 
 function renderCombosFS(combosDocs){
@@ -1303,15 +1552,12 @@ function renderCombosFS(combosDocs){
     if(badgeManual === "oferta"){
       return `<span class="productBadge">🏷 OFERTA</span>`;
     }
-
     if(ventas < 10){
       return `<span class="productBadge">🆕 NUEVO</span>`;
     }
-
     if(ventas < 30){
       return `<span class="productBadge">🔥 POPULAR</span>`;
     }
-
     return `<span class="productBadge">⭐ MÁS VENDIDO</span>`;
   }
 
@@ -1333,19 +1579,22 @@ function renderCombosFS(combosDocs){
         </div>
       </div>
 
-      <input
-        type="number"
-        min="0"
-        value="0"
-        class="qty comboQty"
-        data-name="${escapeAttr(c.name)}"
-        data-price="${price}"
-        data-toppings="${toppingsIncl}"
-      >
+      <div class="comboControl">
+        <button type="button" class="qtyBtn" onclick="adjustCombo(this,-1)">−</button>
+        <div class="qtyBox">0</div>
+        <button type="button" class="qtyBtn" onclick="adjustCombo(this,1)">+</button>
+        <input
+          type="number"
+          min="0"
+          value="0"
+          class="comboQty"
+          data-name="${escapeAttr(c.name)}"
+          data-price="${price}"
+          data-toppings="${toppingsIncl}"
+        >
+      </div>
     `;
 
-    const input = div.querySelector("input");
-    input.addEventListener("input", calcular);
     cont.appendChild(div);
   });
 }
@@ -1380,9 +1629,9 @@ function renderToppingsFS(toppingsDocs){
 function escucharTiendaEnVivo(){
   db.collection("store_settings").doc("main").onSnapshot((snap)=>{
     const s = snap.exists ? snap.data() : {};
-    document.getElementById("combosTitle").textContent = s.combosTitle || "🍩 Combos";
-    document.getElementById("toppingsTitle").textContent = s.toppingsTitle || "✨ Toppings";
-    document.getElementById("glaseadosTitle").textContent = s.glaseadosTitle || "🍫 Glaseados";
+    document.getElementById("combosTitle").innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.combosTitle || "Combos").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
+    document.getElementById("toppingsTitle").innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.toppingsTitle || "Toppings").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
+    document.getElementById("glaseadosTitle").innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.glaseadosTitle || "Glaseados").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
     window.__thanksMessage = s.thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
 
     const tinfo = (s.transferInfo || "").trim();
@@ -1677,8 +1926,6 @@ async function actualizarVentasProductos(combos){
           salesCount: firebase.firestore.FieldValue.increment(Number(c.cantidad || 0)),
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-
-        console.log("salesCount actualizado para:", c.combo, "cantidad:", c.cantidad);
       }
     }
   }catch(e){
@@ -1690,6 +1937,11 @@ async function actualizarVentasProductos(combos){
 function cerrarResumen(){
   document.getElementById("resumenModal").style.display = "none";
 }
+function cerrarResumenDesdeFondo(event){
+  if(event.target === document.getElementById("resumenModal")){
+    cerrarResumen();
+  }
+}
 
 function abrirTransfer(){
   document.getElementById("transferMsg").innerText = "";
@@ -1698,9 +1950,13 @@ function abrirTransfer(){
   document.getElementById("fotoComprobante").value = "";
   document.getElementById("transferModal").style.display = "flex";
 }
-
 function cerrarTransfer(){
   document.getElementById("transferModal").style.display = "none";
+}
+function cerrarTransferDesdeFondo(event){
+  if(event.target === document.getElementById("transferModal")){
+    cerrarTransfer();
+  }
 }
 
 function fileToBase64(file){
@@ -1750,8 +2006,12 @@ function limpiarFormulario(){
     i.value = 0;
   });
 
-  document.getElementById("toppingsContainer").innerHTML = "<p style='color:#999;font-size:14px'>Selecciona un combo para elegir toppings</p>";
-  document.getElementById("glaseadosContainer").innerHTML = "<p style='color:#999;font-size:14px'>Selecciona un combo para elegir glaseados</p>";
+  document.querySelectorAll(".qtyBox").forEach(v=>{
+    v.textContent = "0";
+  });
+
+  document.getElementById("toppingsContainer").innerHTML = "<p class='smallMuted' style='text-align:center;padding:4px 0;'>Selecciona un combo para elegir toppings</p>";
+  document.getElementById("glaseadosContainer").innerHTML = "<p class='smallMuted' style='text-align:center;padding:4px 0;'>Selecciona un combo para elegir glaseados</p>";
   document.getElementById("glaseadosPreview").innerHTML = "";
 
   document.getElementById("tipoEntrega").value = "pickup";
@@ -1796,8 +2056,6 @@ async function guardarPedidoFirestore(){
       creado: new Date()
     });
 
-    await actualizarVentasProductos(pedidoActual.combos);
-
     alert(window.__thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.");
     limpiarFormulario();
   }catch(e){
@@ -1805,14 +2063,6 @@ async function guardarPedidoFirestore(){
   }
 }
 
-document.addEventListener("click", function(e){
-  const wrap = document.querySelector(".settingsWrap");
-  if(!wrap) return;
-
-  if(!wrap.contains(e.target)){
-    cerrarSettingsMenu();
-  }
-});
 
 document.addEventListener("DOMContentLoaded", ()=>{
   toggleDelivery();
@@ -1821,16 +2071,12 @@ document.addEventListener("DOMContentLoaded", ()=>{
   calcular();
 });
 
-
 window.addEventListener("load", ()=>{
   const loader = document.getElementById("loader");
   if(loader){
     loader.style.opacity = "0";
-    loader.style.transition = "opacity .4s ease";
-
-    setTimeout(()=>{
-      loader.remove();
-    },400);
+    loader.style.transition = "opacity .35s ease";
+    setTimeout(()=> loader.remove(), 350);
   }
 });
 </script>
