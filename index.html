@@ -6,8 +6,9 @@
 
 <link rel="icon" type="image/png" href="logo.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#c2185b">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -29,29 +30,25 @@
   --success-tx:#0f5132;
   --warning-bg:#fff3cd;
   --warning-bd:#ffe69c;
+  --danger:#b42318;
 }
 
 html,body{
   margin:0;
   padding:0;
   background:var(--bg);
-  font-family:'Poppins',sans-serif;
+  font-family:'Inter',sans-serif;
   color:var(--text);
 }
 
-body{
-  min-height:100vh;
-}
+body{min-height:100vh;}
 
 img{
   max-width:100%;
   display:block;
 }
 
-button,
-input,
-select,
-textarea{
+button,input,select,textarea{
   font:inherit;
 }
 
@@ -60,9 +57,13 @@ button{
   cursor:pointer;
 }
 
-.hidden{
-  display:none !important;
+button:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+  transform:none !important;
 }
+
+.hidden{display:none !important;}
 
 /* APP */
 .appShell{
@@ -82,6 +83,7 @@ button{
   position:relative;
 }
 
+/* TOP ACTIONS */
 .topActions{
   position:absolute;
   top:12px;
@@ -89,9 +91,7 @@ button{
   z-index:60;
 }
 
-.settingsWrap{
-  position:relative;
-}
+.settingsWrap{position:relative;}
 
 .settingsBtn{
   width:48px;
@@ -108,13 +108,8 @@ button{
   transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
-.settingsBtn:active{
-  transform:scale(.96);
-}
-
-.settingsBtn.active{
-  transform:rotate(90deg);
-}
+.settingsBtn:active{transform:scale(.96);}
+.settingsBtn.active{transform:rotate(90deg);}
 
 .settingsSvg{
   width:22px;
@@ -157,16 +152,15 @@ button{
   font-size:14px;
   font-weight:600;
   min-height:auto;
+  border-radius:0;
+  box-shadow:none;
 }
 
 .settingsMenu button + button{
   border-top:1px solid var(--line-2);
 }
 
-.settingsMenu button:active{
-  background:var(--soft-2);
-}
-
+.settingsMenu button:active{background:var(--soft-2);}
 .settingsMenuIcon{
   width:20px;
   flex:0 0 20px;
@@ -214,6 +208,20 @@ h1{
   padding:7px 12px;
   border-radius:999px;
 }
+
+.heroNotice{
+  background:linear-gradient(180deg,#fff7fb 0%,#fff0f6 100%);
+  border:1px dashed var(--line);
+  border-radius:18px;
+  padding:12px;
+  margin:0 0 12px;
+  text-align:center;
+  color:#6d5562;
+  font-size:13px;
+  line-height:1.45;
+}
+
+.heroNotice b{color:var(--main);}
 
 /* SECTION */
 .sectionCard{
@@ -263,9 +271,7 @@ h1{
   border-bottom:1px dotted var(--line);
 }
 
-.item:last-child{
-  border-bottom:none;
-}
+.item:last-child{border-bottom:none;}
 
 .productInfo{
   display:flex;
@@ -331,11 +337,11 @@ h1{
   align-items:center;
   justify-content:center;
   padding:0;
+  box-shadow:none;
+  min-height:40px;
 }
 
-.qtyBtn:active{
-  transform:scale(.94);
-}
+.qtyBtn:active{transform:scale(.94);}
 
 .qtyBox{
   min-width:54px;
@@ -352,9 +358,7 @@ h1{
   color:#111;
 }
 
-.comboQty{
-  display:none;
-}
+.comboQty{display:none;}
 
 /* FIELDS */
 input,select,textarea{
@@ -416,13 +420,37 @@ textarea{
   font-size:18px;
   font-weight:700;
   padding:0;
+  box-shadow:none;
+  min-height:48px;
 }
 
 .secondary{
   background:#efeff1;
   color:#333;
   font-weight:700;
+  box-shadow:none;
 }
+
+.selectorBlock{
+  background:#fff9fc;
+  border:1px dashed var(--line);
+  border-radius:16px;
+  padding:12px;
+  margin-top:10px;
+}
+
+.previewBox{
+  margin-top:10px;
+  background:#fff9fc;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  font-size:13px;
+  color:#5d4a56;
+  line-height:1.45;
+}
+
+.previewBox b{color:var(--main);}
 
 /* GALLERY */
 .gallerySummary{
@@ -440,18 +468,14 @@ textarea{
   font-weight:700;
 }
 
-.gallerySummary::-webkit-details-marker{
-  display:none;
-}
+.gallerySummary::-webkit-details-marker{display:none;}
 
 .gallerySummary::after{
   content:"▾";
   font-size:16px;
 }
 
-details[open] .gallerySummary::after{
-  content:"▴";
-}
+details[open] .gallerySummary::after{content:"▴";}
 
 .galeria{
   display:grid;
@@ -500,18 +524,22 @@ details[open] .gallerySummary::after{
   color:#5d4a56;
 }
 
-.deliveryResume b{
-  color:var(--main);
+.deliveryResume b{color:var(--main);}
+
+.errorInline{
+  margin-top:8px;
+  background:#fff2f1;
+  border:1px solid #f6c4c0;
+  color:var(--danger);
+  padding:10px 12px;
+  border-radius:14px;
+  font-size:13px;
+  display:none;
 }
 
 /* ACCORDION */
-details summary{
-  list-style:none;
-}
-
-details summary::-webkit-details-marker{
-  display:none;
-}
+details summary{list-style:none;}
+details summary::-webkit-details-marker{display:none;}
 
 .accordionSummary{
   display:block;
@@ -531,34 +559,7 @@ details summary::-webkit-details-marker{
   vertical-align:middle;
 }
 
-details[open] .accordionSummary::after{
-  content:" ▴";
-}
-
-/* PREVIEW CHIPS */
-.glaseadosPreview{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:10px;
-}
-
-.glaseadoChip{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  background:var(--soft);
-  border:1px solid var(--line);
-  color:var(--main);
-  padding:8px 12px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:700;
-}
-
-.glaseadoChipIcon{
-  font-size:15px;
-}
+details[open] .accordionSummary::after{content:" ▴";}
 
 /* STICKY BAR */
 .stickyBar{
@@ -609,9 +610,7 @@ button{
   min-height:54px;
 }
 
-button:active{
-  transform:scale(.98);
-}
+button:active{transform:scale(.98);}
 
 /* MODALS */
 .modal,
@@ -632,9 +631,7 @@ button:active{
   border-radius:14px;
 }
 
-.infoModal{
-  z-index:4000;
-}
+.infoModal{z-index:4000;}
 
 .infoModalCard,
 .sheetCard{
@@ -648,7 +645,8 @@ button:active{
   box-shadow:0 18px 45px rgba(0,0,0,.22);
 }
 
-.infoModalTitle{
+.infoModalTitle,
+.resumenTitle{
   font-family:'Pacifico',cursive;
   color:var(--main);
   text-align:center;
@@ -670,14 +668,12 @@ button:active{
   font-size:16px;
 }
 
-.infoBlock p,
-.infoBlock li{
+.infoBlock p,.infoBlock li{
   font-size:14px;
   color:#444;
 }
 
-.infoBlock ul,
-.infoBlock ol{
+.infoBlock ul,.infoBlock ol{
   margin:8px 0 0 18px;
   padding:0;
 }
@@ -701,17 +697,7 @@ button:active{
   margin-top:12px;
 }
 
-.modalActions button{
-  flex:1;
-}
-
-.resumenTitle{
-  font-family:'Pacifico',cursive;
-  color:var(--main);
-  text-align:center;
-  font-size:26px;
-  margin:0 0 12px;
-}
+.modalActions button{flex:1;}
 
 #resumenContenido{
   font-size:14px;
@@ -778,12 +764,14 @@ button:active{
     <div style="margin-top:10px;">
       <label class="fieldLabel" style="color:#c2185b;">📝 Nota del pedido (opcional)</label>
       <textarea id="notaPedidoResumen" placeholder="Ej: sin azúcar glass, más Oreo, bien cargado de crema, etc."></textarea>
-      <div class="smallMuted">Esto se guardará en el pedido para que ustedes lo vean en el panel.</div>
+      <div class="smallMuted">Esto se guardará en el pedido para que lo vean en el panel.</div>
     </div>
+
+    <div id="resumenError" class="errorInline"></div>
 
     <div class="modalActions">
       <button class="secondary" type="button" onclick="cerrarResumen()">Cancelar</button>
-      <button type="button" onclick="confirmarEnvio()">Confirmar</button>
+      <button type="button" id="btnConfirmarResumen" onclick="confirmarEnvio()">Confirmar</button>
     </div>
   </div>
 </div>
@@ -809,9 +797,11 @@ button:active{
     <label class="fieldLabel">Nota para tu pedido (opcional)</label>
     <input id="notaPedidoTransfer" placeholder="Ej: más chocolate, sin azúcar glass...">
 
+    <div id="transferError" class="errorInline"></div>
+
     <div class="modalActions">
       <button class="secondary" type="button" onclick="cerrarTransfer()">Cancelar</button>
-      <button type="button" onclick="confirmarTransferencia()">Listo, ya transferí</button>
+      <button type="button" id="btnConfirmarTransfer" onclick="confirmarTransferencia()">Listo, ya transferí</button>
     </div>
 
     <div id="transferMsg" class="smallMuted" style="margin-top:10px;"></div>
@@ -830,18 +820,18 @@ button:active{
     <div class="infoBlock">
       <h3>🛍️ Pasos para hacer tu pedido</h3>
       <ol>
-        <li>Elige tu combo de donas.</li>
-        <li>Selecciona los glaseados incluidos.</li>
-        <li>Selecciona los toppings incluidos.</li>
-        <li>Si quieres, agrega extras.</li>
-        <li>Escoge delivery o recoger en tienda.</li>
+        <li>Elige tu combo.</li>
+        <li>Selecciona glaseados incluidos.</li>
+        <li>Selecciona toppings incluidos.</li>
+        <li>Agrega extras si quieres.</li>
+        <li>Escoge delivery o recoger.</li>
         <li>Llena tus datos y confirma.</li>
       </ol>
     </div>
 
     <div class="infoBlock">
       <h3>🍫 ¿Qué son los glaseados?</h3>
-      <p>Son cremas o coberturas que bañan la dona.</p>
+      <p>Son coberturas o cremas que bañan la dona.</p>
       <ul>
         <li>Nutella</li>
         <li>Chocolate blanco</li>
@@ -851,7 +841,7 @@ button:active{
 
     <div class="infoBlock">
       <h3>✨ ¿Qué son los toppings?</h3>
-      <p>Son ingredientes que van arriba de las donas para dar textura y sabor.</p>
+      <p>Son ingredientes que van arriba para dar textura y sabor.</p>
       <ul>
         <li>Oreo</li>
         <li>M&amp;M</li>
@@ -864,7 +854,7 @@ button:active{
       <p>Es la mini dona recién hecha sobre la que se agregan glaseados y toppings.</p>
     </div>
 
-    <button type="button" class="infoCloseBtn" onclick="cerrarAyuda()">Entendido</button>
+    <button type="button" class="secondary" onclick="cerrarAyuda()">Entendido</button>
   </div>
 </div>
 
@@ -883,7 +873,7 @@ button:active{
 
       <div id="zonaContainer" style="display:none; margin-top:10px;">
         <label class="fieldLabel" style="color:#c2185b;">Zonas disponibles</label>
-        <select id="zona" onchange="actualizarResumenEntrega(); calcular()">
+        <select id="zona" onchange="actualizarResumenEntrega(); toggleDireccionField(); calcular()">
           <option value="0">Selecciona tu zona</option>
           <option value="50">Zona 1 – Licey al Medio (RD$50)</option>
           <option value="100">Zona 2 – Tamboril / Pontezuela (RD$100)</option>
@@ -897,7 +887,7 @@ button:active{
       <p>Delivery solo en: Licey al Medio, Tamboril, Pontezuela, Centro, Pekín, Monumental y Universitaria.</p>
     </div>
 
-    <button type="button" class="infoCloseBtn" onclick="cerrarDelivery()">Entendido</button>
+    <button type="button" class="secondary" onclick="cerrarDelivery()">Entendido</button>
   </div>
 </div>
 
@@ -947,6 +937,11 @@ button:active{
       <span class="miniChip">✨ Personalízalas a tu gusto</span>
     </div>
 
+    <div class="heroNotice">
+      <b>Pedidos abiertos.</b> Haz tu orden con tiempo para asegurar tu entrega.  
+      Mientras más claro el pedido, menos relajo después.
+    </div>
+
     <details id="fotosSection" class="sectionCard">
       <summary class="gallerySummary">
         <span>📸 Hechas por nosotros</span>
@@ -978,13 +973,29 @@ button:active{
       <h2 id="glaseadosTitle" class="sectionTitle"><img src="Carga.png" class="iconDonut" alt="">Glaseados</h2>
       <div class="subHint">Primero eliges el baño de la dona.</div>
       <div id="glaseadosContainer"></div>
-      <div id="glaseadosPreview" class="glaseadosPreview"></div>
+
+      <div class="selectorBlock">
+        <div class="stackLabel">Glaseados extra</div>
+        <div class="smallMuted" style="margin-bottom:8px;">Solo si quieres agregar más.</div>
+        <div id="extraGlaseadosList"></div>
+        <button type="button" class="secondary" onclick="agregarGlaseadoExtra()">+ Agregar glaseado extra</button>
+      </div>
+
+      <div id="glaseadosPreview" class="previewBox hidden"></div>
     </section>
 
     <section class="sectionCard">
       <h2 id="toppingsTitle" class="sectionTitle"><img src="Carga.png" class="iconDonut" alt="">Toppings</h2>
       <div class="subHint">Luego le pones la corona. Aquí vive el sabor.</div>
       <div id="toppingsContainer"></div>
+
+      <div class="selectorBlock">
+        <div class="stackLabel">Toppings extra</div>
+        <div class="smallMuted" style="margin-bottom:8px;">Agrega más si quieres subirle el nivel.</div>
+        <div id="extraToppingsList"></div>
+        <button type="button" class="secondary" onclick="agregarToppingExtra()">+ Agregar topping extra</button>
+      </div>
+
       <div id="toppingsList" class="hidden"></div>
     </section>
 
@@ -999,13 +1010,16 @@ button:active{
 
       <div style="padding-top:10px;">
         <label class="fieldLabel">Nombre</label>
-        <input id="nombre">
+        <input id="nombre" autocomplete="name">
 
-        <label class="fieldLabel">Dirección</label>
-        <input id="direccion">
+        <div id="direccionFieldWrap">
+          <label class="fieldLabel" id="direccionLabel">Dirección</label>
+          <input id="direccion" autocomplete="street-address" placeholder="Ej: Calle..., sector..., referencia...">
+          <div id="direccionHint" class="smallMuted">Necesaria para delivery.</div>
+        </div>
 
         <label class="fieldLabel">Teléfono (WhatsApp)</label>
-        <input id="telefono" placeholder="Ej: 8091234567" inputmode="numeric">
+        <input id="telefono" placeholder="Ej: 8091234567" inputmode="numeric" autocomplete="tel">
 
         <label class="fieldLabel">Método de pago</label>
         <select id="pago">
@@ -1018,6 +1032,8 @@ button:active{
 
         <label class="fieldLabel">Hora</label>
         <input type="time" id="hora">
+
+        <div id="formError" class="errorInline"></div>
       </div>
     </details>
 
@@ -1029,7 +1045,7 @@ button:active{
   <div class="stickyBar">
     <div class="rowSticky">
       <div class="total" id="total">TOTAL: RD$0</div>
-      <button type="button" class="primaryBtn" onclick="enviar()">Confirmar pedido</button>
+      <button type="button" id="btnEnviarPedido" class="primaryBtn" onclick="enviar()">Confirmar pedido</button>
     </div>
 
     <div class="smallMuted" style="text-align:center; margin-top:6px;">
@@ -1053,19 +1069,87 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.firestore();
 const storage = firebase.storage();
 
+let textoFinal = "";
+let pedidoActual = {};
+let unsubStoreProducts = null;
+let ultimoMaxToppings = -1;
+let ultimoMaxGlaseados = -1;
+let enviandoPedido = false;
+
+window.__thanksMessage = "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
+window.__businessWhatsApp = ""; // ejemplo: 18091234567
+
+let toppings = [
+  {name:"Kisses",price:55},
+  {name:"Hershey’s blanco",price:50},
+  {name:"Hershey’s negro",price:50},
+  {name:"Almendras",price:50},
+  {name:"M&M",price:50},
+  {name:"Oreo",price:35},
+  {name:"Chispas de colores",price:30},
+  {name:"Crema Dubai",price:75},
+  {name:"Twix",price:65},
+  {name:"Canela",price:10},
+  {name:"Azúcar glass",price:25},
+  {name:"Crema pastelera",price:55}
+];
+
+let glaseados = [
+  {name:"Chocolate Negro", icon:"🍫", price:0},
+  {name:"Chocolate Blanco", icon:"🤍", price:0},
+  {name:"Nutella", icon:"🌰", price:0},
+  {name:"Dulce de leche", icon:"🍯", price:0},
+  {name:"Avellana", icon:"🥜", price:0},
+  {name:"Crema pastelera", icon:"🎂", price:0},
+  {name:"Glaseado Dubai", icon:"✨", price:0},
+  {name:"Mermelada de fresa", icon:"🍓", price:0},
+  {name:"Mermelada de piña", icon:"🍍", price:0}
+];
+
 function escapeHtml(str=""){
   return String(str).replace(/[&<>"']/g, m => ({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
-    "'":'&#039;'
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
   }[m]));
 }
 function escapeAttr(str=""){ return escapeHtml(str); }
+
+function showInlineError(id, msg){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = msg || "";
+  el.style.display = msg ? "block" : "none";
+}
+function clearInlineError(id){
+  showInlineError(id, "");
+}
+
+function setSendingState(isSending){
+  enviandoPedido = isSending;
+  const btnEnviar = document.getElementById("btnEnviarPedido");
+  const btnResumen = document.getElementById("btnConfirmarResumen");
+  const btnTransfer = document.getElementById("btnConfirmarTransfer");
+
+  if(btnEnviar){
+    btnEnviar.disabled = isSending;
+    btnEnviar.textContent = isSending ? "Guardando..." : "Confirmar pedido";
+  }
+  if(btnResumen){
+    btnResumen.disabled = isSending;
+    btnResumen.textContent = isSending ? "Guardando..." : "Confirmar";
+  }
+  if(btnTransfer){
+    btnTransfer.disabled = isSending;
+    btnTransfer.textContent = isSending ? "Procesando..." : "Listo, ya transferí";
+  }
+}
 
 function zoom(src){
   document.getElementById("imgGrande").src = src;
@@ -1102,24 +1186,15 @@ function toggleSettingsMenu(event){
 
   const menu = document.getElementById("settingsMenu");
   const btn = document.getElementById("settingsBtn");
-
   if(!menu || !btn) return;
 
   const abierto = menu.classList.contains("open");
-
-  if(abierto){
-    menu.classList.remove("open");
-    btn.classList.remove("active");
-  }else{
-    menu.classList.add("open");
-    btn.classList.add("active");
-  }
+  menu.classList.toggle("open", !abierto);
+  btn.classList.toggle("active", !abierto);
 }
-
 function cerrarSettingsMenu(){
   const menu = document.getElementById("settingsMenu");
   const btn = document.getElementById("settingsBtn");
-
   if(menu) menu.classList.remove("open");
   if(btn) btn.classList.remove("active");
 }
@@ -1172,40 +1247,27 @@ function actualizarResumenEntrega(){
   }
 }
 
-let textoFinal = "";
-let pedidoActual = {};
-let unsubStoreProducts = null;
-let ultimoMaxToppings = -1;
-let ultimoMaxGlaseados = -1;
+function toggleDireccionField(){
+  const tipo = document.getElementById("tipoEntrega")?.value || "pickup";
+  const wrap = document.getElementById("direccionFieldWrap");
+  const label = document.getElementById("direccionLabel");
+  const hint = document.getElementById("direccionHint");
+  const input = document.getElementById("direccion");
 
-window.__thanksMessage = "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
+  if(!wrap || !label || !hint || !input) return;
 
-let toppings = [
-  {name:"Kisses",price:55},
-  {name:"Hershey’s blanco",price:50},
-  {name:"Hershey’s negro",price:50},
-  {name:"Almendras",price:50},
-  {name:"M&M",price:50},
-  {name:"Oreo",price:35},
-  {name:"Chispas de colores",price:30},
-  {name:"Crema Dubai",price:75},
-  {name:"Twix",price:65},
-  {name:"Canela",price:10},
-  {name:"Azúcar glass",price:25},
-  {name:"Crema pastelera",price:55}
-];
-
-let glaseados = [
-  {name:"Chocolate Negro", icon:"🍫"},
-  {name:"Chocolate Blanco", icon:"🤍"},
-  {name:"Nutella", icon:"🌰"},
-  {name:"Dulce de leche", icon:"🍯"},
-  {name:"Avellana", icon:"🥜"},
-  {name:"Crema pastelera", icon:"🎂"},
-  {name:"Glaseado Dubai", icon:"✨"},
-  {name:"Mermelada de fresa", icon:"🍓"},
-  {name:"Mermelada de piña", icon:"🍍"}
-];
+  if(tipo === "delivery"){
+    wrap.style.display = "block";
+    label.textContent = "Dirección";
+    hint.textContent = "Obligatoria para delivery.";
+    input.placeholder = "Ej: Calle..., sector..., referencia...";
+  }else{
+    wrap.style.display = "block";
+    label.textContent = "Dirección / referencia (opcional)";
+    hint.textContent = "Si recoges en tienda, puedes dejarlo vacío.";
+    input.placeholder = "Opcional";
+  }
+}
 
 function toggleDelivery(){
   const tipoEl = document.getElementById("tipoEntrega");
@@ -1216,6 +1278,7 @@ function toggleDelivery(){
   zonaBox.style.display = (tipo === "delivery") ? "block" : "none";
 
   actualizarResumenEntrega();
+  toggleDireccionField();
   calcular();
 }
 
@@ -1227,7 +1290,7 @@ function adjustCombo(btn, delta){
   const view = row.querySelector(".qtyBox");
   if(!input || !view) return;
 
-  let value = parseInt(input.value || "0") || 0;
+  let value = parseInt(input.value || "0", 10) || 0;
   value += delta;
   if(value < 0) value = 0;
 
@@ -1236,16 +1299,149 @@ function adjustCombo(btn, delta){
   calcular();
 }
 
+/* =========================
+   SELECTORES INCLUIDOS
+========================= */
+function buildSingleIncludedSelect({
+  options,
+  selectClass,
+  selectId = "",
+  placeholder = "Selecciona una opción",
+  onchangeExtra = ""
+}){
+  return `
+    <select
+      ${selectId ? `id="${selectId}"` : ""}
+      class="${selectClass}"
+      data-kind="included"
+      onchange="calcular(); ${onchangeExtra}"
+    >
+      <option value="">${placeholder}</option>
+      ${options.map(opt => `
+        <option value="${escapeAttr(opt.name)}" data-price="${Number(opt.price || 0)}">
+          ${escapeHtml(opt.icon || "")} ${escapeHtml(opt.name)}
+        </option>
+      `).join("")}
+    </select>
+  `;
+}
+
+function renderIncludedSelector({
+  containerId,
+  title,
+  itemLabelSingular,
+  itemLabelPlural,
+  count,
+  options,
+  selectClass,
+  sameToggleId,
+  sameSelectId,
+  onchangeExtra = ""
+}){
+  const cont = document.getElementById(containerId);
+  if(!cont) return;
+
+  const textoCantidad = `${count} ${count === 1 ? itemLabelSingular : itemLabelPlural}`;
+
+  cont.innerHTML = `
+    <div class="stackLabel">${title}</div>
+    <div class="smallMuted" style="margin-bottom:10px;">
+      Tienes ${textoCantidad} incluido${count === 1 ? "" : "s"} en tu combo.
+    </div>
+
+    <label style="display:flex;align-items:center;gap:8px;margin:8px 0 12px;font-size:14px;font-weight:600;color:#5d4a56;">
+      <input type="checkbox" id="${sameToggleId}" checked onchange="toggleSameSelection('${containerId}','${sameToggleId}','${sameSelectId}','${selectClass}','${onchangeExtra.replace(/'/g, "\\'")}')">
+      Quiero el mismo sabor en todos
+    </label>
+
+    <div id="${sameSelectId}Wrap"></div>
+    <div id="${containerId}_multipleWrap" class="hidden"></div>
+  `;
+
+  const sameWrap = document.getElementById(`${sameSelectId}Wrap`);
+  const multiWrap = document.getElementById(`${containerId}_multipleWrap`);
+  if(!sameWrap || !multiWrap) return;
+
+  sameWrap.innerHTML = buildSingleIncludedSelect({
+    options,
+    selectClass,
+    selectId: sameSelectId,
+    placeholder: `Selecciona ${itemLabelSingular}`,
+    onchangeExtra
+  });
+
+  multiWrap.innerHTML = Array.from({ length: count }).map((_, i) => `
+    <div style="margin-bottom:8px;">
+      ${buildSingleIncludedSelect({
+        options,
+        selectClass,
+        placeholder: `${itemLabelSingular.charAt(0).toUpperCase() + itemLabelSingular.slice(1)} ${i + 1}`,
+        onchangeExtra
+      })}
+    </div>
+  `).join("");
+}
+
+function toggleSameSelection(containerId, sameToggleId, sameSelectId, selectClass, onchangeExtra = ""){
+  const sameToggle = document.getElementById(sameToggleId);
+  const sameWrap = document.getElementById(`${sameSelectId}Wrap`);
+  const multiWrap = document.getElementById(`${containerId}_multipleWrap`);
+
+  if(!sameToggle || !sameWrap || !multiWrap) return;
+
+  if(sameToggle.checked){
+    sameWrap.classList.remove("hidden");
+    multiWrap.classList.add("hidden");
+  }else{
+    sameWrap.classList.add("hidden");
+    multiWrap.classList.remove("hidden");
+  }
+
+  calcular();
+
+  if(onchangeExtra && typeof window[onchangeExtra] === "function"){
+    window[onchangeExtra]();
+  }
+}
+
+function getIncludedSelections(containerId, sameToggleId, sameSelectId, count, selectClass){
+  const sameToggle = document.getElementById(sameToggleId);
+  if(!sameToggle) return [];
+
+  const values = [];
+
+  if(sameToggle.checked){
+    const sameSelect = document.getElementById(sameSelectId);
+    const val = sameSelect?.value || "";
+    if(val){
+      for(let i = 0; i < count; i++) values.push(val);
+    }
+  }else{
+    const multiWrap = document.getElementById(`${containerId}_multipleWrap`);
+    if(!multiWrap) return [];
+
+    multiWrap.querySelectorAll(`.${selectClass}`).forEach(sel => {
+      if(sel.value) values.push(sel.value);
+    });
+  }
+
+  return values;
+}
+
+
+/* =========================
+   CÁLCULO
+========================= */
 function calcular(){
   let total = 0;
   let maxToppings = 0;
   let maxGlaseados = 0;
 
-  document.querySelectorAll(".comboQty").forEach(c=>{
-    let q = parseInt(c.value) || 0;
-    total += q * parseInt(c.dataset.price || 0);
-    maxToppings += q * parseInt(c.dataset.toppings || 0);
-    maxGlaseados += q * parseInt(c.dataset.toppings || 0);
+  document.querySelectorAll(".comboQty").forEach(c => {
+    const q = parseInt(c.value || "0", 10) || 0;
+    total += q * parseInt(c.dataset.price || "0", 10);
+    maxToppings += q * parseInt(c.dataset.toppings || "0", 10);
+    maxGlaseados += q * parseInt(c.dataset.glaseados || "0", 10);
   });
 
   if(maxToppings !== ultimoMaxToppings){
@@ -1258,93 +1454,49 @@ function calcular(){
     ultimoMaxGlaseados = maxGlaseados;
   }
 
-  document.querySelectorAll(".toppingExtra").forEach(s=>{
-    total += parseInt(s.value) || 0;
+  document.querySelectorAll(".toppingExtra").forEach(s => {
+    total += parseInt(s.value || "0", 10) || 0;
   });
 
-  document.querySelectorAll(".glaseadoSelect").forEach(s=>{
+  document.querySelectorAll(".glaseadoExtra").forEach(s => {
     const opt = s.options[s.selectedIndex];
-    total += parseInt(opt?.dataset?.price || 0) || 0;
+    total += parseInt(opt?.dataset?.price || "0", 10) || 0;
   });
 
   const tipoEntrega = document.getElementById("tipoEntrega");
   const zona = document.getElementById("zona");
   if(tipoEntrega && tipoEntrega.value === "delivery"){
-    total += parseInt(zona?.value || 0) || 0;
+    total += parseInt(zona?.value || "0", 10) || 0;
   }
 
   document.getElementById("total").innerText = "TOTAL: RD$" + total;
+ 
 }
 
 function actualizarToppings(max){
   const cont = document.getElementById("toppingsContainer");
-
-  const anteriores = [];
-  document.querySelectorAll(".toppingSelect").forEach(s=>{
-    anteriores.push({
-      value: s.value,
-      selectedName: s.dataset.selectedName || "",
-      kind: s.dataset.kind || "included"
-    });
-  });
-
-  cont.innerHTML = "";
+  if(!cont) return;
 
   if(max <= 0){
-    cont.innerHTML = "<p class='smallMuted' style='text-align:center;padding:4px 0;'>Selecciona un combo para elegir toppings</p>";
+    cont.innerHTML = "<p class='smallMuted'>Selecciona un combo</p>";
     return;
   }
 
-  const tituloIncluidos = document.createElement("div");
-  tituloIncluidos.innerHTML = `
-    <div class="stackLabel">Toppings incluidos</div>
-    <div class="smallMuted" style="margin-bottom:8px;">Estos no tienen costo porque ya vienen con tu combo.</div>
-  `;
-  cont.appendChild(tituloIncluidos);
-
-  for(let i=0; i<max; i++){
-    const s = document.createElement("select");
-    s.className = "toppingSelect toppingIncluded";
-    s.dataset.kind = "included";
-    s.onchange = function(){
-      const txt = s.options[s.selectedIndex]?.text || "";
-      s.dataset.selectedName = txt.replace(" (Incluido)", "").trim();
-      calcular();
-    };
-
-    const o = document.createElement("option");
-    o.value = "";
-    o.text = "Selecciona topping incluido " + (i+1);
-    s.appendChild(o);
-
-    toppings.forEach(t=>{
-      const op = document.createElement("option");
-      op.value = t.name;
-      op.text = t.name;
-      s.appendChild(op);
-    });
-
-    if(anteriores[i] && anteriores[i].kind === "included"){
-      s.value = anteriores[i].value;
-      s.dataset.selectedName = anteriores[i].selectedName || anteriores[i].value;
-    }
-
-    cont.appendChild(s);
-  }
-
-  const extrasWrap = document.createElement("div");
-  extrasWrap.style.marginTop = "14px";
-  extrasWrap.innerHTML = `
-    <div class="stackLabel">Toppings extra</div>
-    <div class="smallMuted" style="margin-bottom:8px;">Estos sí tienen costo adicional.</div>
-    <div id="extraToppingsList"></div>
-    <button type="button" class="secondary" style="margin-top:8px;" onclick="agregarToppingExtra(); calcular();">+ Agregar topping extra</button>
-  `;
-  cont.appendChild(extrasWrap);
-
-  anteriores
-    .filter(x => x && x.kind === "extra")
-    .forEach(x => agregarToppingExtra(x.value));
+  renderIncludedSelector({
+    containerId: "toppingsContainer",
+    title: "Toppings incluidos",
+    itemLabelSingular: "topping",
+    itemLabelPlural: "toppings",
+    count: max,
+    options: toppings.map(t => ({
+      name: t.name,
+      icon: "",
+      price: 0
+    })),
+    selectClass: "toppingSelect",
+    sameToggleId: "sameToppingToggle",
+    sameSelectId: "sameToppingSelect"
+  });
 }
 
 function agregarToppingExtra(valorPrevio = ""){
@@ -1365,7 +1517,7 @@ function agregarToppingExtra(valorPrevio = ""){
   o.text = "Selecciona topping extra";
   s.appendChild(o);
 
-  toppings.forEach(t=>{
+  toppings.forEach(t => {
     const op = document.createElement("option");
     op.value = t.price;
     op.dataset.name = t.name;
@@ -1373,15 +1525,13 @@ function agregarToppingExtra(valorPrevio = ""){
     s.appendChild(op);
   });
 
-  if(valorPrevio){
-    s.value = valorPrevio;
-  }
+  if(valorPrevio) s.value = valorPrevio;
 
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "removeBtn";
   btn.textContent = "✕";
-  btn.onclick = ()=>{
+  btn.onclick = () => {
     row.remove();
     calcular();
   };
@@ -1395,74 +1545,31 @@ function agregarToppingExtra(valorPrevio = ""){
 
 function actualizarGlaseados(max){
   const cont = document.getElementById("glaseadosContainer");
-
-  const anteriores = [];
-  document.querySelectorAll(".glaseadoSelect").forEach(s=>{
-    anteriores.push({
-      value: s.value,
-      kind: s.dataset.kind || "included"
-    });
-  });
-
-  cont.innerHTML = "";
+  if(!cont) return;
 
   if(max <= 0){
-    cont.innerHTML = "<p class='smallMuted' style='text-align:center;padding:4px 0;'>Selecciona un combo para elegir glaseados</p>";
-    renderGlaseadosPreview();
+    cont.innerHTML = "<p class='smallMuted'>Selecciona un combo</p>";
+    
     return;
   }
 
-  const tituloIncluidos = document.createElement("div");
-  tituloIncluidos.innerHTML = `
-    <div class="stackLabel">Glaseados incluidos</div>
-    <div class="smallMuted" style="margin-bottom:8px;">Estos no tienen costo porque ya vienen con tu combo.</div>
-  `;
-  cont.appendChild(tituloIncluidos);
+  renderIncludedSelector({
+    containerId: "glaseadosContainer",
+    title: "Glaseados incluidos",
+    itemLabelSingular: "glaseado",
+    itemLabelPlural: "glaseados",
+    count: max,
+    options: glaseados.map(g => ({
+      name: g.name,
+      icon: g.icon || "🍫",
+      price: 0
+    })),
+    selectClass: "glaseadoSelect",
+    sameToggleId: "sameGlaseadoToggle",
+    sameSelectId: "sameGlaseadoSelect",
+    onchangeExtra: "renderGlaseadosPreview"
+  });
 
-  for(let i=0; i<max; i++){
-    const s = document.createElement("select");
-    s.className = "glaseadoSelect glaseadoIncluded";
-    s.dataset.kind = "included";
-    s.onchange = () => {
-      calcular();
-      renderGlaseadosPreview();
-    };
-
-    const o = document.createElement("option");
-    o.value = "";
-    o.text = "Selecciona glaseado incluido " + (i+1);
-    s.appendChild(o);
-
-    glaseados.forEach(g=>{
-      const op = document.createElement("option");
-      op.value = g.name;
-      op.dataset.price = 0;
-      op.text = `${g.icon || "🍫"} ${g.name}`;
-      s.appendChild(op);
-    });
-
-    if(anteriores[i]?.value){
-      s.value = anteriores[i].value;
-    }
-
-    cont.appendChild(s);
-  }
-
-  const extrasWrap = document.createElement("div");
-  extrasWrap.style.marginTop = "14px";
-  extrasWrap.innerHTML = `
-    <div class="stackLabel">Glaseados extra</div>
-    <div class="smallMuted" style="margin-bottom:8px;">Estos sí tienen costo adicional.</div>
-    <div id="extraGlaseadosList"></div>
-    <button type="button" class="secondary" style="margin-top:8px;" onclick="agregarGlaseadoExtra()">+ Agregar glaseado extra</button>
-  `;
-  cont.appendChild(extrasWrap);
-
-  anteriores
-    .filter(x => x && x.kind === "extra")
-    .forEach(x => agregarGlaseadoExtra(x.value));
-
-  renderGlaseadosPreview();
 }
 
 function agregarGlaseadoExtra(valorPrevio = ""){
@@ -1478,7 +1585,7 @@ function agregarGlaseadoExtra(valorPrevio = ""){
   s.style.flex = "1";
   s.onchange = () => {
     calcular();
-    renderGlaseadosPreview();
+   
   };
 
   const o = document.createElement("option");
@@ -1486,7 +1593,7 @@ function agregarGlaseadoExtra(valorPrevio = ""){
   o.text = "Selecciona glaseado extra";
   s.appendChild(o);
 
-  glaseados.forEach(g=>{
+  glaseados.forEach(g => {
     const op = document.createElement("option");
     op.value = g.name;
     op.dataset.price = Number(g.price || 0);
@@ -1494,48 +1601,29 @@ function agregarGlaseadoExtra(valorPrevio = ""){
     s.appendChild(op);
   });
 
-  if(valorPrevio){
-    s.value = valorPrevio;
-  }
+  if(valorPrevio) s.value = valorPrevio;
 
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "removeBtn";
   btn.textContent = "✕";
-  btn.onclick = ()=>{
+  btn.onclick = () => {
     row.remove();
     calcular();
-    renderGlaseadosPreview();
+  
   };
 
   row.appendChild(s);
   row.appendChild(btn);
   list.appendChild(row);
+
+  calcular();
+  
 }
 
-function renderGlaseadosPreview(){
-  const cont = document.getElementById("glaseadosPreview");
-  if(!cont) return;
-
-  cont.innerHTML = "";
-
-  const elegidos = [];
-
-  document.querySelectorAll(".glaseadoSelect").forEach(sel=>{
-    if(sel.value){
-      const g = glaseados.find(x => x.name === sel.value);
-      if(g) elegidos.push(g);
-    }
-  });
-
-  elegidos.forEach(g=>{
-    const chip = document.createElement("div");
-    chip.className = "glaseadoChip";
-    chip.innerHTML = `<span class="glaseadoChipIcon">${g.icon || "🍫"}</span><span>${escapeHtml(g.name)}</span>`;
-    cont.appendChild(chip);
-  });
-}
-
+/* =========================
+   RENDER PRODUCTOS
+========================= */
 function renderCombosFS(combosDocs){
   const cont = document.getElementById("combosList");
   cont.innerHTML = "";
@@ -1561,11 +1649,12 @@ function renderCombosFS(combosDocs){
     return `<span class="productBadge">⭐ MÁS VENDIDO</span>`;
   }
 
-  combosDocs.forEach(c=>{
+  combosDocs.forEach(c => {
     const div = document.createElement("div");
     div.className = "item";
 
     const toppingsIncl = Number(c.toppingsIncluded || 0);
+    const glaseadosIncl = Number(c.glaseadosIncluded || 0);
     const price = Number(c.price || 0);
 
     div.innerHTML = `
@@ -1575,7 +1664,7 @@ function renderCombosFS(combosDocs){
           ${generarBadgeAutomatico(c)}
         </div>
         <div class="productMeta">
-          ${toppingsIncl > 0 ? `${toppingsIncl} topping${toppingsIncl > 1 ? "s" : ""} incluido${toppingsIncl > 1 ? "s" : ""}` : "Sin toppings incluidos"} · RD$${price}
+          ${glaseadosIncl} glaseado${glaseadosIncl !== 1 ? "s" : ""} + ${toppingsIncl} topping${toppingsIncl !== 1 ? "s" : ""} incluidos · RD$${price}
         </div>
       </div>
 
@@ -1591,6 +1680,7 @@ function renderCombosFS(combosDocs){
           data-name="${escapeAttr(c.name)}"
           data-price="${price}"
           data-toppings="${toppingsIncl}"
+          data-glaseados="${glaseadosIncl}"
         >
       </div>
     `;
@@ -1604,11 +1694,11 @@ function renderToppingsFS(toppingsDocs){
   if(cont) cont.innerHTML = "";
 
   if(!toppingsDocs.length){
-    cont.innerHTML = `<div class="smallMuted" style="text-align:center;padding:8px;">No hay toppings activos ahora mismo.</div>`;
+    if(cont) cont.innerHTML = `<div class="smallMuted" style="text-align:center;padding:8px;">No hay toppings activos ahora mismo.</div>`;
     return;
   }
 
-  toppingsDocs.forEach(t=>{
+  toppingsDocs.forEach(t => {
     const div = document.createElement("div");
     div.className = "item toppingRowOnly";
 
@@ -1627,32 +1717,33 @@ function renderToppingsFS(toppingsDocs){
 }
 
 function escucharTiendaEnVivo(){
-  db.collection("store_settings").doc("main").onSnapshot((snap)=>{
+  db.collection("store_settings").doc("main").onSnapshot((snap) => {
     const s = snap.exists ? snap.data() : {};
+
     document.getElementById("combosTitle").innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.combosTitle || "Combos").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
     document.getElementById("toppingsTitle").innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.toppingsTitle || "Toppings").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
     document.getElementById("glaseadosTitle").innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.glaseadosTitle || "Glaseados").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
     window.__thanksMessage = s.thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
+    window.__businessWhatsApp = String(s.businessWhatsApp || s.whatsapp || "").replace(/\D/g, "");
 
     const tinfo = (s.transferInfo || "").trim();
     const box = document.getElementById("transferInfoBox");
     if(box){
       box.innerHTML = tinfo ? escapeHtml(tinfo).replace(/\n/g,"<br>") : "Banco..., Cuenta..., Nombre..., etc.";
     }
-  }, (err)=>{
+  }, (err) => {
     console.error("Error leyendo store_settings:", err);
   });
 
   if(unsubStoreProducts) unsubStoreProducts();
 
-  unsubStoreProducts = db.collection("store_products").onSnapshot((snap)=>{
+  unsubStoreProducts = db.collection("store_products").onSnapshot((snap) => {
     const combosDocs = [];
     const toppingsDocs = [];
     const glaseadosDocs = [];
 
-    snap.forEach(doc=>{
+    snap.forEach(doc => {
       const p = { id: doc.id, ...doc.data() };
-
       const isActive = p.active === true || p.active === "true";
       const type = String(p.type || "").toLowerCase();
 
@@ -1662,9 +1753,9 @@ function escucharTiendaEnVivo(){
       if(type === "glaseado") glaseadosDocs.push(p);
     });
 
-    combosDocs.sort((a,b)=> Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
-    toppingsDocs.sort((a,b)=> Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
-    glaseadosDocs.sort((a,b)=> Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
+    combosDocs.sort((a,b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
+    toppingsDocs.sort((a,b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
+    glaseadosDocs.sort((a,b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
 
     toppings = toppingsDocs.map(t => ({
       name: t.name,
@@ -1680,7 +1771,7 @@ function escucharTiendaEnVivo(){
     renderCombosFS(combosDocs);
     renderToppingsFS(toppingsDocs);
     calcular();
-  }, (err)=>{
+  }, (err) => {
     console.error("Error leyendo store_products:", err);
     document.getElementById("combosList").innerHTML =
       `<div class="smallMuted" style="text-align:center;padding:8px;">Error leyendo productos: ${escapeHtml(err.message || "desconocido")}</div>`;
@@ -1688,6 +1779,7 @@ function escucharTiendaEnVivo(){
 }
 
 function abrirDatosSiFaltan(){
+  const tipo = document.getElementById("tipoEntrega")?.value || "pickup";
   const nombre = document.getElementById("nombre").value.trim();
   const direccion = document.getElementById("direccion").value.trim();
   const fecha = document.getElementById("fecha").value;
@@ -1697,14 +1789,16 @@ function abrirDatosSiFaltan(){
   const datosBox = document.getElementById("datosClienteBox");
   if(!datosBox) return false;
 
-  const faltanDatos = !nombre || !direccion || !fecha || !hora || !telefono;
+  const faltanDatosBase = !nombre || !fecha || !hora || !telefono;
+  const faltaDireccionDelivery = (tipo === "delivery" && !direccion);
+  const faltanDatos = faltanDatosBase || faltaDireccionDelivery;
 
   if(faltanDatos){
     datosBox.setAttribute("open", "open");
-    setTimeout(()=>{
+    setTimeout(() => {
       const primerCampoVacio =
         !nombre ? document.getElementById("nombre") :
-        !direccion ? document.getElementById("direccion") :
+        (tipo === "delivery" && !direccion) ? document.getElementById("direccion") :
         !telefono ? document.getElementById("telefono") :
         !fecha ? document.getElementById("fecha") :
         document.getElementById("hora");
@@ -1716,10 +1810,24 @@ function abrirDatosSiFaltan(){
   return faltanDatos;
 }
 
+function abrirWhatsAppPedidoFallback(){
+  const numeroNegocio = String(window.__businessWhatsApp || "").replace(/\D/g, "");
+  if(!numeroNegocio || !textoFinal) return false;
+
+  const url = `https://wa.me/${numeroNegocio}?text=${textoFinal}`;
+  window.open(url, "_blank");
+  return true;
+}
+
 function enviar(){
+  if(enviandoPedido) return;
+
   pedidoActual = {};
   textoFinal = "";
   document.getElementById("thanksMsg").style.display = "none";
+  clearInlineError("formError");
+  clearInlineError("resumenError");
+
   abrirDatosSiFaltan();
 
   const nombre = document.getElementById("nombre").value.trim();
@@ -1736,49 +1844,56 @@ function enviar(){
   let total = 0;
   const combos = [];
 
-  document.querySelectorAll(".comboQty").forEach(i=>{
-    const q = parseInt(i.value) || 0;
+  document.querySelectorAll(".comboQty").forEach(i => {
+    const q = parseInt(i.value || "0", 10) || 0;
     if(q > 0){
-      const p = parseInt(i.dataset.price) || 0;
+      const p = parseInt(i.dataset.price || "0", 10) || 0;
       combos.push({
         combo: i.dataset.name,
         cantidad: q,
         precio: q * p,
-        toppingsIncluidos: Number(i.dataset.toppings || 0)
+        toppingsIncluidos: Number(i.dataset.toppings || 0),
+        glaseadosIncluidos: Number(i.dataset.glaseados || 0)
       });
-      resumen += `🍩 ${q} x ${i.dataset.name} — RD$${q*p}<br>`;
+      resumen += `🍩 ${q} x ${escapeHtml(i.dataset.name)} — RD$${q*p}<br>`;
       texto += `- ${q} x ${i.dataset.name} RD$${q*p}%0A`;
       total += q * p;
     }
   });
 
   if(combos.length === 0){
-    alert("Elige al menos un combo");
+    showInlineError("formError", "Elige al menos un combo.");
     return;
   }
 
-  const topsIncluidos = [];
-  document.querySelectorAll(".toppingIncluded").forEach(s=>{
-    if(s.value){
-      topsIncluidos.push(s.value);
-    }
-  });
+  const topsIncluidos = getIncludedSelections(
+    "toppingsContainer",
+    "sameToppingToggle",
+    "sameToppingSelect",
+    ultimoMaxToppings,
+    "toppingSelect"
+  );
 
   const topsExtras = [];
-  document.querySelectorAll(".toppingExtra").forEach(s=>{
+  document.querySelectorAll(".toppingExtra").forEach(s => {
     if(Number(s.value) > 0){
-      const nombre = s.options[s.selectedIndex]?.dataset?.name || s.options[s.selectedIndex]?.text || "";
-      const precio = parseInt(s.value) || 0;
-      topsExtras.push(`${nombre} (RD$${precio})`);
+      const nombreExtra = s.options[s.selectedIndex]?.dataset?.name || s.options[s.selectedIndex]?.text || "";
+      const precio = parseInt(s.value || "0", 10) || 0;
+      topsExtras.push(`${nombreExtra} (RD$${precio})`);
       total += precio;
     }
   });
 
+  if(ultimoMaxToppings > 0 && topsIncluidos.length < ultimoMaxToppings){
+    showInlineError("formError", `Faltan toppings por seleccionar. Debes elegir ${ultimoMaxToppings}.`);
+    return;
+  }
+
   if(topsIncluidos.length){
     resumen += "<br><b>Toppings incluidos:</b><br>";
     texto += "Toppings incluidos:%0A";
-    topsIncluidos.forEach(t=>{
-      resumen += `- ${t}<br>`;
+    topsIncluidos.forEach(t => {
+      resumen += `- ${escapeHtml(t)}<br>`;
       texto += `- ${t}%0A`;
     });
   }
@@ -1786,35 +1901,41 @@ function enviar(){
   if(topsExtras.length){
     resumen += "<br><b>Toppings extra:</b><br>";
     texto += "Toppings extra:%0A";
-    topsExtras.forEach(t=>{
-      resumen += `- ${t}<br>`;
+    topsExtras.forEach(t => {
+      resumen += `- ${escapeHtml(t)}<br>`;
       texto += `- ${t}%0A`;
     });
   }
 
-  const glaseadosIncluidos = [];
-  document.querySelectorAll(".glaseadoIncluded").forEach(s=>{
-    if(s.value){
-      glaseadosIncluidos.push(s.value);
-    }
-  });
+  const glaseadosIncluidos = getIncludedSelections(
+    "glaseadosContainer",
+    "sameGlaseadoToggle",
+    "sameGlaseadoSelect",
+    ultimoMaxGlaseados,
+    "glaseadoSelect"
+  );
 
   const glaseadosExtras = [];
-  document.querySelectorAll(".glaseadoExtra").forEach(s=>{
+  document.querySelectorAll(".glaseadoExtra").forEach(s => {
     if(s.selectedIndex > 0){
       const opt = s.options[s.selectedIndex];
-      const nombre = s.value;
-      const precio = parseInt(opt.dataset.price || 0) || 0;
-      glaseadosExtras.push(`${nombre} (RD$${precio})`);
+      const nombreGlaseado = s.value;
+      const precio = parseInt(opt.dataset.price || "0", 10) || 0;
+      glaseadosExtras.push(`${nombreGlaseado} (RD$${precio})`);
       total += precio;
     }
   });
 
+  if(ultimoMaxGlaseados > 0 && glaseadosIncluidos.length < ultimoMaxGlaseados){
+    showInlineError("formError", `Faltan glaseados por seleccionar. Debes elegir ${ultimoMaxGlaseados}.`);
+    return;
+  }
+
   if(glaseadosIncluidos.length){
     resumen += "<br><b>Glaseados incluidos:</b><br>";
     texto += "Glaseados incluidos:%0A";
-    glaseadosIncluidos.forEach(g=>{
-      resumen += `- ${g}<br>`;
+    glaseadosIncluidos.forEach(g => {
+      resumen += `- ${escapeHtml(g)}<br>`;
       texto += `- ${g}%0A`;
     });
   }
@@ -1822,42 +1943,49 @@ function enviar(){
   if(glaseadosExtras.length){
     resumen += "<br><b>Glaseados extra:</b><br>";
     texto += "Glaseados extra:%0A";
-    glaseadosExtras.forEach(g=>{
-      resumen += `- ${g}<br>`;
+    glaseadosExtras.forEach(g => {
+      resumen += `- ${escapeHtml(g)}<br>`;
       texto += `- ${g}%0A`;
     });
   }
 
-  if(!nombre || !direccion || !fecha || !hora){
+  if(!nombre || !fecha || !hora){
+    showInlineError("formError", "Completa tus datos (Nombre, Fecha y Hora).");
     const datosBox = document.getElementById("datosClienteBox");
     if(datosBox) datosBox.setAttribute("open", "open");
-    alert("Completa tus datos (Nombre, Dirección, Fecha y Hora).");
+    return;
+  }
+
+  if(tipo === "delivery" && !direccion){
+    showInlineError("formError", "La dirección es obligatoria para delivery.");
+    const datosBox = document.getElementById("datosClienteBox");
+    if(datosBox) datosBox.setAttribute("open", "open");
     return;
   }
 
   const soloDigitos = telefono.replace(/\D/g,'');
   if(!soloDigitos){
+    showInlineError("formError", "El teléfono es obligatorio (WhatsApp).");
     const datosBox = document.getElementById("datosClienteBox");
     if(datosBox) datosBox.setAttribute("open", "open");
-    alert("El teléfono es obligatorio (WhatsApp).");
     return;
   }
   if(soloDigitos.length < 10){
+    showInlineError("formError", "Teléfono inválido. Ej: 8091234567");
     const datosBox = document.getElementById("datosClienteBox");
     if(datosBox) datosBox.setAttribute("open", "open");
-    alert("Teléfono inválido. Ej: 8091234567");
     return;
   }
 
   if(tipo === "delivery"){
     if(!zona || zona.value === "0"){
-      alert("Selecciona zona");
+      showInlineError("formError", "Selecciona tu zona de delivery.");
       return;
     }
-    resumen += `<br>🚚 ${zona.options[zona.selectedIndex].text}<br>`;
+    resumen += `<br>🚚 ${escapeHtml(zona.options[zona.selectedIndex].text)}<br>`;
     texto += `Entrega: Delivery%0AZona: ${zona.options[zona.selectedIndex].text}%0A`;
-    total += parseInt(zona.value) || 0;
-  } else {
+    total += parseInt(zona.value || "0", 10) || 0;
+  }else{
     resumen += "<br>📍 Recoger en tienda<br>";
     texto += "Entrega: Recoger en tienda%0A";
   }
@@ -1865,10 +1993,14 @@ function enviar(){
   resumen += `<br><b>TOTAL: RD$${total}</b>`;
   texto += `TOTAL: RD$${total}`;
 
-  const notaResumen = (document.getElementById("notaPedidoResumen").value || "").trim();
-
   pedidoActual = {
-    nombre,direccion,telefono,fecha,hora,pago,tipo,
+    nombre,
+    direccion: tipo === "delivery" ? direccion : direccion,
+    telefono,
+    fecha,
+    hora,
+    pago,
+    tipo,
     zonaCosto: (tipo === "delivery") ? Number(zona?.value || 0) : 0,
     combos,
     toppingsIncluidos: topsIncluidos,
@@ -1876,8 +2008,7 @@ function enviar(){
     glaseadosIncluidos,
     glaseadosExtras,
     glaseados: [...glaseadosIncluidos, ...glaseadosExtras],
-    total,
-    notaCliente: notaResumen
+    total
   };
 
   textoFinal = texto;
@@ -1886,19 +2017,24 @@ function enviar(){
 }
 
 function confirmarEnvio(){
+  if(enviandoPedido) return;
+  clearInlineError("resumenError");
+
   const telInput = (document.getElementById("telefono")?.value || "").trim();
   const soloDigitos = telInput.replace(/\D/g, "");
 
   if(!soloDigitos){
-    alert("El teléfono es obligatorio (WhatsApp).");
+    showInlineError("resumenError", "El teléfono es obligatorio (WhatsApp).");
     return;
   }
   if(soloDigitos.length < 10){
-    alert("Teléfono inválido. Ej: 8091234567");
+    showInlineError("resumenError", "Teléfono inválido. Ej: 8091234567");
     return;
   }
 
+  const notaResumen = (document.getElementById("notaPedidoResumen")?.value || "").trim();
   pedidoActual.telefono = telInput;
+  pedidoActual.notaCliente = notaResumen;
 
   if((pedidoActual.pago || "") === "Transferencia"){
     abrirTransfer();
@@ -1930,7 +2066,6 @@ async function actualizarVentasProductos(combos){
     }
   }catch(e){
     console.error("Error actualizando salesCount:", e);
-    alert("Error actualizando salesCount: " + e.message);
   }
 }
 
@@ -1944,6 +2079,7 @@ function cerrarResumenDesdeFondo(event){
 }
 
 function abrirTransfer(){
+  clearInlineError("transferError");
   document.getElementById("transferMsg").innerText = "";
   document.getElementById("refTransfer").value = "";
   document.getElementById("notaPedidoTransfer").value = "";
@@ -1960,7 +2096,7 @@ function cerrarTransferDesdeFondo(event){
 }
 
 function fileToBase64(file){
-  return new Promise((resolve, reject)=>{
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = reject;
@@ -1969,6 +2105,9 @@ function fileToBase64(file){
 }
 
 async function confirmarTransferencia(){
+  if(enviandoPedido) return;
+  clearInlineError("transferError");
+
   const ref = (document.getElementById("refTransfer").value || "").trim();
   const notaT = (document.getElementById("notaPedidoTransfer").value || "").trim();
   const fileInput = document.getElementById("fotoComprobante");
@@ -1983,7 +2122,7 @@ async function confirmarTransferencia(){
   try{
     if(file){
       if(file.size > 450 * 1024){
-        alert("La foto es muy pesada. Usa una más liviana o hazle captura antes de subirla.");
+        showInlineError("transferError", "La foto es muy pesada. Usa una más liviana o hazle captura antes de subirla.");
         return;
       }
 
@@ -1994,29 +2133,33 @@ async function confirmarTransferencia(){
 
     cerrarTransfer();
     guardarPedidoFirestore();
-
   }catch(e){
     console.error("Error procesando comprobante:", e);
-    alert("Error procesando comprobante: " + e.message);
+    showInlineError("transferError", "Error procesando comprobante: " + e.message);
   }
 }
 
 function limpiarFormulario(){
-  document.querySelectorAll(".comboQty").forEach(i=>{
+  document.querySelectorAll(".comboQty").forEach(i => {
     i.value = 0;
   });
 
-  document.querySelectorAll(".qtyBox").forEach(v=>{
+  document.querySelectorAll(".qtyBox").forEach(v => {
     v.textContent = "0";
   });
 
   document.getElementById("toppingsContainer").innerHTML = "<p class='smallMuted' style='text-align:center;padding:4px 0;'>Selecciona un combo para elegir toppings</p>";
   document.getElementById("glaseadosContainer").innerHTML = "<p class='smallMuted' style='text-align:center;padding:4px 0;'>Selecciona un combo para elegir glaseados</p>";
   document.getElementById("glaseadosPreview").innerHTML = "";
+  document.getElementById("glaseadosPreview").classList.add("hidden");
+
+  document.getElementById("extraToppingsList").innerHTML = "";
+  document.getElementById("extraGlaseadosList").innerHTML = "";
 
   document.getElementById("tipoEntrega").value = "pickup";
   document.getElementById("zona").value = "0";
   document.getElementById("zonaContainer").style.display = "none";
+  toggleDireccionField();
   actualizarResumenEntrega();
 
   document.getElementById("nombre").value = "";
@@ -2030,6 +2173,10 @@ function limpiarFormulario(){
   document.getElementById("refTransfer").value = "";
   document.getElementById("notaPedidoTransfer").value = "";
   document.getElementById("fotoComprobante").value = "";
+
+  clearInlineError("formError");
+  clearInlineError("resumenError");
+  clearInlineError("transferError");
 
   pedidoActual = {};
   textoFinal = "";
@@ -2049,34 +2196,70 @@ function limpiarFormulario(){
 }
 
 async function guardarPedidoFirestore(){
+  if(enviandoPedido) return;
+  setSendingState(true);
+
   try{
     await db.collection("pedidos").add({
       ...pedidoActual,
       mensaje: decodeURIComponent(textoFinal),
-      creado: new Date()
+      creado: firebase.firestore.FieldValue.serverTimestamp()
     });
 
+    try{
+      await actualizarVentasProductos(pedidoActual.combos || []);
+    }catch(_){}
+
     alert(window.__thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.");
+    document.getElementById("thanksMsg").style.display = "block";
     limpiarFormulario();
   }catch(e){
-    alert("Error guardando pedido: " + e.message);
+    console.error("Error guardando pedido:", e);
+
+    const pudoAbrirWhatsApp = abrirWhatsAppPedidoFallback();
+    if(pudoAbrirWhatsApp){
+      alert("No se pudo guardar en el sistema. Abrimos WhatsApp para que no pierdas el pedido.");
+    }else{
+      alert("Error guardando pedido: " + e.message);
+    }
+  }finally{
+    setSendingState(false);
   }
 }
 
+function setFechaMinimaHoy(){
+  const fechaInput = document.getElementById("fecha");
+  if(!fechaInput) return;
 
-document.addEventListener("DOMContentLoaded", ()=>{
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, "0");
+  const dd = String(hoy.getDate()).padStart(2, "0");
+  fechaInput.min = `${yyyy}-${mm}-${dd}`;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setFechaMinimaHoy();
   toggleDelivery();
+  toggleDireccionField();
   actualizarResumenEntrega();
   escucharTiendaEnVivo();
   calcular();
 });
 
-window.addEventListener("load", ()=>{
+window.addEventListener("click", (e) => {
+  const wrap = document.querySelector(".settingsWrap");
+  if(wrap && !wrap.contains(e.target)){
+    cerrarSettingsMenu();
+  }
+});
+
+window.addEventListener("load", () => {
   const loader = document.getElementById("loader");
   if(loader){
     loader.style.opacity = "0";
     loader.style.transition = "opacity .35s ease";
-    setTimeout(()=> loader.remove(), 350);
+    setTimeout(() => loader.remove(), 350);
   }
 });
 </script>

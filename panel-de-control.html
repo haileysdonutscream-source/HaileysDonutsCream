@@ -896,6 +896,11 @@
                 <input id="pTopsIncl" type="number" min="0" value="0">
               </div>
 
+              <div id="pGlaseadosInclWrap">
+                <label>Glaseados incluidos (solo combos)</label>
+                <input id="pGlaseadosIncl" type="number" min="0" value="0">
+              </div>
+
               <div style="display:flex; align-items:end; justify-content:flex-end;">
                 <button type="button" onclick="crearProducto()">➕ Agregar</button>
               </div>
@@ -910,7 +915,8 @@
                     <th class="colTipo">Tipo</th>
                     <th class="colNombre">Nombre</th>
                     <th class="colPrecio">Precio</th>
-                    <th class="colIncl">Incl.</th>
+                    <th class="colIncl">Tops</th>
+                    <th class="colIncl">Glas</th>
                     <th class="colOrden">Orden</th>
                     <th class="colActivo">Activo</th>
                     <th class="colIcon">Ícono</th>
@@ -1314,7 +1320,6 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
   <script>
-
     const firebaseConfig = {
       apiKey: "AIzaSyBIc3oJMmSTnOg4EaFsCLOkhyLoGXEWj6c",
       authDomain: "minidonas-d5e36.firebaseapp.com",
@@ -1336,11 +1341,11 @@
     };
 
     const COMBOS_CATALOGO = [
-      { name:"6 Donitas", price:160, toppings:1 },
-      { name:"12 Donitas", price:300, toppings:2 },
-      { name:"24 Donitas", price:600, toppings:3 },
-      { name:"4 Donitas", price:130, toppings:1 },
-      { name:"9 Donitas", price:200, toppings:1 }
+      { name:"6 Donitas", price:160, toppings:1, glaseados:1 },
+      { name:"12 Donitas", price:300, toppings:2, glaseados:2 },
+      { name:"24 Donitas", price:600, toppings:3, glaseados:3 },
+      { name:"4 Donitas", price:130, toppings:1, glaseados:1 },
+      { name:"9 Donitas", price:200, toppings:1, glaseados:1 }
     ];
 
     const TOPPINGS_CATALOGO = [
@@ -1409,8 +1414,8 @@
     let editId = null;
     let editDraft = null;
 
-    
-    let panelAudioUnlocked = false;
+    let panelAudioCtx = null;
+    let panelAudioReady = false;
 
     function safe(v){
       return (v === undefined || v === null) ? "" : String(v);
@@ -1451,6 +1456,10 @@
     }
 
     function normalizeUsername(v){
+      return String(v || "").trim().toLowerCase();
+    }
+
+    function normalizeName(v){
       return String(v || "").trim().toLowerCase();
     }
 
@@ -1621,7 +1630,7 @@
       }, 3500);
     }
 
-    function ensurePanelAudio(){
+    function getPanelAudioContext(){
       try{
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if(!AudioCtx) return null;
@@ -1632,76 +1641,97 @@
 
         return panelAudioCtx;
       }catch(e){
-        console.warn("No se pudo crear el contexto de audio:", e);
+        console.warn("No se pudo crear AudioContext:", e);
         return null;
       }
     }
 
     async function unlockPanelAudio(){
       try{
-        const ctx = ensurePanelAudio();
-        if(!ctx) return;
+        const ctx = getPanelAudioContext();
+        if(!ctx) return false;
 
         if(ctx.state === "suspended"){
           await ctx.resume();
         }
 
-        const buffer = ctx.createBuffer(1, 1, 22050);
-        const source = ctx.createBufferSource();
+        const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
-        gain.gain.value = 0.0001;
-        source.buffer = buffer;
-        source.connect(gain);
-        gain.connect(ctx.destination);
-        source.start(0);
+        gain.gain.setValueAtTime(0.00001, ctx.currentTime);
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
 
-        panelAudioUnlocked = ctx.state === "running";
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.02);
+
+        panelAudioReady = (ctx.state === "running");
+        return panelAudioReady;
       }catch(e){
         console.warn("No se pudo desbloquear el audio:", e);
+        panelAudioReady = false;
+        return false;
       }
     }
 
-    ["click","touchstart","keydown"].forEach(evt => {
-      document.addEventListener(evt, unlockPanelAudio, { once:true });
-    });
+    function hookAudioUnlock(){
+      const eventos = ["click", "touchstart", "pointerdown", "keydown"];
+
+      const handler = async () => {
+        const ok = await unlockPanelAudio();
+        if(ok){
+          eventos.forEach(evt => {
+            document.removeEventListener(evt, handler, true);
+          });
+        }
+      };
+
+      eventos.forEach(evt => {
+        document.addEventListener(evt, handler, true);
+      });
+    }
+
+    function playBeep(freq, start, duration, type = "sine", volume = 0.085){
+      if(!panelAudioCtx) return;
+
+      const osc = panelAudioCtx.createOscillator();
+      const gain = panelAudioCtx.createGain();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, start);
+
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(volume, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+      osc.connect(gain);
+      gain.connect(panelAudioCtx.destination);
+
+      osc.start(start);
+      osc.stop(start + duration + 0.02);
+    }
 
     async function playNewOrderSound(){
       try{
-        const ctx = ensurePanelAudio();
+        const ctx = getPanelAudioContext();
         if(!ctx) return;
 
-        if(ctx.state === "suspended"){
-          await ctx.resume();
+        if(ctx.state !== "running"){
+          await unlockPanelAudio();
         }
 
-        if(ctx.state !== "running") return;
+        if(ctx.state !== "running"){
+          console.warn("Audio bloqueado por el navegador.");
+          return;
+        }
 
-        const now = ctx.currentTime;
+        const now = ctx.currentTime + 0.01;
 
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.connect(ctx.destination);
-
-        const osc1 = ctx.createOscillator();
-        osc1.type = "sine";
-        osc1.frequency.setValueAtTime(880, now);
-        osc1.connect(gain);
-
-        const osc2 = ctx.createOscillator();
-        osc2.type = "triangle";
-        osc2.frequency.setValueAtTime(1320, now + 0.05);
-        osc2.connect(gain);
-
-        osc1.start(now);
-        osc2.start(now + 0.05);
-
-        gain.gain.exponentialRampToValueAtTime(0.14, now + 0.03);
-        gain.gain.exponentialRampToValueAtTime(0.08, now + 0.12);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
-
-        osc1.stop(now + 0.28);
-        osc2.stop(now + 0.45);
+        playBeep(880,  now,        0.18, "sine",     0.10);
+        playBeep(1174, now + 0.09, 0.20, "triangle", 0.09);
+        playBeep(1568, now + 0.18, 0.24, "sine",     0.08);
       }catch(e){
         console.error("Error reproduciendo sonido:", e);
       }
@@ -1807,10 +1837,13 @@
         .onSnapshot((snap) => {
           if(!firstPedidosLoad){
             const added = snap.docChanges().filter(c => c.type === "added");
+
             if(added.length){
               const newest = added[0].doc.data() || {};
-              playNewOrderSound();
-              showToastNew(newest);
+              setTimeout(() => {
+                playNewOrderSound();
+                showToastNew(newest);
+              }, 100);
             }
           }
 
@@ -1978,6 +2011,14 @@
         ? p.tops.map(t => `• ${escapeHtml(t)}`).join("<br>")
         : "";
 
+      const glaseadosIncluidos = Array.isArray(p.glaseadosIncluidos)
+        ? p.glaseadosIncluidos.map(g => `• ${escapeHtml(g)}`).join("<br>")
+        : "";
+
+      const glaseadosExtras = Array.isArray(p.glaseadosExtras)
+        ? p.glaseadosExtras.map(g => `• ${escapeHtml(g)}`).join("<br>")
+        : "";
+
       const glaseados = Array.isArray(p.glaseados)
         ? p.glaseados.map(g => `• ${escapeHtml(g)}`).join("<br>")
         : "";
@@ -2070,8 +2111,13 @@
             </div>
 
             <div>
-              <div><b>Glaseados</b></div>
-              <div class="small" style="margin-top:6px;">${glaseados || "<span class='muted'>-</span>"}</div>
+              <div><b>Glaseados incluidos</b></div>
+              <div class="small" style="margin-top:6px;">${glaseadosIncluidos || glaseados || "<span class='muted'>-</span>"}</div>
+            </div>
+
+            <div>
+              <div><b>Glaseados extra</b></div>
+              <div class="small" style="margin-top:6px;">${glaseadosExtras || "<span class='muted'>-</span>"}</div>
             </div>
 
             ${p.notaCliente ? `
@@ -2200,7 +2246,15 @@
         ? p.tops.map(t => `- ${t}`).join("\n")
         : "";
 
-      const glaseados = Array.isArray(p.glaseados) && p.glaseados.length
+      const glaseadosIncluidos = Array.isArray(p.glaseadosIncluidos) && p.glaseadosIncluidos.length
+        ? p.glaseadosIncluidos.map(g => `- ${g}`).join("\n")
+        : "";
+
+      const glaseadosExtras = Array.isArray(p.glaseadosExtras) && p.glaseadosExtras.length
+        ? p.glaseadosExtras.map(g => `- ${g}`).join("\n")
+        : "";
+
+      const glaseadosLegacy = Array.isArray(p.glaseados) && p.glaseados.length
         ? p.glaseados.map(g => `- ${g}`).join("\n")
         : "";
 
@@ -2217,8 +2271,11 @@ ${topsIncluidos || topsLegacy || "- (sin toppings incluidos)"}
 TOPPINGS EXTRA:
 ${topsExtras || "- (sin toppings extra)"}
 
-GLASEADOS:
-${glaseados || "- (sin glaseados)"}
+GLASEADOS INCLUIDOS:
+${glaseadosIncluidos || glaseadosLegacy || "- (sin glaseados incluidos)"}
+
+GLASEADOS EXTRA:
+${glaseadosExtras || "- (sin glaseados extra)"}
 
 Entrega: ${entrega}
 Dirección: ${p.direccion || ""}
@@ -2295,7 +2352,7 @@ o
     function getRequiredGlaseadosCount(){
       let count = 0;
       (editDraft.combos || []).forEach(c => {
-        count += Number(c.cantidad || 0);
+        count += Number(c.cantidad || 0) * Number(c.glaseadosIncluidos || 0);
       });
       return count;
     }
@@ -2348,9 +2405,17 @@ o
       return arr;
     }
 
-    function getEditGlaseadosSelected(){
+    function getEditGlaseadosIncluidosSelected(){
       const arr = [];
-      document.querySelectorAll(".glaseadoEdit").forEach(sel => {
+      document.querySelectorAll(".glaseadoIncluidoEdit").forEach(sel => {
+        if(sel.value) arr.push(sel.value);
+      });
+      return arr;
+    }
+
+    function getEditGlaseadosExtrasSelected(){
+      const arr = [];
+      document.querySelectorAll(".glaseadoExtraEdit").forEach(sel => {
         if(sel.value){
           const precio = Number(sel.options[sel.selectedIndex]?.dataset?.price || 0);
           arr.push(precio > 0 ? `${sel.value} (${money(precio)})` : sel.value);
@@ -2359,9 +2424,9 @@ o
       return arr;
     }
 
-    function getEditGlaseadosTotal(){
+    function getEditGlaseadosExtrasTotal(){
       let sum = 0;
-      document.querySelectorAll(".glaseadoEdit").forEach(sel => {
+      document.querySelectorAll(".glaseadoExtraEdit").forEach(sel => {
         if(sel.value){
           sum += Number(sel.options[sel.selectedIndex]?.dataset?.price || 0);
         }
@@ -2456,36 +2521,81 @@ o
       if(recalc) recalcularTotalEdit();
     }
 
-    function refreshEditGlaseadosUI(){
-      const cont = document.getElementById("editGlaseadosContainer");
-      const hint = document.getElementById("editGlaseadosHint");
+    function refreshEditGlaseadosIncluidosUI(){
+      const cont = document.getElementById("editGlaseadosIncluidosContainer");
+      const hint = document.getElementById("editGlaseadosIncluidosHint");
       if(!cont || !hint) return;
 
-      const prev = Array.isArray(editDraft.glaseados) ? editDraft.glaseados : [];
+      const prev = Array.isArray(editDraft.glaseadosIncluidos) ? editDraft.glaseadosIncluidos : [];
       const required = getRequiredGlaseadosCount();
 
       cont.innerHTML = "";
 
       if(required <= 0){
-        hint.textContent = "Elige combos para habilitar glaseados.";
-        editDraft.glaseados = [];
+        hint.textContent = "Elige combos para habilitar glaseados incluidos.";
+        editDraft.glaseadosIncluidos = [];
         return;
       }
 
-      hint.textContent = `Glaseados requeridos: ${required}`;
+      hint.textContent = `Glaseados incluidos requeridos: ${required}`;
 
       for(let i = 0; i < required; i++){
         cont.appendChild(
           buildSelectDesdeCatalogo(
-            `Selecciona glaseado ${i + 1}`,
+            `Selecciona glaseado incluido ${i + 1}`,
             GLASEADOS_CATALOGO,
-            "glaseadoEdit",
+            "glaseadoIncluidoEdit",
             prev[i] || ""
           )
         );
       }
 
-      editDraft.glaseados = getEditGlaseadosSelected();
+      editDraft.glaseadosIncluidos = getEditGlaseadosIncluidosSelected();
+    }
+
+    function renderEditGlaseadosExtrasUI(){
+      const cont = document.getElementById("editGlaseadosExtrasContainer");
+      if(!cont) return;
+
+      const prev = Array.isArray(editDraft.glaseadosExtras) ? editDraft.glaseadosExtras : [];
+      cont.innerHTML = "";
+      prev.forEach(g => addEditGlaseadoExtra(g, false));
+    }
+
+    function addEditGlaseadoExtra(valor = "", recalc = true){
+      const cont = document.getElementById("editGlaseadosExtrasContainer");
+      if(!cont) return;
+
+      const row = document.createElement("div");
+      row.style.display = "flex";
+      row.style.gap = "8px";
+      row.style.alignItems = "center";
+      row.style.marginBottom = "6px";
+
+      const selectWrap = buildSelectDesdeCatalogo(
+        "Selecciona glaseado extra",
+        GLASEADOS_CATALOGO,
+        "glaseadoExtraEdit",
+        valor,
+        true
+      );
+
+      selectWrap.style.flex = "1";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "secondary mini";
+      btn.textContent = "Quitar";
+      btn.onclick = () => {
+        row.remove();
+        recalcularTotalEdit();
+      };
+
+      row.appendChild(selectWrap.firstChild);
+      row.appendChild(btn);
+      cont.appendChild(row);
+
+      if(recalc) recalcularTotalEdit();
     }
 
     function abrirEdit(id){
@@ -2504,6 +2614,8 @@ o
         ? editDraft.toppingsIncluidos
         : (Array.isArray(editDraft.tops) ? editDraft.tops : []);
       editDraft.toppingsExtras = Array.isArray(editDraft.toppingsExtras) ? editDraft.toppingsExtras : [];
+      editDraft.glaseadosIncluidos = Array.isArray(editDraft.glaseadosIncluidos) ? editDraft.glaseadosIncluidos : [];
+      editDraft.glaseadosExtras = Array.isArray(editDraft.glaseadosExtras) ? editDraft.glaseadosExtras : [];
       editDraft.glaseados = Array.isArray(editDraft.glaseados) ? editDraft.glaseados : [];
       editDraft.tipo = editDraft.tipo || "pickup";
       editDraft.estado = editDraft.estado || "pendiente";
@@ -2517,21 +2629,28 @@ o
         const cantidad = Number(c.cantidad || 0);
         const unitPrice = Number(c.unitPrice ?? (cat ? cat.price : 0));
         const topsIncl = Number(c.toppingsIncluidos ?? (cat ? cat.toppings : 0));
+        const glsIncl = Number(c.glaseadosIncluidos ?? (cat ? cat.glaseados : 0));
 
         return {
           combo: c.combo || (cat ? cat.name : ""),
           cantidad,
           unitPrice,
           toppingsIncluidos: topsIncl,
+          glaseadosIncluidos: glsIncl,
           precio: Number(c.precio ?? (cantidad * unitPrice))
         };
       });
+
+      if(!editDraft.glaseadosIncluidos.length && editDraft.glaseados.length){
+        editDraft.glaseadosIncluidos = [...editDraft.glaseados];
+      }
 
       renderEdit();
       document.getElementById("editModal").classList.remove("hidden");
       refreshEditToppingsIncluidosUI();
       renderEditToppingsExtrasUI();
-      refreshEditGlaseadosUI();
+      refreshEditGlaseadosIncluidosUI();
+      renderEditGlaseadosExtrasUI();
       recalcularTotalEdit();
     }
 
@@ -2641,16 +2760,24 @@ o
 
         <div class="row">
           <div class="card" style="flex:1; min-width:260px;">
-            <strong>Glaseados</strong>
-            <div id="editGlaseadosContainer"></div>
-            <div class="small muted" id="editGlaseadosHint"></div>
+            <strong>Glaseados incluidos</strong>
+            <div id="editGlaseadosIncluidosContainer"></div>
+            <div class="small muted" id="editGlaseadosIncluidosHint"></div>
+
+            <hr>
+
+            <strong>Glaseados extra</strong>
+            <div id="editGlaseadosExtrasContainer"></div>
+            <div style="display:flex; gap:8px; margin-top:6px;">
+              <button class="secondary" type="button" onclick="addEditGlaseadoExtra()">+ Glaseado extra</button>
+            </div>
           </div>
 
           <div class="card" style="flex:1; min-width:240px;">
             <strong>Total</strong>
             <div class="pill">TOTAL <span id="eTotal">${money(safe(p.total || 0))}</span></div>
             <div class="small muted" style="margin-top:8px;">
-              Total = combos + toppings extra + glaseados + delivery.
+              Total = combos + toppings extra + glaseados extra + delivery.
             </div>
           </div>
 
@@ -2664,7 +2791,8 @@ o
       renderCombosEdit();
       refreshEditToppingsIncluidosUI();
       renderEditToppingsExtrasUI();
-      refreshEditGlaseadosUI();
+      refreshEditGlaseadosIncluidosUI();
+      renderEditGlaseadosExtrasUI();
       recalcularTotalEdit();
     }
 
@@ -2688,14 +2816,16 @@ o
         const cat = COMBOS_CATALOGO.find(x => x.name === c.combo);
         const unit = Number(c.unitPrice ?? (cat ? cat.price : 0));
         const topsIncl = Number(c.toppingsIncluidos ?? (cat ? cat.toppings : 0));
+        const glsIncl = Number(c.glaseadosIncluidos ?? (cat ? cat.glaseados : 0));
 
         editDraft.combos[idx].unitPrice = unit;
         editDraft.combos[idx].toppingsIncluidos = topsIncl;
+        editDraft.combos[idx].glaseadosIncluidos = glsIncl;
         editDraft.combos[idx].precio = cantidad * unit;
 
         const options = COMBOS_CATALOGO.map(opt => `
           <option value="${escapeHtml(opt.name)}" ${opt.name === c.combo ? 'selected' : ''}>
-            ${escapeHtml(opt.name)} — ${money(opt.price)} • ${opt.toppings} topping(s)
+            ${escapeHtml(opt.name)} — ${money(opt.price)} • ${opt.toppings} topping(s) • ${opt.glaseados} glaseado(s)
           </option>
         `).join("");
 
@@ -2715,7 +2845,7 @@ o
                 type="number"
                 min="0"
                 value="${cantidad}"
-                oninput="editDraft.combos[${idx}].cantidad=Number(this.value||0); refreshEditToppingsIncluidosUI(); refreshEditGlaseadosUI(); recalcularTotalEdit();"
+                oninput="editDraft.combos[${idx}].cantidad=Number(this.value||0); refreshEditToppingsIncluidosUI(); refreshEditGlaseadosIncluidosUI(); recalcularTotalEdit();"
               >
             </div>
 
@@ -2725,7 +2855,7 @@ o
                 type="number"
                 min="0"
                 value="${unit}"
-                oninput="editDraft.combos[${idx}].unitPrice=Number(this.value||0); refreshEditToppingsIncluidosUI(); refreshEditGlaseadosUI(); recalcularTotalEdit();"
+                oninput="editDraft.combos[${idx}].unitPrice=Number(this.value||0); recalcularTotalEdit();"
               >
             </div>
 
@@ -2749,16 +2879,18 @@ o
         editDraft.combos[idx].combo = cat.name;
         editDraft.combos[idx].unitPrice = cat.price;
         editDraft.combos[idx].toppingsIncluidos = cat.toppings;
+        editDraft.combos[idx].glaseadosIncluidos = cat.glaseados || 0;
         if(!editDraft.combos[idx].cantidad) editDraft.combos[idx].cantidad = 1;
       }else{
         editDraft.combos[idx].combo = "";
         editDraft.combos[idx].unitPrice = 0;
         editDraft.combos[idx].toppingsIncluidos = 0;
+        editDraft.combos[idx].glaseadosIncluidos = 0;
       }
 
       renderCombosEdit();
       refreshEditToppingsIncluidosUI();
-      refreshEditGlaseadosUI();
+      refreshEditGlaseadosIncluidosUI();
       recalcularTotalEdit();
     }
 
@@ -2768,12 +2900,13 @@ o
         cantidad: 1,
         unitPrice: 0,
         toppingsIncluidos: 0,
+        glaseadosIncluidos: 0,
         precio: 0
       });
 
       renderCombosEdit();
       refreshEditToppingsIncluidosUI();
-      refreshEditGlaseadosUI();
+      refreshEditGlaseadosIncluidosUI();
       recalcularTotalEdit();
     }
 
@@ -2787,13 +2920,13 @@ o
         editDraft.toppingsIncluidos = editDraft.toppingsIncluidos.slice(0, reqTops);
       }
 
-      if(Array.isArray(editDraft.glaseados)){
-        editDraft.glaseados = editDraft.glaseados.slice(0, reqGls);
+      if(Array.isArray(editDraft.glaseadosIncluidos)){
+        editDraft.glaseadosIncluidos = editDraft.glaseadosIncluidos.slice(0, reqGls);
       }
 
       renderCombosEdit();
       refreshEditToppingsIncluidosUI();
-      refreshEditGlaseadosUI();
+      refreshEditGlaseadosIncluidosUI();
       recalcularTotalEdit();
     }
 
@@ -2811,10 +2944,15 @@ o
 
       editDraft.toppingsIncluidos = getEditToppingsIncluidosSelected();
       editDraft.toppingsExtras = getEditToppingsExtrasSelected();
-      editDraft.glaseados = getEditGlaseadosSelected();
+      editDraft.glaseadosIncluidos = getEditGlaseadosIncluidosSelected();
+      editDraft.glaseadosExtras = getEditGlaseadosExtrasSelected();
+      editDraft.glaseados = [
+        ...(editDraft.glaseadosIncluidos || []),
+        ...(editDraft.glaseadosExtras || [])
+      ];
 
       total += getEditToppingsExtrasTotal();
-      total += getEditGlaseadosTotal();
+      total += getEditGlaseadosExtrasTotal();
 
       const tipo = document.getElementById("eTipo")?.value || "pickup";
       if(tipo === "delivery"){
@@ -2872,6 +3010,8 @@ o
         combos: editDraft.combos || [],
         toppingsIncluidos: editDraft.toppingsIncluidos || [],
         toppingsExtras: editDraft.toppingsExtras || [],
+        glaseadosIncluidos: editDraft.glaseadosIncluidos || [],
+        glaseadosExtras: editDraft.glaseadosExtras || [],
         glaseados: editDraft.glaseados || [],
         tops: firebase.firestore.FieldValue.delete(),
         total: Number(editDraft.total || 0),
@@ -2908,14 +3048,58 @@ o
       }
     }
 
+    async function cargarStoreSettings(){
+      try{
+        const snap = await db.collection("store_settings").doc("main").get();
+        const s = snap.exists ? snap.data() : {};
+
+        document.getElementById("stCombosTitle").value = s.combosTitle || "";
+        document.getElementById("stToppingsTitle").value = s.toppingsTitle || "";
+        document.getElementById("stGlaseadosTitle").value = s.glaseadosTitle || "";
+        document.getElementById("stThanks").value = s.thanksMessage || "";
+        document.getElementById("stTransfer").value = s.transferInfo || "";
+
+        setStMsg("");
+      }catch(e){
+        setStMsg("Error cargando textos: " + e.message);
+      }
+    }
+
+    async function guardarStoreSettings(){
+      if(!isAdminUser){
+        setStMsg("No tienes permisos para guardar.");
+        return;
+      }
+
+      try{
+        setStMsg("Guardando...");
+
+        await db.collection("store_settings").doc("main").set({
+          combosTitle: (document.getElementById("stCombosTitle").value || "").trim(),
+          toppingsTitle: (document.getElementById("stToppingsTitle").value || "").trim(),
+          glaseadosTitle: (document.getElementById("stGlaseadosTitle").value || "").trim(),
+          thanksMessage: (document.getElementById("stThanks").value || "").trim(),
+          transferInfo: (document.getElementById("stTransfer").value || "").trim(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedBy: auth.currentUser?.email || "admin"
+        }, { merge:true });
+
+        setStMsg("✅ Textos guardados.");
+      }catch(e){
+        setStMsg("Error guardando textos: " + e.message);
+      }
+    }
+
     function toggleCamposProducto(){
       const type = document.getElementById("pType")?.value || "";
       const topsWrap = document.getElementById("pTopsInclWrap");
+      const glaseadosWrap = document.getElementById("pGlaseadosInclWrap");
       const iconInput = document.getElementById("pIcon");
 
-      if(topsWrap){
-        topsWrap.style.display = (type === "combo") ? "block" : "none";
-      }
+      const esCombo = (type === "combo");
+
+      if(topsWrap) topsWrap.style.display = esCombo ? "block" : "none";
+      if(glaseadosWrap) glaseadosWrap.style.display = esCombo ? "block" : "none";
 
       if(iconInput && type !== "glaseado"){
         iconInput.value = "";
@@ -2958,10 +3142,16 @@ o
     }
 
     async function crearProducto(){
+      if(!isAdminUser){
+        setProdMsg("No tienes permisos para crear productos.");
+        return;
+      }
+
       const type = document.getElementById("pType").value;
       const name = (document.getElementById("pName").value || "").trim();
       const price = Number(document.getElementById("pPrice").value || 0);
       const topsIncl = Number(document.getElementById("pTopsIncl").value || 0);
+      const glaseadosIncl = Number(document.getElementById("pGlaseadosIncl").value || 0);
       const sortOrder = Number(document.getElementById("pSort").value || 0);
       const badge = (document.getElementById("pBadge").value || "").trim();
       const icon = (document.getElementById("pIcon").value || "").trim();
@@ -2986,6 +3176,7 @@ o
           price,
           icon,
           toppingsIncluded: (type === "combo") ? topsIncl : 0,
+          glaseadosIncluded: (type === "combo") ? glaseadosIncl : 0,
           sortOrder,
           badge,
           active,
@@ -2998,6 +3189,7 @@ o
         document.getElementById("pName").value = "";
         document.getElementById("pPrice").value = "";
         document.getElementById("pTopsIncl").value = "0";
+        document.getElementById("pGlaseadosIncl").value = "0";
         document.getElementById("pSort").value = "0";
         document.getElementById("pBadge").value = "";
         document.getElementById("pActive").value = "true";
@@ -3036,7 +3228,7 @@ o
       tbody.innerHTML = "";
 
       if(!list.length){
-        tbody.innerHTML = `<tr><td colspan="9" class="muted" style="padding:14px;">No hay productos todavía.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="muted" style="padding:14px;">No hay productos todavía.</td></tr>`;
         return;
       }
 
@@ -3045,30 +3237,66 @@ o
 
         row.innerHTML = `
           <td class="colTipo">${escapeHtml(p.type || "")}</td>
+
           <td class="colNombre">
-            <input value="${escapeHtml(p.name || "")}" onblur="updProd('${p.id}', {name:this.value})">
+            <input
+              value="${escapeHtml(p.name || "")}"
+              onblur="updProd('${p.id}', {name:this.value})">
           </td>
+
           <td class="colPrecio">
-            <input type="number" min="0" value="${Number(p.price || 0)}" onblur="updProd('${p.id}', {price:Number(this.value||0)})">
+            <input
+              type="number"
+              min="0"
+              value="${Number(p.price || 0)}"
+              onblur="updProd('${p.id}', {price:Number(this.value||0)})">
           </td>
+
           <td class="colIncl">
-            <input type="number" min="0" value="${Number(p.toppingsIncluded || 0)}" ${(p.type === 'combo') ? '' : 'disabled'} onblur="updProd('${p.id}', {toppingsIncluded:Number(this.value||0)})">
+            <input
+              type="number"
+              min="0"
+              value="${Number(p.toppingsIncluded || 0)}"
+              ${(p.type === 'combo') ? '' : 'disabled'}
+              onblur="updProd('${p.id}', {toppingsIncluded:Number(this.value||0)})">
           </td>
+
+          <td class="colIncl">
+            <input
+              type="number"
+              min="0"
+              value="${Number(p.glaseadosIncluded || 0)}"
+              ${(p.type === 'combo') ? '' : 'disabled'}
+              onblur="updProd('${p.id}', {glaseadosIncluded:Number(this.value||0)})">
+          </td>
+
           <td class="colOrden">
-            <input type="number" min="0" value="${Number(p.sortOrder || 0)}" onblur="updProd('${p.id}', {sortOrder:Number(this.value||0)})">
+            <input
+              type="number"
+              min="0"
+              value="${Number(p.sortOrder || 0)}"
+              onblur="updProd('${p.id}', {sortOrder:Number(this.value||0)})">
           </td>
+
           <td class="colActivo">
             <select onchange="updProd('${p.id}', {active:(this.value==='true')})">
               <option value="true" ${p.active ? 'selected' : ''}>Sí</option>
               <option value="false" ${!p.active ? 'selected' : ''}>No</option>
             </select>
           </td>
+
           <td class="colIcon">
-            <input value="${escapeHtml(p.icon || "")}" onblur="updProd('${p.id}', {icon:this.value})">
+            <input
+              value="${escapeHtml(p.icon || "")}"
+              onblur="updProd('${p.id}', {icon:this.value})">
           </td>
+
           <td class="colBadge">
-            <input value="${escapeHtml(p.badge || "")}" onblur="updProd('${p.id}', {badge:this.value})">
+            <input
+              value="${escapeHtml(p.badge || "")}"
+              onblur="updProd('${p.id}', {badge:this.value})">
           </td>
+
           <td class="colAcciones actionBtnCell">
             <button class="secondary mini" type="button" onclick="borrarProd('${p.id}')">Borrar</button>
           </td>
@@ -3079,6 +3307,11 @@ o
     }
 
     async function updProd(id, patch){
+      if(!isAdminUser){
+        setProdMsg("No tienes permisos para editar productos.");
+        return;
+      }
+
       try{
         patch.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
         patch.updatedBy = auth.currentUser?.email || "admin";
@@ -3091,6 +3324,11 @@ o
     }
 
     async function borrarProd(id){
+      if(!isAdminUser){
+        setProdMsg("No tienes permisos para borrar productos.");
+        return;
+      }
+
       if(!confirm("¿Borrar este producto?")) return;
 
       try{
@@ -3107,7 +3345,8 @@ o
         .map(x => ({
           name: x.name,
           price: Number(x.price || 0),
-          toppings: Number(x.toppingsIncluded || 0)
+          toppings: Number(x.toppingsIncluded || 0),
+          glaseados: Number(x.glaseadosIncluded || 0)
         }));
 
       const tops = rows
@@ -3134,11 +3373,6 @@ o
       gls.forEach(g => GLASEADOS_CATALOGO.push(g));
     }
 
-
-    
-    // =========================
-    // TOOLTIPS DE AYUDA
-    // =========================
     function wrapInfoLabels(){
       document.querySelectorAll(".infoTip").forEach(tip => {
         if(tip.dataset.ready === "1") return;
@@ -3178,9 +3412,6 @@ o
       `;
     }
 
-    // =========================
-    // INVENTARIO Y COSTOS
-    // =========================
     function normalizeName(v){
       return String(v || "").trim().toLowerCase();
     }
@@ -3252,6 +3483,11 @@ o
     }
 
     async function crearIngrediente(){
+      if(!isAdminUser){
+        setInvMsg("No tienes permisos para guardar ingredientes.");
+        return;
+      }
+
       const name = (document.getElementById("invName").value || "").trim();
       const category = document.getElementById("invCategory").value;
       const purchaseUnit = document.getElementById("invUnit").value;
@@ -3301,6 +3537,11 @@ o
     }
 
     async function borrarIngrediente(id){
+      if(!isAdminUser){
+        setInvMsg("No tienes permisos para borrar ingredientes.");
+        return;
+      }
+
       if(!confirm("¿Borrar este ingrediente?")) return;
 
       try{
@@ -3442,6 +3683,11 @@ o
     }
 
     async function guardarRecetaCalculada(){
+      if(!isAdminUser){
+        setCalcMsg("No tienes permisos para guardar cálculos.");
+        return;
+      }
+
       const tipo = document.getElementById("calcTipo").value;
       const nombre = (document.getElementById("calcNombre").value || "").trim();
       const porciones = Math.max(1, Number(document.getElementById("calcPorciones").value || 1));
@@ -3551,528 +3797,6 @@ o
       }
     }
 
-    // =========================
-    // SONIDO DEL PANEL
-    // =========================
-    let panelAudioCtx = null;
-
-    function initPanelAudio(){
-      try{
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if(!AudioCtx) return;
-
-        if(!panelAudioCtx){
-          panelAudioCtx = new AudioCtx();
-        }
-
-        if(panelAudioCtx.state === "suspended"){
-          panelAudioCtx.resume();
-        }
-      }catch(e){
-        console.warn("No se pudo iniciar audio del panel:", e);
-      }
-    }
-
-    ["click", "touchstart", "keydown"].forEach(evt => {
-      document.addEventListener(evt, initPanelAudio, { once:true });
-    });
-
-    function playTone(freq, startAt, duration, type = "sine", volume = 0.05){
-      if(!panelAudioCtx) return;
-
-      const osc = panelAudioCtx.createOscillator();
-      const gain = panelAudioCtx.createGain();
-
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, startAt);
-
-      gain.gain.setValueAtTime(0.0001, startAt);
-      gain.gain.exponentialRampToValueAtTime(volume, startAt + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
-
-      osc.connect(gain);
-      gain.connect(panelAudioCtx.destination);
-
-      osc.start(startAt);
-      osc.stop(startAt + duration);
-    }
-
-    function playNewOrderSound(){
-      try{
-        initPanelAudio();
-
-        if(!panelAudioCtx || panelAudioCtx.state !== "running"){
-          console.warn("Audio todavía bloqueado por el navegador.");
-          return;
-        }
-
-        const now = panelAudioCtx.currentTime + 0.01;
-
-        playTone(880, now, 0.18, "sine", 0.05);
-        playTone(1174, now + 0.08, 0.20, "triangle", 0.045);
-        playTone(1567, now + 0.17, 0.24, "sine", 0.04);
-      }catch(e){
-        console.error("Error reproduciendo sonido:", e);
-      }
-    }
-
-    function showToastNew(p){
-      const toast = document.getElementById("toastNew");
-      const text = document.getElementById("toastText");
-
-      if(!toast || !text) return;
-
-      text.textContent = `${(p.nombre || "Cliente").toString()} • ${money(p.total || 0)}`;
-      toast.classList.remove("hidden");
-
-      setTimeout(() => {
-        toast.classList.add("hidden");
-      }, 3500);
-    }
-
-    function listenPedidos(){
-      if(unsubPedidos) unsubPedidos();
-
-      unsubPedidos = db.collection("pedidos")
-        .orderBy("creado", "desc")
-        .onSnapshot((snap) => {
-          if(!firstPedidosLoad){
-            const added = snap.docChanges().filter(c => c.type === "added");
-
-            if(added.length){
-              const newest = added[0].doc.data() || {};
-              playNewOrderSound();
-              showToastNew(newest);
-            }
-          }
-
-          pedidosCache = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-          actualizarKPIs();
-          renderFiltrado();
-          renderCajaResumen();
-          firstPedidosLoad = false;
-        }, (err) => alert("Error leyendo pedidos: " + err.message));
-    }
-
-    // =========================
-    // TOOLTIPS DE AYUDA
-    // =========================
-    function wrapInfoLabels(){
-      document.querySelectorAll(".infoTip").forEach(tip => {
-        if(tip.dataset.ready === "1") return;
-
-        const text = tip.getAttribute("data-tip") || "";
-        const wrap = document.createElement("span");
-        wrap.className = "infoWrap";
-
-        const bubble = document.createElement("span");
-        bubble.className = "infoBubble";
-        bubble.textContent = text;
-
-        tip.parentNode.insertBefore(wrap, tip);
-        wrap.appendChild(tip);
-        wrap.appendChild(bubble);
-
-        tip.setAttribute("tabindex", "0");
-        tip.dataset.ready = "1";
-      });
-    }
-
-    function infoIcon(text){
-      return `
-        <span class="infoWrap">
-          <span class="infoTip" tabindex="0">ⓘ</span>
-          <span class="infoBubble">${escapeHtml(text)}</span>
-        </span>
-      `;
-    }
-
-    function labelConInfo(label, texto){
-      return `
-        <label class="infoLabel">
-          ${escapeHtml(label)}
-          ${infoIcon(texto)}
-        </label>
-      `;
-    }
-
-    // =========================
-    // INVENTARIO Y COSTOS
-    // =========================
-    function normalizeName(v){
-      return String(v || "").trim().toLowerCase();
-    }
-
-    function costPerBase(item){
-      const qty = Number(item.purchaseQty || 0);
-      const cost = Number(item.purchaseCost || 0);
-      return qty > 0 ? cost / qty : 0;
-    }
-
-    function listenInventario(){
-      if(unsubInventario) unsubInventario();
-
-      unsubInventario = db.collection("inventory_items")
-        .orderBy("name")
-        .onSnapshot((snap) => {
-          inventarioCache = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-          renderInventario();
-        }, (err) => setInvMsg("Error leyendo inventario: " + err.message));
-    }
-
-    function renderInventario(){
-      setText("invCount", inventarioCache.length);
-
-      const tbody = document.getElementById("inventarioRows");
-      if(!tbody) return;
-
-      tbody.innerHTML = "";
-
-      if(!inventarioCache.length){
-        tbody.innerHTML = '<tr><td colspan="5" class="muted">No hay ingredientes guardados todavía.</td></tr>';
-        return;
-      }
-
-      inventarioCache.forEach(item => {
-        const cpu = costPerBase(item);
-        const stock = Number(item.stockQty || 0);
-
-        let status = "statusOk";
-        let txt = "OK";
-
-        if(stock <= 0){
-          status = "statusBad";
-          txt = "Agotado";
-        }else if(stock <= Number(item.purchaseQty || 0) * 0.15){
-          status = "statusWarn";
-          txt = "Bajo";
-        }
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>
-            <b>${escapeHtml(item.name || "")}</b>
-            <div class="small muted">${escapeHtml(item.note || "")}</div>
-          </td>
-          <td>${escapeHtml(item.category || "")}</td>
-          <td>${money(cpu)} / ${escapeHtml(item.purchaseUnit || "")}</td>
-          <td>
-            <span class="${status}">
-              ${Number(stock)} ${escapeHtml(item.purchaseUnit || "")} • ${txt}
-            </span>
-          </td>
-          <td>
-            <button class="secondary mini" onclick="borrarIngrediente('${item.id}')">Borrar</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    async function crearIngrediente(){
-      const name = (document.getElementById("invName").value || "").trim();
-      const category = document.getElementById("invCategory").value;
-      const purchaseUnit = document.getElementById("invUnit").value;
-      const purchaseQty = Number(document.getElementById("invQty").value || 0);
-      const purchaseCost = Number(document.getElementById("invCost").value || 0);
-      const stockQty = Number(document.getElementById("invStock").value || 0);
-      const note = (document.getElementById("invNote").value || "").trim();
-
-      if(!name){
-        setInvMsg("Pon un ingrediente.");
-        return;
-      }
-
-      if(purchaseQty <= 0 || purchaseCost < 0){
-        setInvMsg("Revisa cantidad y costo.");
-        return;
-      }
-
-      try{
-        setInvMsg("Guardando...");
-
-        await db.collection("inventory_items").add({
-          name,
-          category,
-          purchaseUnit,
-          purchaseQty,
-          purchaseCost,
-          stockQty,
-          note,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedBy: auth.currentUser?.email || "admin"
-        });
-
-        ["invName", "invQty", "invCost", "invStock", "invNote"].forEach(id => {
-          document.getElementById(id).value = "";
-        });
-
-        document.getElementById("invUnit").value = "g";
-        document.getElementById("invCategory").value = "masa";
-
-        setInvMsg("✅ Ingrediente guardado.");
-        renderRecetaBuilder();
-      }catch(e){
-        setInvMsg("Error: " + e.message);
-      }
-    }
-
-    async function borrarIngrediente(id){
-      if(!confirm("¿Borrar este ingrediente?")) return;
-
-      try{
-        await db.collection("inventory_items").doc(id).delete();
-      }catch(e){
-        setInvMsg("Error: " + e.message);
-      }
-    }
-
-    function findIngredienteByName(name){
-      const k = normalizeName(name);
-      return inventarioCache.find(i => normalizeName(i.name) === k) || null;
-    }
-
-    function recetaActualDesdeDOM(){
-      const rows = [];
-
-      document.querySelectorAll(".recipeLine").forEach(line => {
-        const name = line.querySelector(".recipeIng")?.value || "";
-        const qty = Number(line.querySelector(".recipeQty")?.value || 0);
-        const unit = line.querySelector(".recipeUnit")?.value || "g";
-
-        if(name && qty > 0){
-          rows.push({ name, qty, unit });
-        }
-      });
-
-      return rows;
-    }
-
-    function recetaCosto(item){
-      const base = findIngredienteByName(item.name);
-      if(!base) return 0;
-
-      const cpu = costPerBase(base);
-      return Number(item.qty || 0) * cpu;
-    }
-
-    function buildRecipeLine(item = { name:"", qty:0, unit:"g" }){
-      const options = inventarioCache.map(i => `
-        <option value="${escapeHtml(i.name)}" ${normalizeName(i.name) === normalizeName(item.name) ? "selected" : ""}>
-          ${escapeHtml(i.name)}
-        </option>
-      `).join("");
-
-      return `
-        <div class="recipeLine row" style="align-items:end;margin-bottom:8px;">
-          <div style="flex:2;min-width:180px;">
-            <label>Ingrediente</label>
-            <select class="recipeIng" onchange="calcularReceta()">
-              <option value="">Selecciona</option>
-              ${options}
-            </select>
-          </div>
-
-          <div style="flex:1;min-width:120px;">
-            <label>Cantidad</label>
-            <input class="recipeQty" type="number" min="0" step="0.01" value="${Number(item.qty || 0)}" oninput="calcularReceta()">
-          </div>
-
-          <div style="width:120px;">
-            <label>Unidad</label>
-            <select class="recipeUnit" onchange="calcularReceta()">
-              <option value="g" ${item.unit === 'g' ? 'selected' : ''}>g</option>
-              <option value="ml" ${item.unit === 'ml' ? 'selected' : ''}>ml</option>
-              <option value="unidad" ${item.unit === 'unidad' ? 'selected' : ''}>unidad</option>
-            </select>
-          </div>
-
-          <div style="width:100px;">
-            <button type="button" class="secondary mini" onclick="this.closest('.recipeLine').remove(); calcularReceta()">Quitar</button>
-          </div>
-        </div>
-      `;
-    }
-
-    function cargarRecetaBase(){
-      const tipo = document.getElementById("calcTipo")?.value || "donitas";
-      const sugerida = RECETAS_BASE[tipo] || [];
-      const nombreEl = document.getElementById("calcNombre");
-      const gramEl = document.getElementById("calcGramaje");
-      const porcionesEl = document.getElementById("calcPorciones");
-
-      if(tipo === "donitas"){
-        if(nombreEl && !nombreEl.value) nombreEl.value = "Donitas base";
-        if(gramEl) gramEl.value = 25;
-        if(porcionesEl && Number(porcionesEl.value || 0) <= 0) porcionesEl.value = 12;
-      }else if(tipo === "topping"){
-        if(nombreEl && !nombreEl.value) nombreEl.value = "Topping base";
-        if(gramEl) gramEl.value = 10;
-      }else if(tipo === "glaseado"){
-        if(nombreEl && !nombreEl.value) nombreEl.value = "Glaseado base";
-        if(gramEl) gramEl.value = 18;
-      }
-
-      renderRecetaBuilder(false, sugerida);
-    }
-
-    function renderRecetaBuilder(forceReset = false, sugerida = null){
-      const cont = document.getElementById("recetaBuilder");
-      if(!cont) return;
-
-      let rows = [];
-
-      if(!forceReset){
-        rows = recetaActualDesdeDOM();
-      }
-
-      if(!rows.length){
-        rows = (sugerida || RECETAS_BASE[document.getElementById("calcTipo")?.value || "donitas"] || []).slice(0, 3);
-      }
-
-      cont.innerHTML = rows.map(r => buildRecipeLine(r)).join("");
-      calcularReceta();
-    }
-
-    function addLineaReceta(){
-      const cont = document.getElementById("recetaBuilder");
-      if(!cont) return;
-
-      cont.insertAdjacentHTML("beforeend", buildRecipeLine());
-      calcularReceta();
-    }
-
-    function calcularReceta(){
-      const receta = recetaActualDesdeDOM();
-      const porciones = Math.max(1, Number(document.getElementById("calcPorciones")?.value || 1));
-      const margen = Math.max(0, Number(document.getElementById("calcMargen")?.value || 0));
-
-      const costoTotal = receta.reduce((acc, r) => acc + recetaCosto(r), 0);
-      const costoPorcion = costoTotal / porciones;
-      const sugerido = costoPorcion * (1 + (margen / 100));
-      const min40 = costoPorcion * 1.4;
-
-      setText("recetaCostoTotal", money(costoTotal));
-      setText("recetaCostoPorcion", money(costoPorcion));
-      setText("recetaPrecioSugerido", money(Math.ceil(sugerido)));
-      setText("recetaPrecioMin", money(Math.ceil(min40)));
-    }
-
-    async function guardarRecetaCalculada(){
-      const tipo = document.getElementById("calcTipo").value;
-      const nombre = (document.getElementById("calcNombre").value || "").trim();
-      const porciones = Math.max(1, Number(document.getElementById("calcPorciones").value || 1));
-      const gramaje = Math.max(1, Number(document.getElementById("calcGramaje").value || 1));
-      const margen = Math.max(0, Number(document.getElementById("calcMargen").value || 0));
-      const receta = recetaActualDesdeDOM();
-
-      if(!nombre){
-        setCalcMsg("Pon un nombre al cálculo.");
-        return;
-      }
-
-      if(!receta.length){
-        setCalcMsg("Agrega al menos un ingrediente.");
-        return;
-      }
-
-      const costoTotal = receta.reduce((acc, r) => acc + recetaCosto(r), 0);
-      const costoPorcion = costoTotal / porciones;
-      const precioSugerido = Math.ceil(costoPorcion * (1 + (margen / 100)));
-
-      try{
-        setCalcMsg("Guardando...");
-
-        await db.collection("recipe_costings").add({
-          tipo,
-          nombre,
-          porciones,
-          gramaje,
-          margen,
-          receta,
-          costoTotal,
-          costoPorcion,
-          precioSugerido,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedBy: auth.currentUser?.email || "admin"
-        });
-
-        setCalcMsg("✅ Cálculo guardado.");
-      }catch(e){
-        setCalcMsg("Error: " + e.message);
-      }
-    }
-
-    function listenRecetas(){
-      if(unsubRecetas) unsubRecetas();
-
-      unsubRecetas = db.collection("recipe_costings")
-        .orderBy("updatedAt", "desc")
-        .onSnapshot((snap) => {
-          recetasCache = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-          renderRecetas();
-        }, (err) => setCalcMsg("Error leyendo cálculos: " + err.message));
-    }
-
-    function renderRecetas(){
-      setText("recetasCount", recetasCache.length);
-
-      const tbody = document.getElementById("recetasRows");
-      if(!tbody) return;
-
-      tbody.innerHTML = "";
-
-      if(!recetasCache.length){
-        tbody.innerHTML = '<tr><td colspan="7" class="muted">No hay cálculos guardados todavía.</td></tr>';
-        return;
-      }
-
-      recetasCache.forEach(r => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><b>${escapeHtml(r.nombre || "")}</b></td>
-          <td>${escapeHtml(r.tipo || "")}</td>
-          <td>${Number(r.porciones || 0)}</td>
-          <td>${money(r.costoPorcion || 0)}</td>
-          <td>${money(r.precioSugerido || 0)}</td>
-          <td>${escapeHtml(fmtFecha(r.updatedAt))}</td>
-          <td>
-            <button class="secondary mini" type="button" onclick="borrarReceta('${r.id}')">Borrar</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    async function borrarReceta(id){
-      if(!isAdminUser){
-        setCalcMsg("No tienes permisos para borrar recetas.");
-        return;
-      }
-
-      const receta = recetasCache.find(r => r.id === id);
-      const nombre = receta?.nombre || "esta receta";
-
-      if(!confirm(`¿Seguro que quieres borrar "${nombre}"? Esta acción no se puede deshacer.`)){
-        return;
-      }
-
-      try{
-        setCalcMsg("Borrando receta...");
-        await db.collection("recipe_costings").doc(id).delete();
-        setCalcMsg("✅ Receta borrada.");
-      }catch(e){
-        console.error("Error borrando receta:", e);
-        setCalcMsg("Error borrando receta: " + (e.message || e));
-      }
-    }
-
-
-    // =========================
-    // CIERRE DE CAJA
-    // =========================
     function initCajaBox(){
       const dateEl = document.getElementById("cashDate");
       if(dateEl && !dateEl.value){
@@ -4183,6 +3907,11 @@ o
     }
 
     async function guardarCierreCaja(){
+      if(!isAdminUser){
+        setCashMsg("No tienes permisos para guardar cierres.");
+        return;
+      }
+
       const date = document.getElementById("cashDate").value || todayISO();
       const inicial = Number(document.getElementById("cashInicial").value || 0);
       const gastos = Number(document.getElementById("cashGastos").value || 0);
@@ -4225,15 +3954,7 @@ o
       }
     }
 
-    // =========================
-    // TOOLTIPS EN COSTOS Y CAJA
-    // =========================
     function insertarAyudasEnCampos(){
-      const calcTipoLabel = document.querySelector('label[for="calcTipo"]') || document.querySelector(".infoLabel");
-      if(calcTipoLabel){
-        // ya tiene ayuda
-      }
-
       const ayudas = [
         {
           selector: "#invUnit",
@@ -4306,9 +4027,6 @@ o
       wrapInfoLabels();
     }
 
-    // =========================
-    // AUTH Y ARRANQUE
-    // =========================
     auth.onAuthStateChanged(async(user) => {
       toggleCamposProducto();
 
@@ -4347,6 +4065,8 @@ o
         loginBox.classList.add("hidden");
         appBox.classList.remove("hidden");
 
+        await unlockPanelAudio();
+
         aplicarPermisosUI();
         mostrarSeccion("pedidos");
         listenPedidos();
@@ -4371,6 +4091,7 @@ o
 
     document.addEventListener("DOMContentLoaded", () => {
       wrapInfoLabels();
+      hookAudioUnlock();
 
       setTimeout(() => {
         insertarAyudasEnCampos();
