@@ -697,6 +697,13 @@
       }
       .panelNav button{min-width:100%}
     }
+
+
+
+
+
+
+
   </style>
 </head>
 <body>
@@ -1459,6 +1466,35 @@
       return `RD$${Number(n || 0).toFixed(2)}`.replace(".00","");
     }
 
+
+function agruparConCantidad(lista = []){
+  const mapa = {};
+
+  lista.forEach(item => {
+    const limpio = String(item || "")
+      .replace(/\s*\(RD\$\d+\)\s*/gi, "")
+      .trim();
+
+    if(!limpio) return;
+    mapa[limpio] = (mapa[limpio] || 0) + 1;
+  });
+
+  return Object.entries(mapa).map(([nombre, cantidad]) => ({
+    nombre,
+    cantidad
+  }));
+}
+
+function renderListaAgrupada(lista = []){
+  const agrupados = agruparConCantidad(lista);
+  if(!agrupados.length) return "<span class='muted'>-</span>";
+
+  return agrupados
+    .map(item => `• x${item.cantidad} ${escapeHtml(item.nombre)}`)
+    .join("<br>");
+}
+
+
     function todayISO(){
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -2009,28 +2045,28 @@
         : "";
 
       const topsIncluidos = Array.isArray(p.toppingsIncluidos)
-        ? p.toppingsIncluidos.map(t => `• ${escapeHtml(t)}`).join("<br>")
-        : "";
+  ? renderListaAgrupada(p.toppingsIncluidos)
+  : "";
 
-      const topsExtras = Array.isArray(p.toppingsExtras)
-        ? p.toppingsExtras.map(t => `• ${escapeHtml(t)}`).join("<br>")
-        : "";
+const topsExtras = Array.isArray(p.toppingsExtras)
+  ? renderListaAgrupada(p.toppingsExtras)
+  : "";
 
-      const topsLegacy = Array.isArray(p.tops)
-        ? p.tops.map(t => `• ${escapeHtml(t)}`).join("<br>")
-        : "";
+const topsLegacy = Array.isArray(p.tops)
+  ? renderListaAgrupada(p.tops)
+  : "";
 
-      const glaseadosIncluidos = Array.isArray(p.glaseadosIncluidos)
-        ? p.glaseadosIncluidos.map(g => `• ${escapeHtml(g)}`).join("<br>")
-        : "";
+const glaseadosIncluidos = Array.isArray(p.glaseadosIncluidos)
+  ? renderListaAgrupada(p.glaseadosIncluidos)
+  : "";
 
-      const glaseadosExtras = Array.isArray(p.glaseadosExtras)
-        ? p.glaseadosExtras.map(g => `• ${escapeHtml(g)}`).join("<br>")
-        : "";
+const glaseadosExtras = Array.isArray(p.glaseadosExtras)
+  ? renderListaAgrupada(p.glaseadosExtras)
+  : "";
 
-      const glaseados = Array.isArray(p.glaseados)
-        ? p.glaseados.map(g => `• ${escapeHtml(g)}`).join("<br>")
-        : "";
+const glaseados = Array.isArray(p.glaseados)
+  ? renderListaAgrupada(p.glaseados)
+  : "";
 
       const entrega = (p.tipo === "delivery") ? "🚚 Delivery" : "📍 Pickup";
       const total = safe(p.total);
@@ -2243,29 +2279,38 @@
         ? p.combos.map(c => `- ${c.cantidad} x ${c.combo} (${money(c.precio)})`).join("\n")
         : "- (sin combos)";
 
-      const topsIncluidos = Array.isArray(p.toppingsIncluidos) && p.toppingsIncluidos.length
-        ? p.toppingsIncluidos.map(t => `- ${t}`).join("\n")
-        : "";
+      function renderListaAgrupadaPlano(lista = []){
+  const agrupados = agruparConCantidad(lista);
+  if(!agrupados.length) return "";
 
-      const topsExtras = Array.isArray(p.toppingsExtras) && p.toppingsExtras.length
-        ? p.toppingsExtras.map(t => `- ${t}`).join("\n")
-        : "";
+  return agrupados
+    .map(item => `- x${item.cantidad} ${item.nombre}`)
+    .join("\n");
+}
 
-      const topsLegacy = Array.isArray(p.tops) && p.tops.length
-        ? p.tops.map(t => `- ${t}`).join("\n")
-        : "";
+const topsIncluidos = Array.isArray(p.toppingsIncluidos) && p.toppingsIncluidos.length
+  ? renderListaAgrupadaPlano(p.toppingsIncluidos)
+  : "";
 
-      const glaseadosIncluidos = Array.isArray(p.glaseadosIncluidos) && p.glaseadosIncluidos.length
-        ? p.glaseadosIncluidos.map(g => `- ${g}`).join("\n")
-        : "";
+const topsExtras = Array.isArray(p.toppingsExtras) && p.toppingsExtras.length
+  ? renderListaAgrupadaPlano(p.toppingsExtras)
+  : "";
 
-      const glaseadosExtras = Array.isArray(p.glaseadosExtras) && p.glaseadosExtras.length
-        ? p.glaseadosExtras.map(g => `- ${g}`).join("\n")
-        : "";
+const topsLegacy = Array.isArray(p.tops) && p.tops.length
+  ? renderListaAgrupadaPlano(p.tops)
+  : "";
 
-      const glaseadosLegacy = Array.isArray(p.glaseados) && p.glaseados.length
-        ? p.glaseados.map(g => `- ${g}`).join("\n")
-        : "";
+const glaseadosIncluidos = Array.isArray(p.glaseadosIncluidos) && p.glaseadosIncluidos.length
+  ? renderListaAgrupadaPlano(p.glaseadosIncluidos)
+  : "";
+
+const glaseadosExtras = Array.isArray(p.glaseadosExtras) && p.glaseadosExtras.length
+  ? renderListaAgrupadaPlano(p.glaseadosExtras)
+  : "";
+
+const glaseadosLegacy = Array.isArray(p.glaseados) && p.glaseados.length
+  ? renderListaAgrupadaPlano(p.glaseados)
+  : "";
 
       const entrega = (p.tipo === "delivery")
         ? "Delivery"

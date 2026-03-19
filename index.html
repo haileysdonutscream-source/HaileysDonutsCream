@@ -852,6 +852,84 @@ button:active{transform:scale(.98);}
   line-height:1;
 }
 
+
+.sameFlavorBox{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 14px;
+  margin:8px 0 12px;
+  background:#fff7fb;
+  border:1px solid var(--line);
+  border-radius:16px;
+}
+
+.sameFlavorText{
+  flex:1;
+  min-width:0;
+}
+
+.sameFlavorTitle{
+  font-size:15px;
+  font-weight:800;
+  color:var(--main);
+  line-height:1.2;
+}
+
+.sameFlavorSub{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:3px;
+  line-height:1.35;
+}
+
+.sameFlavorSwitch{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.sameFlavorSwitch input{
+  width:22px;
+  height:22px;
+  margin:0;
+  accent-color:var(--main);
+}
+
+.sameFlavorMulti{
+  margin-top:8px;
+}
+
+.sameFlavorMulti > div{
+  margin-bottom:8px;
+}
+
+@media (max-width:560px){
+  .sameFlavorBox{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .sameFlavorSwitch{
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  .sameFlavorTitle{
+    font-size:16px;
+  }
+
+  .sameFlavorSub{
+    font-size:13px;
+  }
+}
+
+
+
+
 </style>
 </head>
 <body>
@@ -1515,13 +1593,26 @@ function renderIncludedSelector({
       Tienes ${textoCantidad} incluido${count === 1 ? "" : "s"} en tu combo.
     </div>
 
-    <label style="display:flex;align-items:center;gap:8px;margin:8px 0 12px;font-size:14px;font-weight:600;color:#5d4a56;">
-      <input type="checkbox" id="${sameToggleId}" checked onchange="toggleSameSelection('${containerId}','${sameToggleId}','${sameSelectId}','${selectClass}','${onchangeExtra.replace(/'/g, "\\'")}')">
-      Quiero el mismo sabor en todos
-    </label>
+    <div class="sameFlavorBox">
+      <div class="sameFlavorText">
+        <div class="sameFlavorTitle">Usar el mismo sabor en todos</div>
+        <div class="sameFlavorSub">
+          Márcalo si quieres repetir el mismo ${itemLabelSingular} en todas tus donitas.
+        </div>
+      </div>
 
-    <div id="${sameSelectId}Wrap"></div>
-    <div id="${containerId}_multipleWrap" class="hidden"></div>
+      <label class="sameFlavorSwitch">
+        <input
+          type="checkbox"
+          id="${sameToggleId}"
+          onchange="toggleSameSelection('${containerId}','${sameToggleId}','${sameSelectId}','${selectClass}','${onchangeExtra.replace(/'/g, "\\'")}')"
+        >
+        <span class="smallMuted">Activar</span>
+      </label>
+    </div>
+
+    <div id="${sameSelectId}Wrap" class="hidden"></div>
+    <div id="${containerId}_multipleWrap" class="sameFlavorMulti"></div>
   `;
 
   const sameWrap = document.getElementById(`${sameSelectId}Wrap`);
@@ -1537,7 +1628,7 @@ function renderIncludedSelector({
   });
 
   multiWrap.innerHTML = Array.from({ length: count }).map((_, i) => `
-    <div style="margin-bottom:8px;">
+    <div>
       ${buildSingleIncludedSelect({
         options,
         selectClass,
@@ -1546,9 +1637,12 @@ function renderIncludedSelector({
       })}
     </div>
   `).join("");
+
+  toggleSameSelection(containerId, sameToggleId, sameSelectId, selectClass, onchangeExtra, true);
 }
 
-function toggleSameSelection(containerId, sameToggleId, sameSelectId, selectClass, onchangeExtra = ""){
+
+function toggleSameSelection(containerId, sameToggleId, sameSelectId, selectClass, onchangeExtra = "", firstLoad = false){
   const sameToggle = document.getElementById(sameToggleId);
   const sameWrap = document.getElementById(`${sameSelectId}Wrap`);
   const multiWrap = document.getElementById(`${containerId}_multipleWrap`);
@@ -1563,10 +1657,12 @@ function toggleSameSelection(containerId, sameToggleId, sameSelectId, selectClas
     multiWrap.classList.remove("hidden");
   }
 
-  calcular();
+  if(!firstLoad){
+    calcular();
 
-  if(onchangeExtra && typeof window[onchangeExtra] === "function"){
-    window[onchangeExtra]();
+    if(onchangeExtra && typeof window[onchangeExtra] === "function"){
+      window[onchangeExtra]();
+    }
   }
 }
 
