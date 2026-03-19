@@ -435,15 +435,16 @@
       background:#fff;
     }
 
-    .productsTable .colTipo{min-width:110px}
-    .productsTable .colNombre{min-width:220px}
-    .productsTable .colPrecio{min-width:110px}
-    .productsTable .colIncl{min-width:90px}
-    .productsTable .colOrden{min-width:100px}
-    .productsTable .colActivo{min-width:110px}
-    .productsTable .colIcon{min-width:90px}
-    .productsTable .colBadge{min-width:150px}
-    .productsTable .colAcciones{min-width:130px}
+   .productsTable .colTipo{min-width:110px}
+.productsTable .colNombre{min-width:220px}
+.productsTable .colPrecio{min-width:110px}
+.productsTable .colIncl{min-width:90px}
+.productsTable .colOrden{min-width:100px}
+.productsTable .colActivo{min-width:110px}
+.productsTable .colGrupo{min-width:130px}
+.productsTable .colIcon{min-width:90px}
+.productsTable .colBadge{min-width:150px}
+.productsTable .colAcciones{min-width:130px}
 
     .productsTable .actionBtnCell{text-align:center}
     .productsTable .actionBtnCell button{
@@ -891,6 +892,13 @@
                 </select>
               </div>
 
+<div id="pGroupWrap">
+  <label>Grupo visual</label>
+  <select id="pGroup">
+    <option value="clasico">Clásico</option>
+    <option value="semanal">Semanal</option>
+  </select>
+</div>
               <div id="pTopsInclWrap">
                 <label>Toppings incluidos (solo combos)</label>
                 <input id="pTopsIncl" type="number" min="0" value="0">
@@ -912,17 +920,18 @@
               <table class="table productsTable">
                 <thead>
                   <tr>
-                    <th class="colTipo">Tipo</th>
-                    <th class="colNombre">Nombre</th>
-                    <th class="colPrecio">Precio</th>
-                    <th class="colIncl">Tops</th>
-                    <th class="colIncl">Glas</th>
-                    <th class="colOrden">Orden</th>
-                    <th class="colActivo">Activo</th>
-                    <th class="colIcon">Ícono</th>
-                    <th class="colBadge">Badge</th>
-                    <th class="colAcciones">Acciones</th>
-                  </tr>
+  <th class="colTipo">Tipo</th>
+  <th class="colNombre">Nombre</th>
+  <th class="colPrecio">Precio</th>
+  <th class="colIncl">Tops</th>
+  <th class="colIncl">Glas</th>
+  <th class="colOrden">Orden</th>
+  <th class="colActivo">Activo</th>
+  <th class="colGrupo">Grupo</th>
+  <th class="colIcon">Ícono</th>
+  <th class="colBadge">Badge</th>
+  <th class="colAcciones">Acciones</th>
+</tr>
                 </thead>
                 <tbody id="tablaProductos"></tbody>
               </table>
@@ -3090,21 +3099,23 @@ o
       }
     }
 
-    function toggleCamposProducto(){
-      const type = document.getElementById("pType")?.value || "";
-      const topsWrap = document.getElementById("pTopsInclWrap");
-      const glaseadosWrap = document.getElementById("pGlaseadosInclWrap");
-      const iconInput = document.getElementById("pIcon");
+function toggleCamposProducto(){
+  const type = document.getElementById("pType")?.value || "";
+  const topsWrap = document.getElementById("pTopsInclWrap");
+  const glaseadosWrap = document.getElementById("pGlaseadosInclWrap");
+  const groupWrap = document.getElementById("pGroupWrap");
+  const iconInput = document.getElementById("pIcon");
 
-      const esCombo = (type === "combo");
+  const esCombo = (type === "combo");
 
-      if(topsWrap) topsWrap.style.display = esCombo ? "block" : "none";
-      if(glaseadosWrap) glaseadosWrap.style.display = esCombo ? "block" : "none";
+  if(topsWrap) topsWrap.style.display = esCombo ? "block" : "none";
+  if(glaseadosWrap) glaseadosWrap.style.display = esCombo ? "block" : "none";
+  if(groupWrap) groupWrap.style.display = esCombo ? "block" : "none";
 
-      if(iconInput && type !== "glaseado"){
-        iconInput.value = "";
-      }
-    }
+  if(iconInput && type !== "glaseado"){
+    iconInput.value = "";
+  }
+}
 
     function detectarIconoGlaseado(nombre){
       const n = String(nombre || "").toLowerCase().trim();
@@ -3156,6 +3167,7 @@ o
       const badge = (document.getElementById("pBadge").value || "").trim();
       const icon = (document.getElementById("pIcon").value || "").trim();
       const active = document.getElementById("pActive").value === "true";
+const group = document.getElementById("pGroup")?.value || "clasico";
 
       if(!name){
         setProdMsg("Pon un nombre.");
@@ -3170,21 +3182,22 @@ o
       try{
         setProdMsg("Agregando...");
 
-        await db.collection("store_products").add({
-          type,
-          name,
-          price,
-          icon,
-          toppingsIncluded: (type === "combo") ? topsIncl : 0,
-          glaseadosIncluded: (type === "combo") ? glaseadosIncl : 0,
-          sortOrder,
-          badge,
-          active,
-          salesCount: 0,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedBy: auth.currentUser?.email || "admin"
-        });
+await db.collection("store_products").add({
+  type,
+  name,
+  price,
+  icon,
+  group: (type === "combo") ? group : "",
+  toppingsIncluded: (type === "combo") ? topsIncl : 0,
+  glaseadosIncluded: (type === "combo") ? glaseadosIncl : 0,
+  sortOrder,
+  badge,
+  active,
+  salesCount: 0,
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+  updatedBy: auth.currentUser?.email || "admin"
+});
 
         document.getElementById("pName").value = "";
         document.getElementById("pPrice").value = "";
@@ -3194,6 +3207,7 @@ o
         document.getElementById("pBadge").value = "";
         document.getElementById("pActive").value = "true";
         document.getElementById("pIcon").value = "";
+	document.getElementById("pGroup").value = "clasico";
 
         setProdMsg("✅ Agregado.");
       }catch(e){
@@ -3227,10 +3241,10 @@ o
       const tbody = document.getElementById("tablaProductos");
       tbody.innerHTML = "";
 
-      if(!list.length){
-        tbody.innerHTML = `<tr><td colspan="10" class="muted" style="padding:14px;">No hay productos todavía.</td></tr>`;
-        return;
-      }
+    if(!list.length){
+  tbody.innerHTML = `<tr><td colspan="11" class="muted" style="padding:14px;">No hay productos todavía.</td></tr>`;
+  return;
+}
 
       list.forEach(p => {
         const row = document.createElement("tr");
@@ -3278,18 +3292,27 @@ o
               onblur="updProd('${p.id}', {sortOrder:Number(this.value||0)})">
           </td>
 
-          <td class="colActivo">
-            <select onchange="updProd('${p.id}', {active:(this.value==='true')})">
-              <option value="true" ${p.active ? 'selected' : ''}>Sí</option>
-              <option value="false" ${!p.active ? 'selected' : ''}>No</option>
-            </select>
-          </td>
+<td class="colActivo">
+  <select onchange="updProd('${p.id}', {active:(this.value==='true')})">
+    <option value="true" ${p.active ? 'selected' : ''}>Sí</option>
+    <option value="false" ${!p.active ? 'selected' : ''}>No</option>
+  </select>
+</td>
 
-          <td class="colIcon">
-            <input
-              value="${escapeHtml(p.icon || "")}"
-              onblur="updProd('${p.id}', {icon:this.value})">
-          </td>
+<td class="colGrupo">
+  ${p.type === 'combo' ? `
+    <select onchange="updProd('${p.id}', {group:this.value})">
+      <option value="clasico" ${(p.group || 'clasico') === 'clasico' ? 'selected' : ''}>Clásico</option>
+      <option value="semanal" ${(p.group || '') === 'semanal' ? 'selected' : ''}>Semanal</option>
+    </select>
+  ` : `<span class="small muted">—</span>`}
+</td>
+
+<td class="colIcon">
+  <input
+    value="${escapeHtml(p.icon || "")}"
+    onblur="updProd('${p.id}', {icon:this.value})">
+</td>
 
           <td class="colBadge">
             <input

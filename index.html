@@ -191,38 +191,6 @@ h1{
   margin:10px 34px 14px;
 }
 
-.heroMini{
-  display:flex;
-  justify-content:center;
-  gap:8px;
-  flex-wrap:wrap;
-  margin:0 0 12px;
-}
-
-.miniChip{
-  background:var(--soft);
-  border:1px solid var(--line);
-  color:var(--main);
-  font-size:12px;
-  font-weight:700;
-  padding:7px 12px;
-  border-radius:999px;
-}
-
-.heroNotice{
-  background:linear-gradient(180deg,#fff7fb 0%,#fff0f6 100%);
-  border:1px dashed var(--line);
-  border-radius:18px;
-  padding:12px;
-  margin:0 0 12px;
-  text-align:center;
-  color:#6d5562;
-  font-size:13px;
-  line-height:1.45;
-}
-
-.heroNotice b{color:var(--main);}
-
 /* SECTION */
 .sectionCard{
   background:#fff;
@@ -503,17 +471,6 @@ details[open] .gallerySummary::after{content:"▴";}
   color:#5d5132;
 }
 
-.success{
-  background:var(--success-bg);
-  border:1px solid var(--success-bd);
-  color:var(--success-tx);
-  padding:12px;
-  border-radius:14px;
-  font-size:14px;
-  margin:12px 0;
-  display:none;
-}
-
 .deliveryResume{
   background:var(--soft);
   border:1px solid var(--line);
@@ -705,6 +662,53 @@ button:active{transform:scale(.98);}
   line-height:1.5;
 }
 
+/* MODAL ERROR */
+.errorModal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.72);
+  z-index:10000;
+  justify-content:center;
+  align-items:center;
+  padding:18px;
+}
+
+.errorModalCard{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  border-radius:22px;
+  padding:20px 18px;
+  box-shadow:0 18px 45px rgba(0,0,0,.25);
+  border:2px solid #ffd2e3;
+  text-align:center;
+}
+
+.errorEmoji{
+  font-size:46px;
+  line-height:1;
+  margin-bottom:8px;
+}
+
+.errorTitle{
+  font-family:'Pacifico',cursive;
+  color:var(--danger);
+  font-size:28px;
+  margin:0 0 8px;
+}
+
+.errorText{
+  font-size:15px;
+  color:#4d3c45;
+  line-height:1.5;
+  margin:0 0 14px;
+}
+
+.errorModal button{
+  width:100%;
+}
+
 /* LOADER */
 #loader{
   position:fixed;
@@ -736,7 +740,49 @@ button:active{transform:scale(.98);}
   to{transform:rotate(360deg)}
 }
 
-/* MOBILE TWEAKS */
+.weeklySection{
+  margin-top:16px;
+  padding:14px 12px 4px;
+  background:linear-gradient(180deg,#fff8fb 0%, #fff3f8 100%);
+  border:1px solid #f6d3e2;
+  border-radius:18px;
+}
+
+.weeklyHeader{
+  text-align:left;
+  margin-bottom:10px;
+  padding-bottom:10px;
+  border-bottom:1px dashed var(--line);
+}
+
+.weeklyKicker{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 10px;
+  border-radius:999px;
+  background:#ffe3ef;
+  color:var(--main);
+  border:1px solid var(--line);
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+  margin-bottom:8px;
+}
+
+.weeklyTitle{
+  font-size:22px;
+  font-weight:900;
+  color:var(--main);
+  line-height:1.1;
+}
+
+.weeklyText{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
 @media (max-width:380px){
   h1{font-size:28px}
   .sectionTitle{font-size:25px}
@@ -745,6 +791,38 @@ button:active{transform:scale(.98);}
   .qtyBox{min-width:48px}
   .primaryBtn{min-width:132px}
 }
+
+.deliveryResumeBtn{
+  width:100%;
+  display:block;
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  text-align:center;
+  font-size:14px;
+  color:#5d4a56;
+  box-shadow:none;
+  min-height:auto;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.deliveryResumeBtn b{
+  color:var(--main);
+}
+
+.deliveryResumeBtn:hover{
+  border-color:#ea9fbe;
+  box-shadow:0 8px 18px rgba(255,95,162,.10);
+}
+
+.deliveryResumeBtn:active{
+  transform:scale(.98);
+}
+
+
+
 </style>
 </head>
 <body>
@@ -752,6 +830,16 @@ button:active{transform:scale(.98);}
 <div id="loader">
   <img src="Carga.png" class="donutLoader" alt="Cargando">
   <div class="loaderText">Cargando...</div>
+</div>
+
+<!-- MODAL ERROR -->
+<div id="errorModal" class="errorModal" onclick="cerrarErrorModal(event)">
+  <div class="errorModalCard" onclick="event.stopPropagation()">
+    <div class="errorEmoji">⚠️</div>
+    <h2 id="errorModalTitle" class="errorTitle">Ups</h2>
+    <p id="errorModalText" class="errorText">Algo salió mal.</p>
+    <button type="button" onclick="cerrarErrorModal()">Entendido</button>
+  </div>
 </div>
 
 <!-- MODAL RESUMEN -->
@@ -764,7 +852,7 @@ button:active{transform:scale(.98);}
     <div style="margin-top:10px;">
       <label class="fieldLabel" style="color:#c2185b;">📝 Nota del pedido (opcional)</label>
       <textarea id="notaPedidoResumen" placeholder="Ej: sin azúcar glass, más Oreo, bien cargado de crema, etc."></textarea>
-      <div class="smallMuted">Esto se guardará en el pedido para que lo vean en el panel.</div>
+   
     </div>
 
     <div id="resumenError" class="errorInline"></div>
@@ -932,16 +1020,6 @@ button:active{transform:scale(.98);}
 
     <h1>Hailey’s Donuts & Cream</h1>
 
-    <div class="heroMini">
-      <span class="miniChip">🍩 Mini donas frescas</span>
-      <span class="miniChip">✨ Personalízalas a tu gusto</span>
-    </div>
-
-    <div class="heroNotice">
-      <b>Pedidos abiertos.</b> Haz tu orden con tiempo para asegurar tu entrega.  
-      Mientras más claro el pedido, menos relajo después.
-    </div>
-
     <details id="fotosSection" class="sectionCard">
       <summary class="gallerySummary">
         <span>📸 Hechas por nosotros</span>
@@ -966,7 +1044,20 @@ button:active{transform:scale(.98);}
     <section class="sectionCard">
       <h2 id="combosTitle" class="sectionTitle"><img src="Carga.png" class="iconDonut" alt="">Combos</h2>
       <div class="subHint">Toca + o − para elegir cuántas quieres.</div>
-      <div id="combosList"></div>
+
+      <div id="combosClasicosWrap">
+        <div id="combosClasicosList"></div>
+      </div>
+
+      <div id="combosSemanalesWrap" class="weeklySection hidden">
+        <div class="weeklyHeader">
+          <div class="weeklyKicker">Edición limitada</div>
+          <div class="weeklyTitle">🔥 Semanales</div>
+          <div class="weeklyText">Disponibles por tiempo limitado.</div>
+        </div>
+
+        <div id="combosSemanalesList"></div>
+      </div>
     </section>
 
     <section class="sectionCard">
@@ -981,7 +1072,7 @@ button:active{transform:scale(.98);}
         <button type="button" class="secondary" onclick="agregarGlaseadoExtra()">+ Agregar glaseado extra</button>
       </div>
 
-      <div id="glaseadosPreview" class="previewBox hidden"></div>
+     
     </section>
 
     <section class="sectionCard">
@@ -999,11 +1090,18 @@ button:active{transform:scale(.98);}
       <div id="toppingsList" class="hidden"></div>
     </section>
 
-    <section class="sectionCard">
-      <div id="entregaResumenBox" class="deliveryResume">
-        🚚 Entrega seleccionada: <b id="entregaResumenMini">Recoger en tienda (Licey al Medio)</b>
-      </div>
-    </section>
+   <section class="sectionCard">
+  <button
+    type="button"
+    id="entregaResumenBox"
+    class="deliveryResume deliveryResumeBtn"
+    onclick="abrirDelivery()"
+    aria-label="Elegir tipo de entrega"
+  >
+    <span>🚚 Entrega seleccionada: </span>
+    <b id="entregaResumenMini">Recoger en tienda (Licey al Medio)</b>
+  </button>
+</section>
 
     <details id="datosClienteBox" class="sectionCard">
       <summary class="accordionSummary">👤 Tus datos</summary>
@@ -1037,28 +1135,25 @@ button:active{transform:scale(.98);}
       </div>
     </details>
 
-    <div id="thanksMsg" class="success">
-      ✅ Gracias por tu pedido. Lo recibimos y te escribiremos desde el negocio en breve. 🩷
-    </div>
-  </div>
+    <div class="stickyBar">
+      <div class="rowSticky">
+        <div class="total" id="total">TOTAL: RD$0</div>
+        <button type="button" id="btnEnviarPedido" class="primaryBtn" onclick="enviar()">Confirmar pedido</button>
+      </div>
 
-  <div class="stickyBar">
-    <div class="rowSticky">
-      <div class="total" id="total">TOTAL: RD$0</div>
-      <button type="button" id="btnEnviarPedido" class="primaryBtn" onclick="enviar()">Confirmar pedido</button>
+      <div class="smallMuted" style="text-align:center; margin-top:6px;">
+        Revisa tu pedido antes de guardarlo.
+      </div>
     </div>
 
-    <div class="smallMuted" style="text-align:center; margin-top:6px;">
-      Revisa tu pedido antes de guardarlo.
-    </div>
   </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-
 <script>
+
 const firebaseConfig = {
   apiKey: "AIzaSyBIc3oJMmSTnOg4EaFsCLOkhyLoGXEWj6c",
   authDomain: "minidonas-d5e36.firebaseapp.com",
@@ -1081,7 +1176,7 @@ let ultimoMaxGlaseados = -1;
 let enviandoPedido = false;
 
 window.__thanksMessage = "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
-window.__businessWhatsApp = ""; // ejemplo: 18091234567
+window.__businessWhatsApp = "";
 
 let toppings = [
   {name:"Kisses",price:55},
@@ -1121,14 +1216,56 @@ function escapeHtml(str=""){
 }
 function escapeAttr(str=""){ return escapeHtml(str); }
 
+function abrirErrorModal(msg, titulo = "Ups"){
+  const modal = document.getElementById("errorModal");
+  const title = document.getElementById("errorModalTitle");
+  const text = document.getElementById("errorModalText");
+  if(title) title.textContent = titulo;
+  if(text) text.textContent = msg || "Algo salió mal.";
+  if(modal) modal.style.display = "flex";
+}
+
+function agruparConCantidad(arr = []){
+  const map = {};
+
+  arr.forEach(item => {
+    const key = String(item || "").trim();
+    if(!key) return;
+
+    if(!map[key]){
+      map[key] = 1;
+    }else{
+      map[key]++;
+    }
+  });
+
+  return Object.entries(map).map(([nombre, cantidad]) => ({
+    nombre,
+    cantidad
+  }));
+}
+
+function cerrarErrorModal(event){
+  const modal = document.getElementById("errorModal");
+  if(event && event.target !== modal) return;
+  if(modal) modal.style.display = "none";
+}
+
 function showInlineError(id, msg){
   const el = document.getElementById(id);
-  if(!el) return;
-  el.textContent = msg || "";
-  el.style.display = msg ? "block" : "none";
+  if(el){
+    el.textContent = msg || "";
+    el.style.display = msg ? "block" : "none";
+  }
+  if(msg) abrirErrorModal(msg, "Revisa tu pedido");
 }
+
 function clearInlineError(id){
-  showInlineError(id, "");
+  const el = document.getElementById(id);
+  if(el){
+    el.textContent = "";
+    el.style.display = "none";
+  }
 }
 
 function setSendingState(isSending){
@@ -1243,7 +1380,7 @@ function actualizarResumenEntrega(){
       resumenEl.textContent = "Delivery – Falta seleccionar zona";
     }
   }else{
-    resumenEl.textContent = "Recoger en tienda (Licey al Medio)";
+    resumenEl.textContent = "Recoger en tienda (Licey al Medio) • tocar para cambiar";
   }
 }
 
@@ -1299,9 +1436,6 @@ function adjustCombo(btn, delta){
   calcular();
 }
 
-/* =========================
-   SELECTORES INCLUIDOS
-========================= */
 function buildSingleIncludedSelect({
   options,
   selectClass,
@@ -1428,10 +1562,6 @@ function getIncludedSelections(containerId, sameToggleId, sameSelectId, count, s
   return values;
 }
 
-
-/* =========================
-   CÁLCULO
-========================= */
 function calcular(){
   let total = 0;
   let maxToppings = 0;
@@ -1469,7 +1599,9 @@ function calcular(){
     total += parseInt(zona?.value || "0", 10) || 0;
   }
 
-  document.getElementById("total").innerText = "TOTAL: RD$" + total;
+  const totalEl = document.getElementById("total");
+  if(totalEl) totalEl.innerText = "TOTAL: RD$" + total;
+
  
 }
 
@@ -1549,7 +1681,6 @@ function actualizarGlaseados(max){
 
   if(max <= 0){
     cont.innerHTML = "<p class='smallMuted'>Selecciona un combo</p>";
-    
     return;
   }
 
@@ -1567,9 +1698,7 @@ function actualizarGlaseados(max){
     selectClass: "glaseadoSelect",
     sameToggleId: "sameGlaseadoToggle",
     sameSelectId: "sameGlaseadoSelect",
-    onchangeExtra: "renderGlaseadosPreview"
   });
-
 }
 
 function agregarGlaseadoExtra(valorPrevio = ""){
@@ -1583,10 +1712,7 @@ function agregarGlaseadoExtra(valorPrevio = ""){
   s.className = "glaseadoSelect glaseadoExtra";
   s.dataset.kind = "extra";
   s.style.flex = "1";
-  s.onchange = () => {
-    calcular();
-   
-  };
+  s.onchange = () => calcular();
 
   const o = document.createElement("option");
   o.value = "";
@@ -1610,7 +1736,6 @@ function agregarGlaseadoExtra(valorPrevio = ""){
   btn.onclick = () => {
     row.remove();
     calcular();
-  
   };
 
   row.appendChild(s);
@@ -1618,25 +1743,27 @@ function agregarGlaseadoExtra(valorPrevio = ""){
   list.appendChild(row);
 
   calcular();
-  
 }
 
-/* =========================
-   RENDER PRODUCTOS
-========================= */
 function renderCombosFS(combosDocs){
-  const cont = document.getElementById("combosList");
-  cont.innerHTML = "";
+  const clasicosCont = document.getElementById("combosClasicosList");
+  const semanalesCont = document.getElementById("combosSemanalesList");
+  const semanalesWrap = document.getElementById("combosSemanalesWrap");
 
-  if(!combosDocs.length){
-    cont.innerHTML = `<div class="smallMuted" style="text-align:center;padding:8px;">No hay combos activos ahora mismo.</div>`;
-    return;
-  }
+  if(!clasicosCont || !semanalesCont) return;
+
+  clasicosCont.innerHTML = "";
+  semanalesCont.innerHTML = "";
+
+  const semanales = combosDocs.filter(c => String(c.group || "clasico").toLowerCase() === "semanal");
+  const clasicos = combosDocs.filter(c => String(c.group || "clasico").toLowerCase() !== "semanal");
 
   function generarBadgeAutomatico(c){
     const badgeManual = String(c.badge || "").trim().toLowerCase();
     const ventas = Number(c.salesCount || 0);
+    const grupo = String(c.group || "clasico").toLowerCase();
 
+ 
     if(badgeManual === "oferta"){
       return `<span class="productBadge">🏷 OFERTA</span>`;
     }
@@ -1649,7 +1776,7 @@ function renderCombosFS(combosDocs){
     return `<span class="productBadge">⭐ MÁS VENDIDO</span>`;
   }
 
-  combosDocs.forEach(c => {
+  function crearComboCard(c){
     const div = document.createElement("div");
     div.className = "item";
 
@@ -1685,44 +1812,47 @@ function renderCombosFS(combosDocs){
       </div>
     `;
 
-    cont.appendChild(div);
-  });
-}
+    return div;
+  }
 
-function renderToppingsFS(toppingsDocs){
-  const cont = document.getElementById("toppingsList");
-  if(cont) cont.innerHTML = "";
-
-  if(!toppingsDocs.length){
-    if(cont) cont.innerHTML = `<div class="smallMuted" style="text-align:center;padding:8px;">No hay toppings activos ahora mismo.</div>`;
+  if(!clasicos.length && !semanales.length){
+    clasicosCont.innerHTML = `<div class="smallMuted" style="text-align:center;padding:8px;">No hay combos activos ahora mismo.</div>`;
+    if(semanalesWrap) semanalesWrap.classList.add("hidden");
     return;
   }
 
-  toppingsDocs.forEach(t => {
-    const div = document.createElement("div");
-    div.className = "item toppingRowOnly";
+  if(clasicos.length){
+    clasicos.forEach(c => clasicosCont.appendChild(crearComboCard(c)));
+  }else{
+    clasicosCont.innerHTML = `<div class="smallMuted" style="text-align:center;padding:8px;">No hay combos clásicos activos.</div>`;
+  }
 
-    div.innerHTML = `
-      <div class="productInfo">
-        <div class="productTopLine">
-          <span class="productName">${escapeHtml(t.name)}</span>
-          ${t.badge ? `<span class="productBadge">${escapeHtml(t.badge)}</span>` : ""}
-        </div>
-        <div class="productMeta">RD$${Number(t.price || 0)}</div>
-      </div>
-    `;
-
-    cont.appendChild(div);
-  });
+  if(semanales.length){
+    if(semanalesWrap) semanalesWrap.classList.remove("hidden");
+    semanales.forEach(c => semanalesCont.appendChild(crearComboCard(c)));
+  }else{
+    if(semanalesWrap) semanalesWrap.classList.add("hidden");
+  }
 }
 
 function escucharTiendaEnVivo(){
   db.collection("store_settings").doc("main").onSnapshot((snap) => {
     const s = snap.exists ? snap.data() : {};
 
-    document.getElementById("combosTitle").innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.combosTitle || "Combos").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
-    document.getElementById("toppingsTitle").innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.toppingsTitle || "Toppings").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
-    document.getElementById("glaseadosTitle").innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.glaseadosTitle || "Glaseados").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
+    const combosTitle = document.getElementById("combosTitle");
+    const toppingsTitle = document.getElementById("toppingsTitle");
+    const glaseadosTitle = document.getElementById("glaseadosTitle");
+
+    if(combosTitle){
+      combosTitle.innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.combosTitle || "Combos").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
+    }
+    if(toppingsTitle){
+      toppingsTitle.innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.toppingsTitle || "Toppings").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
+    }
+    if(glaseadosTitle){
+      glaseadosTitle.innerHTML = `<img src="Carga.png" class="iconDonut" alt="">${escapeHtml((s.glaseadosTitle || "Glaseados").replace(/^([^\wáéíóúüñÁÉÍÓÚÜÑ]+)\s*/, ""))}`;
+    }
+
     window.__thanksMessage = s.thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.";
     window.__businessWhatsApp = String(s.businessWhatsApp || s.whatsapp || "").replace(/\D/g, "");
 
@@ -1769,22 +1899,24 @@ function escucharTiendaEnVivo(){
     }));
 
     renderCombosFS(combosDocs);
-    renderToppingsFS(toppingsDocs);
     calcular();
   }, (err) => {
     console.error("Error leyendo store_products:", err);
-    document.getElementById("combosList").innerHTML =
-      `<div class="smallMuted" style="text-align:center;padding:8px;">Error leyendo productos: ${escapeHtml(err.message || "desconocido")}</div>`;
+    const list = document.getElementById("combosClasicosList");
+    if(list){
+      list.innerHTML = `<div class="smallMuted" style="text-align:center;padding:8px;">Error leyendo productos: ${escapeHtml(err.message || "desconocido")}</div>`;
+    }
+    abrirErrorModal("No se pudieron cargar los productos. Revisa Firebase o tu conexión.", "Error de carga");
   });
 }
 
 function abrirDatosSiFaltan(){
   const tipo = document.getElementById("tipoEntrega")?.value || "pickup";
-  const nombre = document.getElementById("nombre").value.trim();
-  const direccion = document.getElementById("direccion").value.trim();
-  const fecha = document.getElementById("fecha").value;
-  const hora = document.getElementById("hora").value;
-  const telefono = document.getElementById("telefono").value.trim();
+  const nombre = document.getElementById("nombre")?.value.trim() || "";
+  const direccion = document.getElementById("direccion")?.value.trim() || "";
+  const fecha = document.getElementById("fecha")?.value || "";
+  const hora = document.getElementById("hora")?.value || "";
+  const telefono = document.getElementById("telefono")?.value.trim() || "";
 
   const datosBox = document.getElementById("datosClienteBox");
   if(!datosBox) return false;
@@ -1824,20 +1956,23 @@ function enviar(){
 
   pedidoActual = {};
   textoFinal = "";
-  document.getElementById("thanksMsg").style.display = "none";
+
+  const thanksMsg = document.getElementById("thanksMsg");
+  if(thanksMsg) thanksMsg.style.display = "none";
+
   clearInlineError("formError");
   clearInlineError("resumenError");
 
   abrirDatosSiFaltan();
 
-  const nombre = document.getElementById("nombre").value.trim();
-  const direccion = document.getElementById("direccion").value.trim();
-  const fecha = document.getElementById("fecha").value;
-  const hora = document.getElementById("hora").value;
-  const pago = document.getElementById("pago").value;
-  const tipo = document.getElementById("tipoEntrega").value;
+  const nombre = document.getElementById("nombre")?.value.trim() || "";
+  const direccion = document.getElementById("direccion")?.value.trim() || "";
+  const fecha = document.getElementById("fecha")?.value || "";
+  const hora = document.getElementById("hora")?.value || "";
+  const pago = document.getElementById("pago")?.value || "Efectivo";
+  const tipo = document.getElementById("tipoEntrega")?.value || "pickup";
   const zona = document.getElementById("zona");
-  const telefono = document.getElementById("telefono").value.trim();
+  const telefono = document.getElementById("telefono")?.value.trim() || "";
 
   let resumen = "";
   let texto = "Hola, quiero ordenar:%0A";
@@ -1889,12 +2024,15 @@ function enviar(){
     return;
   }
 
-  if(topsIncluidos.length){
+  const topsAgrupados = agruparConCantidad(topsIncluidos);
+
+  if(topsAgrupados.length){
     resumen += "<br><b>Toppings incluidos:</b><br>";
     texto += "Toppings incluidos:%0A";
-    topsIncluidos.forEach(t => {
-      resumen += `- ${escapeHtml(t)}<br>`;
-      texto += `- ${t}%0A`;
+
+    topsAgrupados.forEach(t => {
+      resumen += `- x${t.cantidad} ${escapeHtml(t.nombre)}<br>`;
+      texto += `- x${t.cantidad} ${t.nombre}%0A`;
     });
   }
 
@@ -1931,12 +2069,15 @@ function enviar(){
     return;
   }
 
-  if(glaseadosIncluidos.length){
+  const glaseadosAgrupados = agruparConCantidad(glaseadosIncluidos);
+
+  if(glaseadosAgrupados.length){
     resumen += "<br><b>Glaseados incluidos:</b><br>";
     texto += "Glaseados incluidos:%0A";
-    glaseadosIncluidos.forEach(g => {
-      resumen += `- ${escapeHtml(g)}<br>`;
-      texto += `- ${g}%0A`;
+
+    glaseadosAgrupados.forEach(g => {
+      resumen += `- x${g.cantidad} ${escapeHtml(g.nombre)}<br>`;
+      texto += `- x${g.cantidad} ${g.nombre}%0A`;
     });
   }
 
@@ -1950,30 +2091,23 @@ function enviar(){
   }
 
   if(!nombre || !fecha || !hora){
-    showInlineError("formError", "Completa tus datos (Nombre, Fecha y Hora).");
-    const datosBox = document.getElementById("datosClienteBox");
-    if(datosBox) datosBox.setAttribute("open", "open");
+    showInlineError("formError", "Completa tus datos: Nombre, Fecha y Hora.");
     return;
   }
 
   if(tipo === "delivery" && !direccion){
     showInlineError("formError", "La dirección es obligatoria para delivery.");
-    const datosBox = document.getElementById("datosClienteBox");
-    if(datosBox) datosBox.setAttribute("open", "open");
     return;
   }
 
   const soloDigitos = telefono.replace(/\D/g,'');
   if(!soloDigitos){
     showInlineError("formError", "El teléfono es obligatorio (WhatsApp).");
-    const datosBox = document.getElementById("datosClienteBox");
-    if(datosBox) datosBox.setAttribute("open", "open");
     return;
   }
+
   if(soloDigitos.length < 10){
-    showInlineError("formError", "Teléfono inválido. Ej: 8091234567");
-    const datosBox = document.getElementById("datosClienteBox");
-    if(datosBox) datosBox.setAttribute("open", "open");
+    showInlineError("formError", "Teléfono inválido. Ejemplo: 8091234567");
     return;
   }
 
@@ -1995,7 +2129,7 @@ function enviar(){
 
   pedidoActual = {
     nombre,
-    direccion: tipo === "delivery" ? direccion : direccion,
+    direccion,
     telefono,
     fecha,
     hora,
@@ -2005,16 +2139,22 @@ function enviar(){
     combos,
     toppingsIncluidos: topsIncluidos,
     toppingsExtras: topsExtras,
-    glaseadosIncluidos,
-    glaseadosExtras,
+    glaseadosIncluidos: glaseadosIncluidos,
+    glaseadosExtras: glaseadosExtras,
     glaseados: [...glaseadosIncluidos, ...glaseadosExtras],
     total
   };
 
   textoFinal = texto;
-  document.getElementById("resumenContenido").innerHTML = resumen;
-  document.getElementById("resumenModal").style.display = "flex";
+
+  const resumenContenido = document.getElementById("resumenContenido");
+  const resumenModal = document.getElementById("resumenModal");
+
+  if(resumenContenido) resumenContenido.innerHTML = resumen;
+  if(resumenModal) resumenModal.style.display = "flex";
 }
+
+
 
 function confirmarEnvio(){
   if(enviandoPedido) return;
@@ -2028,7 +2168,7 @@ function confirmarEnvio(){
     return;
   }
   if(soloDigitos.length < 10){
-    showInlineError("resumenError", "Teléfono inválido. Ej: 8091234567");
+    showInlineError("resumenError", "Teléfono inválido. Ejemplo: 8091234567");
     return;
   }
 
@@ -2150,8 +2290,11 @@ function limpiarFormulario(){
 
   document.getElementById("toppingsContainer").innerHTML = "<p class='smallMuted' style='text-align:center;padding:4px 0;'>Selecciona un combo para elegir toppings</p>";
   document.getElementById("glaseadosContainer").innerHTML = "<p class='smallMuted' style='text-align:center;padding:4px 0;'>Selecciona un combo para elegir glaseados</p>";
-  document.getElementById("glaseadosPreview").innerHTML = "";
-  document.getElementById("glaseadosPreview").classList.add("hidden");
+const glaseadosPreview = document.getElementById("glaseadosPreview");
+if(glaseadosPreview){
+  glaseadosPreview.innerHTML = "";
+  glaseadosPreview.classList.add("hidden");
+}
 
   document.getElementById("extraToppingsList").innerHTML = "";
   document.getElementById("extraGlaseadosList").innerHTML = "";
@@ -2211,16 +2354,15 @@ async function guardarPedidoFirestore(){
     }catch(_){}
 
     alert(window.__thanksMessage || "✅ ¡Gracias por tu pedido! En breve te contactaremos.");
-    document.getElementById("thanksMsg").style.display = "block";
     limpiarFormulario();
   }catch(e){
     console.error("Error guardando pedido:", e);
 
     const pudoAbrirWhatsApp = abrirWhatsAppPedidoFallback();
     if(pudoAbrirWhatsApp){
-      alert("No se pudo guardar en el sistema. Abrimos WhatsApp para que no pierdas el pedido.");
+      abrirErrorModal("No se pudo guardar en el sistema. Abrimos WhatsApp para que no pierdas el pedido.", "Pedido no guardado");
     }else{
-      alert("Error guardando pedido: " + e.message);
+      abrirErrorModal("Error guardando pedido: " + e.message, "Error del sistema");
     }
   }finally{
     setSendingState(false);
@@ -2259,10 +2401,14 @@ window.addEventListener("load", () => {
   if(loader){
     loader.style.opacity = "0";
     loader.style.transition = "opacity .35s ease";
-    setTimeout(() => loader.remove(), 350);
+    setTimeout(() => {
+      if(loader.parentNode) loader.remove();
+    }, 350);
   }
 });
-</script>
 
+</script>
 </body>
 </html>
+
+
