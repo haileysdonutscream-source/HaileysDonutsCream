@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -698,7 +699,16 @@
       .panelNav button{min-width:100%}
     }
 
-
+#tablaBases td:last-child,
+#tablaTops td:last-child,
+#tablaGlasUnit td:last-child,
+#tablaGlasRec td:last-child,
+#tablaBases th:last-child,
+#tablaTops th:last-child,
+#tablaGlasUnit th:last-child,
+#tablaGlasRec th:last-child{
+  min-width:190px;
+}
 
 
 
@@ -719,6 +729,60 @@
       <div id="editMsg" class="small muted" style="margin-top:8px;"></div>
     </div>
   </div>
+
+<div id="ingredienteModal" class="hidden" style="position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:10000; display:flex; justify-content:center; align-items:center; padding:12px;">
+  <div class="card" style="background:white; max-width:700px; width:100%; max-height:92vh; overflow:auto;">
+    <h2>✏️ Editar ingrediente</h2>
+
+    <div class="desktopThree">
+      <div>
+        <label>Nombre</label>
+        <input id="editInvName">
+      </div>
+      <div>
+        <label>Categoría</label>
+        <select id="editInvCategory">
+          <option value="masa">Masa</option>
+          <option value="glaseado">Glaseado</option>
+          <option value="topping">Topping</option>
+          <option value="crema">Crema</option>
+          <option value="material">Material</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div>
+        <label>Unidad compra</label>
+        <select id="editInvUnit">
+          <option value="g">g</option>
+          <option value="ml">ml</option>
+          <option value="unidad">unidad</option>
+        </select>
+      </div>
+      <div>
+        <label>Cantidad comprada</label>
+        <input id="editInvQty" type="number" min="0" step="0.01">
+      </div>
+      <div>
+        <label>Costo total compra</label>
+        <input id="editInvCost" type="number" min="0" step="0.01">
+      </div>
+      <div>
+        <label>Stock actual</label>
+        <input id="editInvStock" type="number" min="0" step="0.01">
+      </div>
+    </div>
+
+    <label>Nota</label>
+    <input id="editInvNote">
+
+    <div class="row" style="justify-content:flex-end; margin-top:12px;">
+      <button class="secondary" type="button" onclick="cerrarIngredienteModal()">Cancelar</button>
+      <button type="button" onclick="guardarIngredienteModal()">Guardar cambios</button>
+    </div>
+
+    <div id="ingredienteModalMsg" class="small muted" style="margin-top:8px;"></div>
+  </div>
+</div>
 
   <div id="toastNew" class="hidden" style="position:fixed; right:14px; bottom:14px; background:white; border:1px solid #f3b5cc; padding:12px 14px; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,.18); z-index:99999;">
     <b style="color:#c2185b">🛎️ Pedido nuevo</b>
@@ -846,6 +910,29 @@
             <label>Texto Transferencia (datos bancarios)</label>
             <textarea id="stTransfer" placeholder="Banco..., Cuenta..., Nombre..., etc."></textarea>
 
+<label style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+  <input id="stShowDeliveryOption" type="checkbox" style="width:auto;margin:0;">
+  Mostrar opción de delivery / tipo de entrega
+</label>
+		<hr>
+
+<strong>Extras del modal de resumen</strong>
+
+<label style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+  <input id="stShowExtraToppings" type="checkbox" style="width:auto;margin:0;">
+  Mostrar toppings extra
+</label>
+
+<label style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+  <input id="stShowExtraGlaseados" type="checkbox" style="width:auto;margin:0;">
+  Mostrar glaseados extra
+</label>
+
+<label style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+  <input id="stShowExtraBebidas" type="checkbox" style="width:auto;margin:0;">
+  Mostrar bebidas extra
+</label>
+
             <div class="row" style="justify-content:flex-end;">
               <button type="button" onclick="guardarStoreSettings()">💾 Guardar textos</button>
             </div>
@@ -854,16 +941,17 @@
           </div>
 
           <div class="card" style="flex:2; min-width:320px; overflow:hidden;">
-            <strong>Productos (Combos / Toppings / Glaseados)</strong>
+           <strong>Productos (Combos / Toppings / Glaseados / Bebidas)</strong>
 
             <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:14px;align-items:end;margin-top:12px;">
               <div>
                 <label>Tipo</label>
                 <select id="pType" onchange="toggleCamposProducto(); autocompletarIconoProducto()">
-                  <option value="combo">Combo</option>
-                  <option value="topping">Topping</option>
-                  <option value="glaseado">Glaseado</option>
-                </select>
+  <option value="combo">Combo</option>
+  <option value="topping">Topping</option>
+  <option value="glaseado">Glaseado</option>
+  <option value="bebida">Bebida</option>
+</select>
               </div>
 
               <div>
@@ -949,243 +1037,479 @@
         </div>
       </div>
 
-      <div id="costosBox" class="hidden">
-        <h2>🧮 Costos e ingredientes</h2>
-        <div class="helperNote">Aquí puedes registrar ingredientes, sus costos y cantidades. El panel te calcula costo por gramo/ml/unidad, costo por porción y un precio sugerido para vender con margen sano. Sin inventar humo: el sistema sugiere, tú mandas.</div>
+     <div id="costosBox" class="hidden">
+  <h2>🧮 Costos e ingredientes</h2>
+  <div class="helperNote">
+    Aquí registras ingredientes, calculas recetas base, obtienes el costo real por mini dona y el precio sugerido por combo.
+    Los toppings y glaseados incluidos sí cuentan dentro del combo. Los extras van aparte.
+  </div>
 
-        <div class="row" style="margin-top:12px;">
-          <div class="card" style="flex:1.2; min-width:330px;">
-            <div class="sectionHeader">
-              <strong>Inventario base</strong>
-              <span class="pill"><span id="invCount">0</span> ingrediente(s)</span>
-            </div>
+  <div class="row" style="margin-top:12px;">
+    <div class="card" style="flex:1.2; min-width:330px;">
+      <div class="sectionHeader">
+        <strong>Inventario base</strong>
+        <span class="pill"><span id="invCount">0</span> ingrediente(s)</span>
+      </div>
 
-            <div class="desktopThree">
-              <div>
-                <label class="infoLabel">
-                  Nombre
-                  <span class="infoWrap">
-                    <span class="infoTip">ⓘ</span>
-                    <span class="infoBubble">Es el nombre con el que identificarás el ingrediente dentro del panel y luego en la receta. Ponlo claro y sin inventos raros.</span>
-                  </span>
-                </label>
-                <input id="invName" placeholder="Ej: Harina">
-              </div>
-
-              <div>
-                <label class="infoLabel">
-                  Categoría
-                  <span class="infoWrap">
-                    <span class="infoTip">ⓘ</span>
-                    <span class="infoBubble">Sirve para organizar el ingrediente dentro del panel. No cambia el costo, pero ayuda a separar masa, topping, glaseado, crema, material u otro.</span>
-                  </span>
-                </label>
-                <select id="invCategory">
-                  <option value="masa">Masa</option>
-                  <option value="glaseado">Glaseado</option>
-                  <option value="topping">Topping</option>
-                  <option value="crema">Crema</option>
-                  <option value="material">Material</option>
-                  <option value="otro">Otro</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="infoLabel">
-                  Unidad compra
-                  <span class="infoWrap">
-                    <span class="infoTip">ⓘ</span>
-                    <span class="infoBubble">Es la unidad en la que compraste ese ingrediente: gramos, mililitros o unidades. De aquí sale el costo unitario.</span>
-                  </span>
-                </label>
-                <select id="invUnit">
-                  <option value="g">g</option>
-                  <option value="ml">ml</option>
-                  <option value="unidad">unidad</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="infoLabel">
-                  Cantidad comprada
-                  <span class="infoWrap">
-                    <span class="infoTip">ⓘ</span>
-                    <span class="infoBubble">Es la cantidad total que trajo la compra. Ejemplo: si compraste 1 kilo y usas gramos, aquí pondrías 1000.</span>
-                  </span>
-                </label>
-                <input id="invQty" type="number" min="0" step="0.01" placeholder="1000">
-              </div>
-
-              <div>
-                <label class="infoLabel">
-                  Costo total compra
-                  <span class="infoWrap">
-                    <span class="infoTip">ⓘ</span>
-                    <span class="infoBubble">Es lo que pagaste por toda la compra, no por una porción. El sistema divide este costo entre la cantidad comprada para sacar el costo por unidad base.</span>
-                  </span>
-                </label>
-                <input id="invCost" type="number" min="0" step="0.01" placeholder="250">
-              </div>
-
-              <div>
-                <label class="infoLabel">
-                  Stock actual
-                  <span class="infoWrap">
-                    <span class="infoTip">ⓘ</span>
-                    <span class="infoBubble">Es lo que te queda disponible ahora mismo. No es lo que compraste originalmente, sino el remanente actual.</span>
-                  </span>
-                </label>
-                <input id="invStock" type="number" min="0" step="0.01" placeholder="950">
-              </div>
-            </div>
-
-            <label class="infoLabel">
-              Nota
-              <span class="infoWrap">
-                <span class="infoTip">ⓘ</span>
-                <span class="infoBubble">Campo libre para marca, tamaño, presentación o cualquier detalle útil. No altera cálculos; solo te evita confundirte luego.</span>
-              </span>
-            </label>
-            <input id="invNote" placeholder="Marca, tamaño, presentación...">
-
-            <div class="row" style="justify-content:flex-end; margin-top:8px;">
-              <button type="button" onclick="crearIngrediente()">➕ Guardar ingrediente</button>
-            </div>
-
-            <div id="invMsg" class="small muted"></div>
-
-            <hr>
-
-            <div class="simpleTableWrap">
-              <table class="simpleTable">
-                <thead>
-                  <tr>
-                    <th>Ingrediente</th>
-                    <th>Categoría</th>
-                    <th>Costo unit.</th>
-                    <th>Stock</th>
-                    <th>Acción</th>
-                  </tr>
-                </thead>
-                <tbody id="inventarioRows"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="card" style="flex:1; min-width:330px;">
-            <div class="sectionHeader">
-              <strong>Calculadora de receta / precio</strong>
-              <span class="navChip">PC friendly</span>
-            </div>
-
-            <label class="infoLabel">
-              Tipo de producto
-              <span class="infoWrap">
-                <span class="infoTip">ⓘ</span>
-                <span class="infoBubble">Define si el cálculo es para donitas, topping o glaseado. Esto también carga una receta base sugerida.</span>
-              </span>
-            </label>
-            <select id="calcTipo" onchange="cargarRecetaBase()">
-              <option value="donitas">Donitas</option>
-              <option value="topping">Topping</option>
-              <option value="glaseado">Glaseado</option>
-            </select>
-
-            <label class="infoLabel">
-              Nombre interno
-              <span class="infoWrap">
-                <span class="infoTip">ⓘ</span>
-                <span class="infoBubble">Es el nombre con el que guardarás ese cálculo dentro del panel. No lo ve el cliente; te sirve a ti para identificar la receta.</span>
-              </span>
-            </label>
-            <input id="calcNombre" placeholder="Ej: Donitas vainilla">
-
-            <div class="calcGrid">
-              <div>
-                <label class="infoLabel">
-                  Porciones a producir
-                  <span class="infoWrap">
-                    <span class="infoTip">ⓘ</span>
-                    <span class="infoBubble">Cuántas porciones te rinde esa receta completa. El sistema divide el costo total entre este número para sacar el costo por porción.</span>
-                  </span>
-                </label>
-                <input id="calcPorciones" type="number" min="1" value="12" oninput="renderRecetaBuilder()">
-              </div>
-
-              <div>
-                <label class="infoLabel">
-                  Gramaje por porción
-                  <span class="infoWrap">
-                    <span class="infoTip">ⓘ</span>
-                    <span class="infoBubble">Referencia del tamaño de cada porción. Te ayuda a estandarizar lo que vendes, aunque el costo principal sale por ingredientes y porciones.</span>
-                  </span>
-                </label>
-                <input id="calcGramaje" type="number" min="1" value="25">
-              </div>
-
-              <div>
-                <label class="infoLabel">
-                  Margen deseado %
-                  <span class="infoWrap">
-                    <span class="infoTip">ⓘ</span>
-                    <span class="infoBubble">Es el porcentaje de ganancia que quieres por encima del costo. El panel usa eso para sugerirte un precio de venta.</span>
-                  </span>
-                </label>
-                <input id="calcMargen" type="number" min="0" value="65">
-              </div>
-            </div>
-
-            <div style="margin-top:10px;" id="recetaBuilder"></div>
-
-            <div class="row" style="margin-top:10px;">
-              <button type="button" onclick="addLineaReceta()">➕ Ingrediente a receta</button>
-              <button class="secondary" type="button" onclick="renderRecetaBuilder(true)">Reset</button>
-            </div>
-
-            <hr>
-
-            <div class="recipeBox">
-              <div class="small muted">Costo total de receta</div>
-              <div class="recommendBig" id="recetaCostoTotal">RD$0</div>
-              <div class="small muted" style="margin-top:6px;">Costo por porción: <b id="recetaCostoPorcion">RD$0</b></div>
-              <div class="small muted">Precio sugerido: <b id="recetaPrecioSugerido">RD$0</b></div>
-              <div class="small muted">Precio mínimo con 40% margen: <b id="recetaPrecioMin">RD$0</b></div>
-            </div>
-
-            <div class="row" style="justify-content:flex-end; margin-top:10px;">
-              <button type="button" onclick="guardarRecetaCalculada()">💾 Guardar cálculo</button>
-            </div>
-
-            <div id="calcMsg" class="small muted"></div>
-          </div>
+      <div class="desktopThree">
+        <div>
+          <label>Nombre</label>
+          <input id="invName" placeholder="Ej: Harina">
         </div>
 
-        <div class="row" style="margin-top:12px;">
-          <div class="card" style="width:100%;">
-            <div class="sectionHeader">
-              <strong>Recetas / cálculos guardados</strong>
-              <span class="pill"><span id="recetasCount">0</span> guardada(s)</span>
-            </div>
+        <div>
+          <label>Categoría</label>
+          <select id="invCategory">
+            <option value="masa">Masa</option>
+            <option value="glaseado">Glaseado</option>
+            <option value="topping">Topping</option>
+            <option value="crema">Crema</option>
+            <option value="material">Material</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
 
-            <div class="simpleTableWrap">
-              <table class="simpleTable">
-                <thead>
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Tipo</th>
-                    <th>Porciones</th>
-                    <th>Costo por porción</th>
-                    <th>Precio sugerido</th>
-                    <th>Actualizado</th>
-                    <th>Acción</th>
-                  </tr>
-                </thead>
-                <tbody id="recetasRows"></tbody>
-              </table>
-            </div>
-          </div>
+        <div>
+          <label>Unidad compra</label>
+          <select id="invUnit">
+            <option value="g">g</option>
+            <option value="ml">ml</option>
+            <option value="unidad">unidad</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Cantidad comprada</label>
+          <input id="invQty" type="number" min="0" step="0.01" placeholder="1000">
+        </div>
+
+        <div>
+          <label>Costo total compra</label>
+          <input id="invCost" type="number" min="0" step="0.01" placeholder="250">
+        </div>
+
+        <div>
+          <label>Stock actual</label>
+          <input id="invStock" type="number" min="0" step="0.01" placeholder="950">
         </div>
       </div>
+
+      <label>Nota</label>
+      <input id="invNote" placeholder="Marca, tamaño, presentación...">
+
+      <div class="row" style="justify-content:flex-end; margin-top:8px;">
+        <button type="button" onclick="crearIngrediente()">➕ Guardar ingrediente</button>
+      </div>
+
+      <div id="invMsg" class="small muted"></div>
+
+      <hr>
+
+      <div class="row" style="justify-content:space-between;align-items:center;margin:10px 0 12px;">
+        <div style="flex:1;min-width:240px;">
+          <input
+            id="buscarIngredientePanel"
+            type="text"
+            placeholder="Buscar ingrediente, categoría, unidad o nota..."
+            oninput="filtrarInventarioPanel()"
+          >
+        </div>
+      </div>
+
+      <div class="simpleTableWrap">
+        <table class="simpleTable">
+          <thead>
+            <tr>
+              <th>Ingrediente</th>
+              <th>Categoría</th>
+              <th>Costo unit.</th>
+              <th>Stock</th>
+              <th style="min-width:170px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="inventarioRows"></tbody>
+        </table>
+      </div>
+    </div>
+ 
+       <div class="card" style="flex:1; min-width:330px;">
+      <div class="sectionHeader">
+        <strong>🍩 Receta base de donitas</strong>
+        <span class="navChip">Nivel 1</span>
+      </div>
+
+      <label>Nombre de la receta base</label>
+      <input id="baseNombre" placeholder="Ej: Masa base mini donas">
+
+      <div class="calcGrid">
+        <div>
+          <label>Rinde total (donitas)</label>
+          <input id="baseRinde" type="number" min="1" value="50" oninput="calcularBaseDonitas()">
+        </div>
+
+        <div>
+          <label>&nbsp;</label>
+          <button type="button" class="secondary" onclick="resetRecetaBase()">Reset base</button>
+        </div>
+      </div>
+
+      <div id="baseBuilder" style="margin-top:10px;"></div>
+
+      <div class="row" style="margin-top:10px;">
+        <button type="button" onclick="addLineaBase()">➕ Ingrediente a base</button>
+      </div>
+
+      <hr>
+
+      <div class="recipeBox">
+        <div class="small muted">Costo total receta base</div>
+        <div class="recommendBig" id="baseCostoTotal">RD$0</div>
+
+        <div class="small muted" style="margin-top:6px;">
+          Costo por donita: <b id="baseCostoUnidad">RD$0</b>
+        </div>
+      </div>
+
+      <div class="row" style="justify-content:flex-end; margin-top:10px;">
+        <button type="button" onclick="guardarRecetaBase()">💾 Guardar base</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:12px;">
+    <div class="card" style="flex:1; min-width:330px;">
+      <div class="sectionHeader">
+        <strong>✨ Toppings por porción</strong>
+        <span class="navChip">Nivel 2</span>
+      </div>
+
+      <label>Nombre del topping</label>
+      <input id="topUnitNombre" placeholder="Ej: Oreo">
+
+      <div class="calcGrid">
+        <div>
+          <label>Ingrediente del inventario</label>
+          <select id="topUnitIngrediente" onchange="calcularToppingUnitario()"></select>
+        </div>
+
+        <div>
+          <label>Cantidad por porción</label>
+          <input id="topUnitQty" type="number" min="0" step="0.01" value="1" oninput="calcularToppingUnitario()">
+        </div>
+
+        <div>
+          <label>Unidad</label>
+          <select id="topUnitUnit" onchange="calcularToppingUnitario()">
+            <option value="g">g</option>
+            <option value="ml">ml</option>
+            <option value="unidad">unidad</option>
+          </select>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="recipeBox">
+        <div class="small muted">Costo por porción incluida</div>
+        <div class="recommendBig" id="topUnitCostoUnidad">RD$0</div>
+      </div>
+
+      <div class="row" style="justify-content:flex-end; margin-top:10px;">
+        <button type="button" onclick="guardarToppingUnitario()">💾 Guardar topping</button>
+      </div>
+    </div>
+
+    <div class="card" style="flex:1; min-width:330px;">
+      <div class="sectionHeader">
+        <strong>🍫 Glaseado por porción</strong>
+        <span class="navChip">Nivel 2A</span>
+      </div>
+
+      <label>Nombre del glaseado</label>
+      <input id="glasUnitNombre" placeholder="Ej: Nutella">
+
+      <div class="calcGrid">
+        <div>
+          <label>Ingrediente del inventario</label>
+          <select id="glasUnitIngrediente" onchange="calcularGlaseadoUnitario()"></select>
+        </div>
+
+        <div>
+          <label>Cantidad por porción</label>
+          <input id="glasUnitQty" type="number" min="0" step="0.01" value="1" oninput="calcularGlaseadoUnitario()">
+        </div>
+
+        <div>
+          <label>Unidad</label>
+          <select id="glasUnitUnit" onchange="calcularGlaseadoUnitario()">
+            <option value="g">g</option>
+            <option value="ml">ml</option>
+            <option value="unidad">unidad</option>
+          </select>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="recipeBox">
+        <div class="small muted">Costo por porción incluida</div>
+        <div class="recommendBig" id="glasUnitCostoUnidad">RD$0</div>
+      </div>
+
+      <div class="row" style="justify-content:flex-end; margin-top:10px;">
+        <button type="button" onclick="guardarGlaseadoUnitario()">💾 Guardar glaseado</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:12px;">
+    <div class="card" style="width:100%;">
+      <div class="sectionHeader">
+        <strong>🍯 Glaseado por receta</strong>
+        <span class="navChip">Nivel 2B</span>
+      </div>
+
+      <label>Nombre del glaseado</label>
+      <input id="glasRecNombre" placeholder="Ej: Glaseado Dubai">
+
+      <div class="calcGrid">
+        <div>
+          <label>Rinde total (porciones)</label>
+          <input id="glasRecRinde" type="number" min="1" value="50" oninput="calcularGlaseadoReceta()">
+        </div>
+
+        <div>
+          <label>&nbsp;</label>
+          <button type="button" class="secondary" onclick="resetGlaseadoReceta()">Reset glaseado receta</button>
+        </div>
+      </div>
+
+      <div id="glasRecBuilder" style="margin-top:10px;"></div>
+
+      <div class="row" style="margin-top:10px;">
+        <button type="button" onclick="addLineaGlasRec()">➕ Ingrediente a glaseado</button>
+      </div>
+
+      <hr>
+
+      <div class="recipeBox">
+        <div class="small muted">Costo total glaseado</div>
+        <div class="recommendBig" id="glasRecCostoTotal">RD$0</div>
+
+        <div class="small muted" style="margin-top:6px;">
+          Costo por porción incluida: <b id="glasRecCostoUnidad">RD$0</b>
+        </div>
+      </div>
+
+      <div class="row" style="justify-content:flex-end; margin-top:10px;">
+        <button type="button" onclick="guardarGlaseadoReceta()">💾 Guardar glaseado receta</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:12px;">
+    <div class="card" style="width:100%;">
+      <div class="sectionHeader">
+        <strong>📦 Calculadora final del combo</strong>
+        <span class="navChip">Nivel 3</span>
+      </div>
+
+      <div class="calcGrid">
+        <div>
+          <label>Cantidad de donitas</label>
+          <input id="comboQtyFinal" type="number" min="1" value="6" oninput="calcularComboFinal()">
+        </div>
+
+        <div>
+          <label>Toppings incluidos</label>
+          <input id="comboTopInclFinal" type="number" min="0" value="1" oninput="calcularComboFinal()">
+        </div>
+
+        <div>
+          <label>Glaseados incluidos</label>
+          <input id="comboGlasInclFinal" type="number" min="0" value="1" oninput="calcularComboFinal()">
+        </div>
+      </div>
+
+      <div class="calcGrid" style="margin-top:10px;">
+        <div>
+          <label>Topping guardado</label>
+          <select id="comboTopReceta" onchange="calcularComboFinal()"></select>
+        </div>
+
+        <div>
+          <label>Glaseado guardado</label>
+          <select id="comboGlasReceta" onchange="calcularComboFinal()"></select>
+        </div>
+
+        <div>
+          <label>Empaque del combo</label>
+          <input id="comboEmpaqueFinal" type="number" min="0" step="0.01" value="0" oninput="calcularComboFinal()">
+        </div>
+      </div>
+
+      <div class="calcGrid" style="margin-top:10px;">
+        <div>
+          <label>Mano de obra (opcional)</label>
+          <input id="comboManoFinal" type="number" min="0" step="0.01" value="0" oninput="calcularComboFinal()">
+        </div>
+
+        <div>
+          <label>Indirectos (opcional)</label>
+          <input id="comboIndirectosFinal" type="number" min="0" step="0.01" value="0" oninput="calcularComboFinal()">
+        </div>
+
+        <div>
+          <label>Margen editable %</label>
+          <input id="comboMargenFinal" type="number" min="0" value="65" oninput="calcularComboFinal()">
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="recipeBox">
+        <div class="small muted">Costo base del combo</div>
+        <div class="recommendBig" id="comboCostoBase">RD$0</div>
+
+        <div class="small muted" style="margin-top:6px;">
+          Costo incluidos: <b id="comboCostoIncluidos">RD$0</b>
+        </div>
+
+        <div class="small muted">
+          Empaque: <b id="comboCostoEmpaque">RD$0</b>
+        </div>
+
+        <div class="small muted">
+          Mano de obra: <b id="comboCostoMano">RD$0</b>
+        </div>
+
+        <div class="small muted">
+          Indirectos: <b id="comboCostoIndirectos">RD$0</b>
+        </div>
+
+        <div class="small muted">
+          Costo total combo: <b id="comboCostoTotalFinal">RD$0</b>
+        </div>
+
+        <div class="small muted">
+          Precio mínimo: <b id="comboPrecioMinFinal">RD$0</b>
+        </div>
+
+        <div class="small muted">
+          Precio sugerido: <b id="comboPrecioSugFinal">RD$0</b>
+        </div>
+
+        <hr>
+
+        <div class="small muted">
+          Precio extra topping: <b id="comboExtraTopFinal">RD$0</b>
+        </div>
+
+        <div class="small muted">
+          Precio extra glaseado: <b id="comboExtraGlasFinal">RD$0</b>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:12px;">
+    <div class="card" style="width:100%;">
+      <div class="sectionHeader">
+        <strong>🍩 Bases guardadas</strong>
+        <span class="pill"><span id="countBases">0</span></span>
+      </div>
+
+      <div class="simpleTableWrap">
+        <table class="simpleTable">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Rinde</th>
+              <th>Costo total</th>
+              <th>Costo por donita</th>
+              <th>Actualizado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaBases"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:12px;">
+    <div class="card" style="flex:1; min-width:330px;">
+      <div class="sectionHeader">
+        <strong>✨ Toppings guardados</strong>
+        <span class="pill"><span id="countTops">0</span></span>
+      </div>
+
+      <div class="simpleTableWrap">
+        <table class="simpleTable">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Ingrediente</th>
+              <th>Cantidad</th>
+              <th>Costo por porción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaTops"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="flex:1; min-width:330px;">
+      <div class="sectionHeader">
+        <strong>🍫 Glaseados por porción</strong>
+        <span class="pill"><span id="countGlasUnit">0</span></span>
+      </div>
+
+      <div class="simpleTableWrap">
+        <table class="simpleTable">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Ingrediente</th>
+              <th>Cantidad</th>
+              <th>Costo por porción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaGlasUnit"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:12px;">
+    <div class="card" style="width:100%;">
+      <div class="sectionHeader">
+        <strong>🍯 Glaseados por receta</strong>
+        <span class="pill"><span id="countGlasRec">0</span></span>
+      </div>
+
+      <div class="simpleTableWrap">
+        <table class="simpleTable">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Rinde</th>
+              <th>Costo total</th>
+              <th>Costo por porción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaGlasRec"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+
 
       <div id="cajaBox" class="hidden">
         <h2>💰 Cierre de caja</h2>
@@ -1416,6 +1740,7 @@
     let unsubRecetas = null;
     let unsubCierres = null;
 
+
     let firstPedidosLoad = true;
     let selectedPedidoId = null;
     let currentRole = "empleado";
@@ -1493,6 +1818,582 @@ function renderListaAgrupada(lista = []){
     .map(item => `• x${item.cantidad} ${escapeHtml(item.nombre)}`)
     .join("<br>");
 }
+
+
+function buscarIngredientePorNombre(nombre){
+  const n = String(nombre || "").trim().toLowerCase();
+  return inventarioCache.find(i => String(i.name || "").trim().toLowerCase() === n) || null;
+}
+
+function costoLineaReceta(name, qty){
+  const ing = buscarIngredientePorNombre(name);
+  if(!ing) return 0;
+  return getCostoUnitarioIngrediente(ing) * Number(qty || 0);
+}
+
+function buildRecipeLineGeneric(cls, item = {}){
+  const options = inventarioCache.map(i =>
+    `<option value="${escapeHtml(i.name || "")}" ${String(i.name || "") === String(item.name || "") ? "selected" : ""}>${escapeHtml(i.name || "")}</option>`
+  ).join("");
+
+  return `
+    <div class="${cls}" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+      <div style="flex:1;min-width:180px;">
+        <label>Ingrediente</label>
+        <select class="recipeIng">
+          <option value="">Selecciona</option>
+          ${options}
+        </select>
+      </div>
+
+      <div style="flex:1;min-width:120px;">
+        <label>Cantidad</label>
+        <input class="recipeQty" type="number" min="0" step="0.01" value="${Number(item.qty || 0)}">
+      </div>
+
+      <div style="width:120px;">
+        <label>Unidad</label>
+        <select class="recipeUnit">
+          <option value="g" ${item.unit === 'g' ? 'selected' : ''}>g</option>
+          <option value="ml" ${item.unit === 'ml' ? 'selected' : ''}>ml</option>
+          <option value="unidad" ${item.unit === 'unidad' ? 'selected' : ''}>unidad</option>
+        </select>
+      </div>
+
+      <div style="width:110px;">
+        <label>&nbsp;</label>
+        <button type="button" class="secondary" onclick="this.closest('.${cls}').remove(); triggerCalcFromClass('${cls}')">Quitar</button>
+      </div>
+    </div>
+  `;
+}
+
+
+
+
+
+
+
+function bindCalcEventsByClass(cls, calcFnName){
+  document.querySelectorAll(`.${cls} .recipeIng, .${cls} .recipeQty, .${cls} .recipeUnit`).forEach(el => {
+    el.onchange = () => window[calcFnName]();
+    el.oninput = () => window[calcFnName]();
+  });
+}
+
+
+
+function getRecipeRowsFromDOM(cls){
+  return [...document.querySelectorAll(`.${cls}`)].map(row => ({
+    name: row.querySelector(".recipeIng")?.value || "",
+    qty: Number(row.querySelector(".recipeQty")?.value || 0),
+    unit: row.querySelector(".recipeUnit")?.value || "g"
+  })).filter(r => r.name && r.qty > 0);
+}
+
+function setBuilderRows(containerId, cls, items, calcFnName){
+  const cont = document.getElementById(containerId);
+  if(!cont) return;
+  cont.innerHTML = (items || []).map(item => buildRecipeLineGeneric(cls, item)).join("");
+  bindCalcEventsByClass(cls, calcFnName);
+  window[calcFnName]();
+}
+
+function addLineaBase(item = {}){
+  const cont = document.getElementById("baseBuilder");
+  if(!cont) return;
+  cont.insertAdjacentHTML("beforeend", buildRecipeLineGeneric("baseLine", item));
+  bindCalcEventsByClass("baseLine", "calcularBaseDonitas");
+  calcularBaseDonitas();
+}
+
+function addLineaTop(item = {}){
+  const cont = document.getElementById("topBuilder");
+  if(!cont) return;
+  cont.insertAdjacentHTML("beforeend", buildRecipeLineGeneric("topLine", item));
+  bindCalcEventsByClass("topLine", "calcularRecetaTop");
+}
+
+function addLineaGlas(item = {}){
+  const cont = document.getElementById("glasBuilder");
+  if(!cont) return;
+  cont.insertAdjacentHTML("beforeend", buildRecipeLineGeneric("glasLine", item));
+  bindCalcEventsByClass("glasLine", "calcularRecetaGlas");
+}
+
+function resetRecetaBase(){
+  editingBaseId = null;
+  document.getElementById("baseNombre").value = "";
+  document.getElementById("baseRinde").value = 50;
+  setBuilderRows("baseBuilder", "baseLine", RECETAS_BASE.donitas || [], "calcularBaseDonitas");
+}
+
+function resetRecetaTop(){
+  editingTopId = null;
+  document.getElementById("topNombre").value = "";
+  document.getElementById("topRinde").value = 50;
+  setBuilderRows("topBuilder", "topLine", RECETAS_BASE.topping || [], "calcularRecetaTop");
+}
+
+function resetRecetaGlas(){
+  editingGlasId = null;
+  document.getElementById("glasNombre").value = "";
+  document.getElementById("glasRinde").value = 50;
+  setBuilderRows("glasBuilder", "glasLine", RECETAS_BASE.glaseado || [], "calcularRecetaGlas");
+}
+
+
+
+
+
+
+
+
+function getCostoUnitarioIngrediente(item){
+  const qty = Number(item.purchaseQty || 0);
+  const cost = Number(item.purchaseCost || 0);
+  if(qty <= 0) return 0;
+  return cost / qty;
+}
+
+function buscarIngredientePorNombre(nombre){
+  const n = String(nombre || "").trim().toLowerCase();
+  return inventarioCache.find(i => String(i.name || "").trim().toLowerCase() === n) || null;
+}
+
+function costoLineaReceta(name, qty){
+  const ing = buscarIngredientePorNombre(name);
+  if(!ing) return 0;
+  return getCostoUnitarioIngrediente(ing) * Number(qty || 0);
+}
+
+function fillIngredientSelect(selectId, selectedValue = ""){
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+
+  const current = selectedValue || sel.value || "";
+  sel.innerHTML = `<option value="">Selecciona</option>` + inventarioCache.map(i =>
+    `<option value="${escapeHtml(i.name || "")}" ${String(i.name || "") === String(current) ? "selected" : ""}>${escapeHtml(i.name || "")}</option>`
+  ).join("");
+}
+
+function buildRecipeLineGeneric(cls, item = {}){
+  const options = inventarioCache.map(i =>
+    `<option value="${escapeHtml(i.name || "")}" ${String(i.name || "") === String(item.name || "") ? "selected" : ""}>${escapeHtml(i.name || "")}</option>`
+  ).join("");
+
+  return `
+    <div class="${cls}" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+      <div style="flex:1;min-width:180px;">
+        <label>Ingrediente</label>
+        <select class="recipeIng">
+          <option value="">Selecciona</option>
+          ${options}
+        </select>
+      </div>
+
+      <div style="flex:1;min-width:120px;">
+        <label>Cantidad</label>
+        <input class="recipeQty" type="number" min="0" step="0.01" value="${Number(item.qty || 0)}">
+      </div>
+
+      <div style="width:120px;">
+        <label>Unidad</label>
+        <select class="recipeUnit">
+          <option value="g" ${item.unit === 'g' ? 'selected' : ''}>g</option>
+          <option value="ml" ${item.unit === 'ml' ? 'selected' : ''}>ml</option>
+          <option value="unidad" ${item.unit === 'unidad' ? 'selected' : ''}>unidad</option>
+        </select>
+      </div>
+
+      <div style="width:110px;">
+        <label>&nbsp;</label>
+        <button type="button" class="secondary" onclick="this.closest('.${cls}').remove(); triggerCalcFromClass('${cls}')">Quitar</button>
+      </div>
+    </div>
+  `;
+}
+
+function bindCalcEventsByClass(cls, calcFnName){
+  document.querySelectorAll(`.${cls} .recipeIng, .${cls} .recipeQty, .${cls} .recipeUnit`).forEach(el => {
+    el.onchange = () => window[calcFnName]();
+    el.oninput = () => window[calcFnName]();
+  });
+}
+
+function triggerCalcFromClass(cls){
+  if(cls === "baseLine") calcularBaseDonitas();
+  if(cls === "glasRecLine") calcularGlaseadoReceta();
+}
+
+function getRecipeRowsFromDOM(cls){
+  return [...document.querySelectorAll(`.${cls}`)].map(row => ({
+    name: row.querySelector(".recipeIng")?.value || "",
+    qty: Number(row.querySelector(".recipeQty")?.value || 0),
+    unit: row.querySelector(".recipeUnit")?.value || "g"
+  })).filter(r => r.name && r.qty > 0);
+}
+
+function setBuilderRows(containerId, cls, items, calcFnName){
+  const cont = document.getElementById(containerId);
+  if(!cont) return;
+  cont.innerHTML = (items || []).map(item => buildRecipeLineGeneric(cls, item)).join("");
+  bindCalcEventsByClass(cls, calcFnName);
+  window[calcFnName]();
+}
+
+function addLineaBase(item = {}){
+  const cont = document.getElementById("baseBuilder");
+  if(!cont) return;
+  cont.insertAdjacentHTML("beforeend", buildRecipeLineGeneric("baseLine", item));
+  bindCalcEventsByClass("baseLine", "calcularBaseDonitas");
+  calcularBaseDonitas();
+}
+
+function addLineaGlasRec(item = {}){
+  const cont = document.getElementById("glasRecBuilder");
+  if(!cont) return;
+  cont.insertAdjacentHTML("beforeend", buildRecipeLineGeneric("glasRecLine", item));
+  bindCalcEventsByClass("glasRecLine", "calcularGlaseadoReceta");
+  calcularGlaseadoReceta();
+}
+
+function resetRecetaBase(){
+  editingBaseId = null;
+  const nameEl = document.getElementById("baseNombre");
+  const rindeEl = document.getElementById("baseRinde");
+  if(nameEl) nameEl.value = "";
+  if(rindeEl) rindeEl.value = 50;
+  setBuilderRows("baseBuilder", "baseLine", RECETAS_BASE.donitas || [], "calcularBaseDonitas");
+}
+
+function resetGlaseadoReceta(){
+  editingGlasRecId = null;
+  const nameEl = document.getElementById("glasRecNombre");
+  const rindeEl = document.getElementById("glasRecRinde");
+  if(nameEl) nameEl.value = "";
+  if(rindeEl) rindeEl.value = 50;
+  setBuilderRows("glasRecBuilder", "glasRecLine", RECETAS_BASE.glaseado || [], "calcularGlaseadoReceta");
+}
+
+function resetToppingUnitario(){
+  editingTopUnitId = null;
+  document.getElementById("topUnitNombre").value = "";
+  document.getElementById("topUnitQty").value = 1;
+  document.getElementById("topUnitUnit").value = "g";
+  fillIngredientSelect("topUnitIngrediente");
+  calcularToppingUnitario();
+}
+
+function resetGlaseadoUnitario(){
+  editingGlasUnitId = null;
+  document.getElementById("glasUnitNombre").value = "";
+  document.getElementById("glasUnitQty").value = 1;
+  document.getElementById("glasUnitUnit").value = "g";
+  fillIngredientSelect("glasUnitIngrediente");
+  calcularGlaseadoUnitario();
+}
+
+function calcularBaseDonitas(){
+  const receta = getRecipeRowsFromDOM("baseLine");
+  const rinde = Math.max(1, Number(document.getElementById("baseRinde")?.value || 1));
+  const costoTotal = receta.reduce((acc, r) => acc + costoLineaReceta(r.name, r.qty), 0);
+  const costoUnidad = costoTotal / rinde;
+
+  setText("baseCostoTotal", money(costoTotal));
+  setText("baseCostoUnidad", money(costoUnidad));
+  calcularComboFinal();
+
+  return { receta, rinde, costoTotal, costoUnidad };
+}
+
+function calcularToppingUnitario(){
+  const ingrediente = document.getElementById("topUnitIngrediente")?.value || "";
+  const qty = Number(document.getElementById("topUnitQty")?.value || 0);
+  const unit = document.getElementById("topUnitUnit")?.value || "g";
+  const costoUnidad = costoLineaReceta(ingrediente, qty);
+
+  setText("topUnitCostoUnidad", money(costoUnidad));
+  return { ingrediente, qty, unit, costoUnidad };
+}
+
+function calcularGlaseadoUnitario(){
+  const nombreIng = document.getElementById("glasUnitIngrediente")?.value || "";
+  const qty = Number(document.getElementById("glasUnitQty")?.value || 0);
+  const costoUnidad = costoLineaReceta(nombreIng, qty);
+  setText("glasUnitCostoUnidad", money(costoUnidad));
+  calcularComboFinal();
+  return { ingrediente: nombreIng, qty, unit: document.getElementById("glasUnitUnit")?.value || "g", costoUnidad };
+}
+
+function calcularGlaseadoReceta(){
+  const receta = getRecipeRowsFromDOM("glasRecLine");
+  const rinde = Math.max(1, Number(document.getElementById("glasRecRinde")?.value || 1));
+  const costoTotal = receta.reduce((acc, r) => acc + costoLineaReceta(r.name, r.qty), 0);
+  const costoUnidad = costoTotal / rinde;
+
+  setText("glasRecCostoTotal", money(costoTotal));
+  setText("glasRecCostoUnidad", money(costoUnidad));
+
+  return { receta, rinde, costoTotal, costoUnidad };
+}
+
+function saveRecipeOption(selectId, items, placeholder){
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+  sel.innerHTML = items.length
+    ? items.map(r => `<option value="${escapeHtml(r.id)}" data-cost="${Number(r.costoUnidad || 0)}">${escapeHtml(r.nombre || "")}</option>`).join("")
+    : `<option value="" data-cost="0">${placeholder}</option>`;
+}
+
+function getSelectedRecipeCost(selectId){
+  const sel = document.getElementById(selectId);
+  if(!sel) return 0;
+  const option = sel.options[sel.selectedIndex];
+  return Number(option?.dataset?.cost || 0);
+}
+
+function calcularComboFinal(){
+  const base = calcularBaseDonitas();
+
+  const qty = Math.max(1, Number(document.getElementById("comboQtyFinal")?.value || 1));
+  const topsIncl = Math.max(0, Number(document.getElementById("comboTopInclFinal")?.value || 0));
+  const glasIncl = Math.max(0, Number(document.getElementById("comboGlasInclFinal")?.value || 0));
+  const empaque = Math.max(0, Number(document.getElementById("comboEmpaqueFinal")?.value || 0));
+  const mano = Math.max(0, Number(document.getElementById("comboManoFinal")?.value || 0));
+  const indirectos = Math.max(0, Number(document.getElementById("comboIndirectosFinal")?.value || 0));
+  const margen = Math.max(0, Number(document.getElementById("comboMargenFinal")?.value || 0));
+
+  const topCost = getSelectedRecipeCost("comboTopReceta");
+  const glasCost = getSelectedRecipeCost("comboGlasReceta");
+
+  const costoBaseCombo = base.costoUnidad * qty;
+  const costoIncluidos = (topsIncl * topCost) + (glasIncl * glasCost);
+  const costoTotal = costoBaseCombo + costoIncluidos + empaque + mano + indirectos;
+  const precioMin = costoTotal * 1.4;
+  const precioSug = costoTotal * (1 + (margen / 100));
+  const extraTop = topCost * (1 + (margen / 100));
+  const extraGlas = glasCost * (1 + (margen / 100));
+
+  setText("comboCostoBase", money(costoBaseCombo));
+  setText("comboCostoIncluidos", money(costoIncluidos));
+  setText("comboCostoEmpaque", money(empaque));
+  setText("comboCostoMano", money(mano));
+  setText("comboCostoIndirectos", money(indirectos));
+  setText("comboCostoTotalFinal", money(costoTotal));
+  setText("comboPrecioMinFinal", money(Math.ceil(precioMin)));
+  setText("comboPrecioSugFinal", money(Math.ceil(precioSug)));
+  setText("comboExtraTopFinal", money(Math.ceil(extraTop)));
+  setText("comboExtraGlasFinal", money(Math.ceil(extraGlas)));
+}
+
+
+
+
+
+function renderTableRows(list, tbodyId, mode){
+  const tbody = document.getElementById(tbodyId);
+  if(!tbody) return;
+  tbody.innerHTML = "";
+
+  if(!list.length){
+    const colspan = mode === "base" ? 6 : 5;
+    tbody.innerHTML = `<tr><td colspan="${colspan}" class="muted">No hay registros guardados.</td></tr>`;
+    return;
+  }
+
+  list.forEach(r => {
+    const tr = document.createElement("tr");
+
+    if(mode === "base"){
+      tr.innerHTML = `
+        <td><b>${escapeHtml(r.nombre || "")}</b></td>
+        <td>${Number(r.rendimiento || 0)}</td>
+        <td>${money(r.costoTotal || 0)}</td>
+        <td>${money(r.costoUnidad || 0)}</td>
+        <td>${escapeHtml(fmtFecha(r.updatedAt))}</td>
+        <td>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="secondary" type="button" onclick="editarRecetaBase('${r.id}')">Editar</button>
+            <button type="button" onclick="borrarRecetaNueva('${r.id}','${escapeHtml(r.nombre || "")}')">Eliminar</button>
+          </div>
+        </td>
+      `;
+    }
+
+    if(mode === "topping_unit" || mode === "glaseado_unit"){
+      tr.innerHTML = `
+        <td><b>${escapeHtml(r.nombre || "")}</b></td>
+        <td>${escapeHtml(r.ingrediente || "")}</td>
+        <td>${Number(r.cantidad || 0)} ${escapeHtml(r.unidad || "")}</td>
+        <td>${money(r.costoUnidad || 0)}</td>
+        <td>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="secondary" type="button" onclick="${mode === 'topping_unit' ? `editarToppingUnitario('${r.id}')` : `editarGlaseadoUnitario('${r.id}')`}">Editar</button>
+            <button type="button" onclick="borrarRecetaNueva('${r.id}','${escapeHtml(r.nombre || "")}')">Eliminar</button>
+          </div>
+        </td>
+      `;
+    }
+
+    if(mode === "glaseado_recipe"){
+      tr.innerHTML = `
+        <td><b>${escapeHtml(r.nombre || "")}</b></td>
+        <td>${Number(r.rendimiento || 0)}</td>
+        <td>${money(r.costoTotal || 0)}</td>
+        <td>${money(r.costoUnidad || 0)}</td>
+        <td>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="secondary" type="button" onclick="editarGlaseadoReceta('${r.id}')">Editar</button>
+            <button type="button" onclick="borrarRecetaNueva('${r.id}','${escapeHtml(r.nombre || "")}')">Eliminar</button>
+          </div>
+        </td>
+      `;
+    }
+
+    tbody.appendChild(tr);
+  });
+}
+
+function renderRecetasNueva(){
+  const bases = recetasCache.filter(r => r.tipo === "base");
+  const tops = recetasCache.filter(r => r.tipo === "topping_unit");
+  const glasUnit = recetasCache.filter(r => r.tipo === "glaseado_unit");
+  const glasRec = recetasCache.filter(r => r.tipo === "glaseado_recipe");
+
+  setText("countBases", bases.length);
+  setText("countTops", tops.length);
+  setText("countGlasUnit", glasUnit.length);
+  setText("countGlasRec", glasRec.length);
+
+  renderTableRows(bases, "tablaBases", "base");
+  renderTableRows(tops, "tablaTops", "topping_unit");
+  renderTableRows(glasUnit, "tablaGlasUnit", "glaseado_unit");
+  renderTableRows(glasRec, "tablaGlasRec", "glaseado_recipe");
+
+  saveRecipeOption("comboTopReceta", tops, "Sin toppings guardados");
+  saveRecipeOption("comboGlasReceta", [...glasUnit, ...glasRec], "Sin glaseados guardados");
+
+  calcularComboFinal();
+}
+
+function listenRecetas(){
+  if(unsubRecetas) unsubRecetas();
+
+  unsubRecetas = db.collection("recipe_costings")
+    .orderBy("updatedAt", "desc")
+    .onSnapshot((snap) => {
+      recetasCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderRecetasNueva();
+    }, (err) => setCalcMsg("Error leyendo recetas: " + err.message));
+}
+
+function editarRecetaBase(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "base");
+  if(!r) return;
+  editingBaseId = id;
+  document.getElementById("baseNombre").value = r.nombre || "";
+  document.getElementById("baseRinde").value = Number(r.rendimiento || 1);
+  setBuilderRows("baseBuilder", "baseLine", Array.isArray(r.receta) ? r.receta : [], "calcularBaseDonitas");
+}
+
+function editarToppingUnitario(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "topping_unit");
+  if(!r) return;
+  editingTopUnitId = id;
+  document.getElementById("topUnitNombre").value = r.nombre || "";
+  fillIngredientSelect("topUnitIngrediente", r.ingrediente || "");
+  document.getElementById("topUnitQty").value = Number(r.cantidad || 0);
+  document.getElementById("topUnitUnit").value = r.unidad || "g";
+  calcularToppingUnitario();
+}
+
+function editarGlaseadoUnitario(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "glaseado_unit");
+  if(!r) return;
+  editingGlasUnitId = id;
+  document.getElementById("glasUnitNombre").value = r.nombre || "";
+  fillIngredientSelect("glasUnitIngrediente", r.ingrediente || "");
+  document.getElementById("glasUnitQty").value = Number(r.cantidad || 0);
+  document.getElementById("glasUnitUnit").value = r.unidad || "g";
+  calcularGlaseadoUnitario();
+}
+
+function editarGlaseadoReceta(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "glaseado_recipe");
+  if(!r) return;
+  editingGlasRecId = id;
+  document.getElementById("glasRecNombre").value = r.nombre || "";
+  document.getElementById("glasRecRinde").value = Number(r.rendimiento || 1);
+  setBuilderRows("glasRecBuilder", "glasRecLine", Array.isArray(r.receta) ? r.receta : [], "calcularGlaseadoReceta");
+}
+
+async function borrarRecetaNueva(id, nombre){
+  if(!isAdminUser){
+    setCalcMsg("No tienes permisos para borrar recetas.");
+    return;
+  }
+
+  if(!confirm(`¿Seguro que quieres borrar "${nombre}"?`)) return;
+
+  try{
+    await db.collection("recipe_costings").doc(id).delete();
+    setCalcMsg("✅ Registro borrado.");
+  }catch(e){
+    setCalcMsg("Error borrando: " + e.message);
+  }
+}
+
+
+
+
+function loadRecipeOptions(){
+  const topSel = document.getElementById("comboTopReceta");
+  const glasSel = document.getElementById("comboGlasReceta");
+  if(topSel){
+    const tops = recetasCache.filter(r => r.tipo === "topping");
+    topSel.innerHTML = tops.length
+      ? tops.map(r => `<option value="${escapeHtml(r.id)}" data-cost="${Number(r.costoUnidad || 0)}">${escapeHtml(r.nombre || "")}</option>`).join("")
+      : `<option value="" data-cost="0">Sin toppings guardados</option>`;
+  }
+  if(glasSel){
+    const glas = recetasCache.filter(r => r.tipo === "glaseado");
+    glasSel.innerHTML = glas.length
+      ? glas.map(r => `<option value="${escapeHtml(r.id)}" data-cost="${Number(r.costoUnidad || 0)}">${escapeHtml(r.nombre || "")}</option>`).join("")
+      : `<option value="" data-cost="0">Sin glaseados guardados</option>`;
+  }
+}
+
+
+
+function editarRecetaBase(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "base");
+  if(!r) return;
+  editingBaseId = id;
+  document.getElementById("baseNombre").value = r.nombre || "";
+  document.getElementById("baseRinde").value = Number(r.rendimiento || 1);
+  setBuilderRows("baseBuilder", "baseLine", Array.isArray(r.receta) ? r.receta : [], "calcularBaseDonitas");
+}
+
+function editarRecetaTop(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "topping");
+  if(!r) return;
+  editingTopId = id;
+  document.getElementById("topNombre").value = r.nombre || "";
+  document.getElementById("topRinde").value = Number(r.rendimiento || 1);
+  setBuilderRows("topBuilder", "topLine", Array.isArray(r.receta) ? r.receta : [], "calcularRecetaTop");
+}
+
+function editarRecetaGlas(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "glaseado");
+  if(!r) return;
+  editingGlasId = id;
+  document.getElementById("glasNombre").value = r.nombre || "";
+  document.getElementById("glasRinde").value = Number(r.rendimiento || 1);
+  setBuilderRows("glasBuilder", "glasLine", Array.isArray(r.receta) ? r.receta : [], "calcularRecetaGlas");
+}
+
+
 
 
     function todayISO(){
@@ -1648,11 +2549,11 @@ function renderListaAgrupada(lista = []){
         toggleCamposProducto();
       }
 
-      if(which === "costos"){
-        listenInventario();
-        listenRecetas();
-        cargarRecetaBase();
-      }
+if(which === "costos"){
+  listenInventario();
+  listenRecetas();
+  initNuevaCalculadora();
+}
 
       if(which === "caja"){
         listenCierres();
@@ -1939,8 +2840,16 @@ function renderListaAgrupada(lista = []){
       }
 
       if(!selectedPedidoId && list.length){
-        selectedPedidoId = list[0].id;
-      }
+  selectedPedidoId = list[0].id;
+
+  // 🔥 FORZAR render inmediato del detalle
+  setTimeout(() => {
+    const sel = pedidosCache.find(p => p.id === selectedPedidoId);
+    if(sel){
+      renderDetalleDerecha(sel);
+    }
+  }, 0);
+}
 
       renderListaIzquierda(list);
 
@@ -2068,6 +2977,12 @@ const glaseados = Array.isArray(p.glaseados)
   ? renderListaAgrupada(p.glaseados)
   : "";
 
+const bebidasExtras = Array.isArray(p.bebidasExtras)
+  ? renderListaAgrupada(p.bebidasExtras)
+  : "";
+
+
+
       const entrega = (p.tipo === "delivery") ? "🚚 Delivery" : "📍 Pickup";
       const total = safe(p.total);
       const creado = fmtFecha(p.creado);
@@ -2164,6 +3079,11 @@ const glaseados = Array.isArray(p.glaseados)
               <div><b>Glaseados extra</b></div>
               <div class="small" style="margin-top:6px;">${glaseadosExtras || "<span class='muted'>-</span>"}</div>
             </div>
+	
+	<div>
+  <div><b>Bebidas extra</b></div>
+  <div style="margin-top:8px;">${bebidasExtras || "<span class='muted'>-</span>"}</div>
+</div>
 
             ${p.notaCliente ? `
               <div style="grid-column:1 / -1;">
@@ -3102,47 +4022,49 @@ o
       }
     }
 
-    async function cargarStoreSettings(){
-      try{
-        const snap = await db.collection("store_settings").doc("main").get();
-        const s = snap.exists ? snap.data() : {};
+   async function cargarStoreSettings(){
+  try{
+    const snap = await db.collection("store_settings").doc("main").get();
+    const s = snap.exists ? snap.data() : {};
 
-        document.getElementById("stCombosTitle").value = s.combosTitle || "";
-        document.getElementById("stToppingsTitle").value = s.toppingsTitle || "";
-        document.getElementById("stGlaseadosTitle").value = s.glaseadosTitle || "";
-        document.getElementById("stThanks").value = s.thanksMessage || "";
-        document.getElementById("stTransfer").value = s.transferInfo || "";
+    document.getElementById("stCombosTitle").value = s.combosTitle || "";
+    document.getElementById("stToppingsTitle").value = s.toppingsTitle || "";
+    document.getElementById("stGlaseadosTitle").value = s.glaseadosTitle || "";
+    document.getElementById("stThanks").value = s.thanksMessage || "";
+    document.getElementById("stTransfer").value = s.transferInfo || "";
 
-        setStMsg("");
-      }catch(e){
-        setStMsg("Error cargando textos: " + e.message);
-      }
-    }
+    document.getElementById("stShowDeliveryOption").checked = s.showDeliveryOption !== false;
 
-    async function guardarStoreSettings(){
-      if(!isAdminUser){
-        setStMsg("No tienes permisos para guardar.");
-        return;
-      }
+    setStMsg("");
+  }catch(e){
+    setStMsg("Error cargando textos: " + e.message);
+  }
+}
 
-      try{
-        setStMsg("Guardando...");
+  async function guardarStoreSettings(){
+  const msg = document.getElementById("stMsg");
+  if(msg) msg.textContent = "Guardando.";
 
-        await db.collection("store_settings").doc("main").set({
-          combosTitle: (document.getElementById("stCombosTitle").value || "").trim(),
-          toppingsTitle: (document.getElementById("stToppingsTitle").value || "").trim(),
-          glaseadosTitle: (document.getElementById("stGlaseadosTitle").value || "").trim(),
-          thanksMessage: (document.getElementById("stThanks").value || "").trim(),
-          transferInfo: (document.getElementById("stTransfer").value || "").trim(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedBy: auth.currentUser?.email || "admin"
-        }, { merge:true });
+  try{
+    await db.collection("store_settings").doc("main").set({
+      combosTitle: document.getElementById("stCombosTitle")?.value.trim() || "Combos",
+      toppingsTitle: document.getElementById("stToppingsTitle")?.value.trim() || "Toppings",
+      glaseadosTitle: document.getElementById("stGlaseadosTitle")?.value.trim() || "Glaseados",
+      thanksMessage: document.getElementById("stThanks")?.value.trim() || "✅ ¡Gracias por tu pedido! En breve te contactaremos.",
+      transferInfo: document.getElementById("stTransfer")?.value.trim() || "",
+      showDeliveryOption: !!document.getElementById("stShowDeliveryOption")?.checked,
+      showExtraToppings: !!document.getElementById("stShowExtraToppings")?.checked,
+      showExtraGlaseados: !!document.getElementById("stShowExtraGlaseados")?.checked,
+      showExtraBebidas: !!document.getElementById("stShowExtraBebidas")?.checked
+    }, { merge:true });
 
-        setStMsg("✅ Textos guardados.");
-      }catch(e){
-        setStMsg("Error guardando textos: " + e.message);
-      }
-    }
+    if(msg) msg.textContent = "✅ Configuración guardada";
+  }catch(e){
+    console.error(e);
+    if(msg) msg.textContent = "❌ Error guardando configuración";
+    alert("Error guardando configuración: " + e.message);
+  }
+}
 
 function toggleCamposProducto(){
   const type = document.getElementById("pType")?.value || "";
@@ -3152,12 +4074,14 @@ function toggleCamposProducto(){
   const iconInput = document.getElementById("pIcon");
 
   const esCombo = (type === "combo");
+  const esGlaseado = (type === "glaseado");
+  const esBebida = (type === "bebida");
 
   if(topsWrap) topsWrap.style.display = esCombo ? "block" : "none";
   if(glaseadosWrap) glaseadosWrap.style.display = esCombo ? "block" : "none";
   if(groupWrap) groupWrap.style.display = esCombo ? "block" : "none";
 
-  if(iconInput && type !== "glaseado"){
+  if(iconInput && !esGlaseado && !esBebida){
     iconInput.value = "";
   }
 }
@@ -3179,24 +4103,77 @@ function toggleCamposProducto(){
       return "";
     }
 
-    function autocompletarIconoProducto(){
-      const typeEl = document.getElementById("pType");
-      const nameEl = document.getElementById("pName");
-      const iconEl = document.getElementById("pIcon");
+function detectarIconoTopping(nombre = ""){
+  const n = String(nombre).toLowerCase().trim();
 
-      if(!typeEl || !nameEl || !iconEl) return;
+  if(n.includes("oreo")) return "🍪";
+  if(n.includes("m&m") || n.includes("mm")) return "🍬";
+  if(n.includes("almendra")) return "🌰";
+  if(n.includes("hershey")) return "🍫";
+  if(n.includes("kisses")) return "💋";
+  if(n.includes("chispas")) return "🌈";
+  if(n.includes("dubai")) return "✨";
+  if(n.includes("twix")) return "🍫";
+  if(n.includes("canela")) return "🟤";
+  if(n.includes("azúcar glass") || n.includes("azucar glass")) return "🍚";
+  if(n.includes("crema pastelera")) return "🎂";
 
-      const type = typeEl.value;
-      const nombre = nameEl.value;
+  return "";
+}
 
-      if(type !== "glaseado"){
-        iconEl.value = "";
-        return;
-      }
+function detectarIconoBebida(nombre = ""){
+  const n = String(nombre).toLowerCase().trim();
 
-      iconEl.value = detectarIconoGlaseado(nombre);
-    }
+  if(n.includes("coca")) return "🥤";
+  if(n.includes("pepsi")) return "🥤";
+  if(n.includes("sprite")) return "🥤";
+  if(n.includes("jugo")) return "🧃";
+  if(n.includes("agua")) return "💧";
+  if(n.includes("café") || n.includes("cafe")) return "☕";
+  if(n.includes("milkshake")) return "🥛";
 
+  return "🥤";
+}
+
+function autocompletarIconoProducto(){
+  const typeEl = document.getElementById("pType");
+  const nameEl = document.getElementById("pName");
+  const iconEl = document.getElementById("pIcon");
+
+  if(!typeEl || !nameEl || !iconEl) return;
+
+  const type = typeEl.value;
+  const nombre = nameEl.value.trim();
+
+  // Si el usuario ya escribió un icono manual, no lo pises
+  if(iconEl.dataset.manual === "true") return;
+
+  if(type === "glaseado"){
+    iconEl.value = detectarIconoGlaseado(nombre);
+    return;
+  }
+
+  if(type === "topping"){
+    iconEl.value = detectarIconoTopping(nombre);
+    return;
+  }
+
+  if(type === "bebida"){
+    iconEl.value = detectarIconoBebida(nombre);
+    return;
+  }
+
+  // combos normalmente no necesitan icono
+  iconEl.value = "";
+}
+
+
+const pIconInput = document.getElementById("pIcon");
+if(pIconInput){
+  pIconInput.addEventListener("input", function(){
+    this.dataset.manual = this.value.trim() ? "true" : "false";
+  });
+}
     async function crearProducto(){
       if(!isAdminUser){
         setProdMsg("No tienes permisos para crear productos.");
@@ -3490,65 +4467,159 @@ await db.collection("store_products").add({
       return qty > 0 ? cost / qty : 0;
     }
 
-    function listenInventario(){
-      if(unsubInventario) unsubInventario();
+function listenInventario(){
+  if(unsubInventario) unsubInventario();
 
-      unsubInventario = db.collection("inventory_items")
-        .orderBy("name")
-        .onSnapshot((snap) => {
-          inventarioCache = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-          renderInventario();
-        }, (err) => setInvMsg("Error leyendo inventario: " + err.message));
+  unsubInventario = db.collection("inventory_items")
+    .orderBy("name")
+    .onSnapshot((snap) => {
+      inventarioCache = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      renderInventario();
+      fillIngredientSelect("topUnitIngrediente");
+      fillIngredientSelect("glasUnitIngrediente");
+    }, (err) => setInvMsg("Error leyendo inventario: " + err.message));
+}
+
+    function renderInventario(lista = inventarioCache){
+  setText("invCount", lista.length);
+  const tbody = document.getElementById("inventarioRows");
+  if(!tbody) return;
+
+  tbody.innerHTML = "";
+
+  if(!lista.length){
+    tbody.innerHTML = '<tr><td colspan="5" class="muted">No hay ingredientes que coincidan.</td></tr>';
+    return;
+  }
+
+  lista.forEach(item => {
+    const cpu = costPerBase(item);
+    const stock = Number(item.stockQty || 0);
+
+    let status = "statusOk";
+    let txt = "OK";
+
+    if(stock <= 0){
+      status = "statusBad";
+      txt = "Agotado";
+    }else if(stock <= Number(item.purchaseQty || 0) * 0.15){
+      status = "statusWarn";
+      txt = "Bajo";
     }
 
-    function renderInventario(){
-      setText("invCount", inventarioCache.length);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>
+        <b>${escapeHtml(item.name || "")}</b>
+        <div class="small muted">${escapeHtml(item.note || "")}</div>
+      </td>
+      <td>${escapeHtml(item.category || "")}</td>
+      <td>${money(cpu)} / ${escapeHtml(item.purchaseUnit || "")}</td>
+      <td>
+        <span class="${status}">
+          ${Number(stock)} ${escapeHtml(item.purchaseUnit || "")} • ${txt}
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <button
+            type="button"
+            class="iconSvgBtn"
+            onclick="abrirEditarIngredienteModal('${item.id}')"
+            title="Editar"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c2185b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+            </svg>
+          </button>
 
-      const tbody = document.getElementById("inventarioRows");
-      if(!tbody) return;
+          <button
+            type="button"
+            class="iconSvgBtn"
+            onclick="borrarIngrediente('${item.id}')"
+            title="Eliminar"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c2185b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14H6L5 6"/>
+              <path d="M10 11v6"/>
+              <path d="M14 11v6"/>
+              <path d="M9 6V4h6v2"/>
+            </svg>
+          </button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
 
-      tbody.innerHTML = "";
+let editingIngredientId = null;
 
-      if(!inventarioCache.length){
-        tbody.innerHTML = '<tr><td colspan="5" class="muted">No hay ingredientes guardados todavía.</td></tr>';
-        return;
-      }
+function abrirEditarIngredienteModal(id){
+  const item = inventarioCache.find(x => x.id === id);
+  if(!item){
+    setInvMsg("No se encontró el ingrediente.");
+    return;
+  }
 
-      inventarioCache.forEach(item => {
-        const cpu = costPerBase(item);
-        const stock = Number(item.stockQty || 0);
+  editingIngredientId = id;
 
-        let status = "statusOk";
-        let txt = "OK";
+  document.getElementById("editInvName").value = item.name || "";
+  document.getElementById("editInvCategory").value = item.category || "masa";
+  document.getElementById("editInvUnit").value = item.purchaseUnit || "g";
+  document.getElementById("editInvQty").value = item.purchaseQty ?? "";
+  document.getElementById("editInvCost").value = item.purchaseCost ?? "";
+  document.getElementById("editInvStock").value = item.stockQty ?? "";
+  document.getElementById("editInvNote").value = item.note || "";
 
-        if(stock <= 0){
-          status = "statusBad";
-          txt = "Agotado";
-        }else if(stock <= Number(item.purchaseQty || 0) * 0.15){
-          status = "statusWarn";
-          txt = "Bajo";
-        }
+  const modal = document.getElementById("ingredienteModal");
+  if(modal){
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+  }
 
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>
-            <b>${escapeHtml(item.name || "")}</b>
-            <div class="small muted">${escapeHtml(item.note || "")}</div>
-          </td>
-          <td>${escapeHtml(item.category || "")}</td>
-          <td>${money(cpu)} / ${escapeHtml(item.purchaseUnit || "")}</td>
-          <td>
-            <span class="${status}">
-              ${Number(stock)} ${escapeHtml(item.purchaseUnit || "")} • ${txt}
-            </span>
-          </td>
-          <td>
-            <button class="secondary mini" onclick="borrarIngrediente('${item.id}')">Borrar</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+  setText("ingredienteModalMsg", "");
+}
+
+function cerrarIngredienteModal(){
+  const modal = document.getElementById("ingredienteModal");
+  if(modal){
+    modal.classList.add("hidden");
+    modal.style.display = "none";
+  }
+  editingIngredientId = null;
+}
+
+async function guardarIngredienteModal(){
+  if(!editingIngredientId){
+    setText("ingredienteModalMsg", "No hay ingrediente seleccionado.");
+    return;
+  }
+
+  try{
+    const data = {
+      name: (document.getElementById("editInvName").value || "").trim(),
+      category: document.getElementById("editInvCategory").value,
+      purchaseUnit: document.getElementById("editInvUnit").value,
+      purchaseQty: Number(document.getElementById("editInvQty").value || 0),
+      purchaseCost: Number(document.getElementById("editInvCost").value || 0),
+      stockQty: Number(document.getElementById("editInvStock").value || 0),
+      note: (document.getElementById("editInvNote").value || "").trim(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: auth.currentUser?.email || "admin"
+    };
+
+    await db.collection("inventory_items").doc(editingIngredientId).update(data);
+
+    setText("ingredienteModalMsg", "✅ Ingrediente actualizado.");
+    setTimeout(() => cerrarIngredienteModal(), 500);
+  }catch(e){
+    setText("ingredienteModalMsg", "Error actualizando: " + e.message);
+  }
+}
+
 
     async function crearIngrediente(){
       if(!isAdminUser){
@@ -3598,7 +4669,6 @@ await db.collection("store_products").add({
         document.getElementById("invCategory").value = "masa";
 
         setInvMsg("✅ Ingrediente guardado.");
-        renderRecetaBuilder();
       }catch(e){
         setInvMsg("Error: " + e.message);
       }
@@ -3648,223 +4718,23 @@ await db.collection("store_products").add({
       return Number(item.qty || 0) * cpu;
     }
 
-    function buildRecipeLine(item = { name:"", qty:0, unit:"g" }){
-      const options = inventarioCache.map(i => `
-        <option value="${escapeHtml(i.name)}" ${normalizeName(i.name) === normalizeName(item.name) ? "selected" : ""}>
-          ${escapeHtml(i.name)}
-        </option>
-      `).join("");
+   
 
-      return `
-        <div class="recipeLine row" style="align-items:end;margin-bottom:8px;">
-          <div style="flex:2;min-width:180px;">
-            <label>Ingrediente</label>
-            <select class="recipeIng" onchange="calcularReceta()">
-              <option value="">Selecciona</option>
-              ${options}
-            </select>
-          </div>
 
-          <div style="flex:1;min-width:120px;">
-            <label>Cantidad</label>
-            <input class="recipeQty" type="number" min="0" step="0.01" value="${Number(item.qty || 0)}" oninput="calcularReceta()">
-          </div>
 
-          <div style="width:120px;">
-            <label>Unidad</label>
-            <select class="recipeUnit" onchange="calcularReceta()">
-              <option value="g" ${item.unit === 'g' ? 'selected' : ''}>g</option>
-              <option value="ml" ${item.unit === 'ml' ? 'selected' : ''}>ml</option>
-              <option value="unidad" ${item.unit === 'unidad' ? 'selected' : ''}>unidad</option>
-            </select>
-          </div>
+  
+function listenRecetas(){
+  if(unsubRecetas) unsubRecetas();
 
-          <div style="width:100px;">
-            <button type="button" class="secondary mini" onclick="this.closest('.recipeLine').remove(); calcularReceta()">Quitar</button>
-          </div>
-        </div>
-      `;
-    }
+  unsubRecetas = db.collection("recipe_costings")
+    .orderBy("updatedAt", "desc")
+    .onSnapshot((snap) => {
+      recetasCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderRecetasNueva();
+    }, (err) => setCalcMsg("Error leyendo recetas: " + err.message));
+}
 
-    function cargarRecetaBase(){
-      const tipo = document.getElementById("calcTipo")?.value || "donitas";
-      const sugerida = RECETAS_BASE[tipo] || [];
-      const nombreEl = document.getElementById("calcNombre");
-      const gramEl = document.getElementById("calcGramaje");
-      const porcionesEl = document.getElementById("calcPorciones");
-
-      if(tipo === "donitas"){
-        if(nombreEl && !nombreEl.value) nombreEl.value = "Donitas base";
-        if(gramEl) gramEl.value = 25;
-        if(porcionesEl && Number(porcionesEl.value || 0) <= 0) porcionesEl.value = 12;
-      }else if(tipo === "topping"){
-        if(nombreEl && !nombreEl.value) nombreEl.value = "Topping base";
-        if(gramEl) gramEl.value = 10;
-      }else if(tipo === "glaseado"){
-        if(nombreEl && !nombreEl.value) nombreEl.value = "Glaseado base";
-        if(gramEl) gramEl.value = 18;
-      }
-
-      renderRecetaBuilder(false, sugerida);
-    }
-
-    function renderRecetaBuilder(forceReset = false, sugerida = null){
-      const cont = document.getElementById("recetaBuilder");
-      if(!cont) return;
-
-      let rows = [];
-
-      if(!forceReset){
-        rows = recetaActualDesdeDOM();
-      }
-
-      if(!rows.length){
-        rows = (sugerida || RECETAS_BASE[document.getElementById("calcTipo")?.value || "donitas"] || []).slice(0, 3);
-      }
-
-      cont.innerHTML = rows.map(r => buildRecipeLine(r)).join("");
-      calcularReceta();
-    }
-
-    function addLineaReceta(){
-      const cont = document.getElementById("recetaBuilder");
-      if(!cont) return;
-
-      cont.insertAdjacentHTML("beforeend", buildRecipeLine());
-      calcularReceta();
-    }
-
-    function calcularReceta(){
-      const receta = recetaActualDesdeDOM();
-      const porciones = Math.max(1, Number(document.getElementById("calcPorciones")?.value || 1));
-      const margen = Math.max(0, Number(document.getElementById("calcMargen")?.value || 0));
-
-      const costoTotal = receta.reduce((acc, r) => acc + recetaCosto(r), 0);
-      const costoPorcion = costoTotal / porciones;
-      const sugerido = costoPorcion * (1 + (margen / 100));
-      const min40 = costoPorcion * 1.4;
-
-      setText("recetaCostoTotal", money(costoTotal));
-      setText("recetaCostoPorcion", money(costoPorcion));
-      setText("recetaPrecioSugerido", money(Math.ceil(sugerido)));
-      setText("recetaPrecioMin", money(Math.ceil(min40)));
-    }
-
-    async function guardarRecetaCalculada(){
-      if(!isAdminUser){
-        setCalcMsg("No tienes permisos para guardar cálculos.");
-        return;
-      }
-
-      const tipo = document.getElementById("calcTipo").value;
-      const nombre = (document.getElementById("calcNombre").value || "").trim();
-      const porciones = Math.max(1, Number(document.getElementById("calcPorciones").value || 1));
-      const gramaje = Math.max(1, Number(document.getElementById("calcGramaje").value || 1));
-      const margen = Math.max(0, Number(document.getElementById("calcMargen").value || 0));
-      const receta = recetaActualDesdeDOM();
-
-      if(!nombre){
-        setCalcMsg("Pon un nombre al cálculo.");
-        return;
-      }
-
-      if(!receta.length){
-        setCalcMsg("Agrega al menos un ingrediente.");
-        return;
-      }
-
-      const costoTotal = receta.reduce((acc, r) => acc + recetaCosto(r), 0);
-      const costoPorcion = costoTotal / porciones;
-      const precioSugerido = Math.ceil(costoPorcion * (1 + (margen / 100)));
-
-      try{
-        setCalcMsg("Guardando...");
-
-        await db.collection("recipe_costings").add({
-          tipo,
-          nombre,
-          porciones,
-          gramaje,
-          margen,
-          receta,
-          costoTotal,
-          costoPorcion,
-          precioSugerido,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedBy: auth.currentUser?.email || "admin"
-        });
-
-        setCalcMsg("✅ Cálculo guardado.");
-      }catch(e){
-        setCalcMsg("Error: " + e.message);
-      }
-    }
-
-    function listenRecetas(){
-      if(unsubRecetas) unsubRecetas();
-
-      unsubRecetas = db.collection("recipe_costings")
-        .orderBy("updatedAt", "desc")
-        .onSnapshot((snap) => {
-          recetasCache = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-          renderRecetas();
-        }, (err) => setCalcMsg("Error leyendo cálculos: " + err.message));
-    }
-
-    function renderRecetas(){
-      setText("recetasCount", recetasCache.length);
-
-      const tbody = document.getElementById("recetasRows");
-      if(!tbody) return;
-
-      tbody.innerHTML = "";
-
-      if(!recetasCache.length){
-        tbody.innerHTML = '<tr><td colspan="7" class="muted">No hay cálculos guardados todavía.</td></tr>';
-        return;
-      }
-
-      recetasCache.forEach(r => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><b>${escapeHtml(r.nombre || "")}</b></td>
-          <td>${escapeHtml(r.tipo || "")}</td>
-          <td>${Number(r.porciones || 0)}</td>
-          <td>${money(r.costoPorcion || 0)}</td>
-          <td>${money(r.precioSugerido || 0)}</td>
-          <td>${escapeHtml(fmtFecha(r.updatedAt))}</td>
-          <td>
-            <button class="secondary mini" type="button" onclick="borrarReceta('${r.id}')">Borrar</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    async function borrarReceta(id){
-      if(!isAdminUser){
-        setCalcMsg("No tienes permisos para borrar recetas.");
-        return;
-      }
-
-      const receta = recetasCache.find(r => r.id === id);
-      const nombre = receta?.nombre || "esta receta";
-
-      if(!confirm(`¿Seguro que quieres borrar "${nombre}"? Esta acción no se puede deshacer.`)){
-        return;
-      }
-
-      try{
-        setCalcMsg("Borrando receta...");
-        await db.collection("recipe_costings").doc(id).delete();
-        setCalcMsg("✅ Receta borrada.");
-      }catch(e){
-        console.error("Error borrando receta:", e);
-        setCalcMsg("Error borrando receta: " + (e.message || e));
-      }
-    }
-
+    
     function initCajaBox(){
       const dateEl = document.getElementById("cashDate");
       if(dateEl && !dateEl.value){
@@ -4145,7 +5015,7 @@ await db.collection("store_products").add({
           listenRecetas();
           listenCierres();
           initCajaBox();
-          cargarRecetaBase();
+      
 
           setTimeout(() => {
             insertarAyudasEnCampos();
@@ -4153,8 +5023,9 @@ await db.collection("store_products").add({
           }, 300);
         }
       }catch(e){
-        alert(e.message);
-      }
+  console.error("Error cargando rol:", e);
+  setLoginMsg("No se pudo conectar con Firebase. Revisa tu internet e intenta otra vez.");
+}
     });
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -4165,6 +5036,640 @@ await db.collection("store_products").add({
         insertarAyudasEnCampos();
       }, 300);
     });
+
+function actualizarLabelRendimiento(){
+  const unidad = document.getElementById("calcUnidadRendimiento")?.value || "donitas";
+  const label = document.getElementById("labelCostoUnidadReceta");
+  if(label){
+    label.textContent = unidad === "donitas" ? "Costo por mini dona base:" : "Costo por porción base:";
+  }
+}
+
+function getCostoUnitarioIngrediente(item){
+  const qty = Number(item.purchaseQty || 0);
+  const cost = Number(item.purchaseCost || 0);
+  if(qty <= 0) return 0;
+  return cost / qty;
+}
+
+function buscarIngredientePorNombre(nombre){
+  const n = String(nombre || "").trim().toLowerCase();
+  return inventarioCache.find(i => String(i.name || "").trim().toLowerCase() === n) || null;
+}
+
+function recetaCosto(linea){
+  const ing = buscarIngredientePorNombre(linea.name);
+  if(!ing) return 0;
+  const costoUnit = getCostoUnitarioIngrediente(ing);
+  return costoUnit * Number(linea.qty || 0);
+}
+
+function recetaActualDesdeDOM(){
+  const rows = [];
+  document.querySelectorAll(".recetaLinea").forEach(row => {
+    const name = row.querySelector(".recetaIng")?.value || "";
+    const qty = Number(row.querySelector(".recetaQty")?.value || 0);
+    const unit = row.querySelector(".recetaUnit")?.value || "g";
+    rows.push({ name, qty, unit });
+  });
+  return rows;
+}
+
+let editingBaseId = null;
+let editingTopUnitId = null;
+let editingGlasUnitId = null;
+let editingGlasRecId = null;
+
+function getCostoUnitarioIngrediente(item){
+  const qty = Number(item.purchaseQty || 0);
+  const cost = Number(item.purchaseCost || 0);
+  if(qty <= 0) return 0;
+  return cost / qty;
+}
+
+function buscarIngredientePorNombre(nombre){
+  const n = String(nombre || "").trim().toLowerCase();
+  return inventarioCache.find(i => String(i.name || "").trim().toLowerCase() === n) || null;
+}
+
+function costoLineaReceta(name, qty){
+  const ing = buscarIngredientePorNombre(name);
+  if(!ing) return 0;
+  return getCostoUnitarioIngrediente(ing) * Number(qty || 0);
+}
+
+function fillIngredientSelect(selectId, selectedValue = ""){
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+
+  const current = selectedValue || sel.value || "";
+  sel.innerHTML = `<option value="">Selecciona</option>` + inventarioCache.map(i =>
+    `<option value="${escapeHtml(i.name || "")}" ${String(i.name || "") === String(current) ? "selected" : ""}>${escapeHtml(i.name || "")}</option>`
+  ).join("");
+}
+
+function buildRecipeLineGeneric(cls, item = {}){
+  const options = inventarioCache.map(i =>
+    `<option value="${escapeHtml(i.name || "")}" ${String(i.name || "") === String(item.name || "") ? "selected" : ""}>${escapeHtml(i.name || "")}</option>`
+  ).join("");
+
+  return `
+    <div class="${cls}" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+      <div style="flex:1;min-width:180px;">
+        <label>Ingrediente</label>
+        <select class="recipeIng">
+          <option value="">Selecciona</option>
+          ${options}
+        </select>
+      </div>
+
+      <div style="flex:1;min-width:120px;">
+        <label>Cantidad</label>
+        <input class="recipeQty" type="number" min="0" step="0.01" value="${Number(item.qty || 0)}">
+      </div>
+
+      <div style="width:120px;">
+        <label>Unidad</label>
+        <select class="recipeUnit">
+          <option value="g" ${item.unit === "g" ? "selected" : ""}>g</option>
+          <option value="ml" ${item.unit === "ml" ? "selected" : ""}>ml</option>
+          <option value="unidad" ${item.unit === "unidad" ? "selected" : ""}>unidad</option>
+        </select>
+      </div>
+
+      <div style="width:110px;">
+        <label>&nbsp;</label>
+        <button type="button" class="secondary" onclick="this.closest('.${cls}').remove(); triggerCalcFromClass('${cls}')">Quitar</button>
+      </div>
+    </div>
+  `;
+}
+
+function bindCalcEventsByClass(cls, calcFnName){
+  document.querySelectorAll(`.${cls} .recipeIng, .${cls} .recipeQty, .${cls} .recipeUnit`).forEach(el => {
+    el.onchange = () => window[calcFnName]();
+    el.oninput = () => window[calcFnName]();
+  });
+}
+
+function triggerCalcFromClass(cls){
+  if(cls === "baseLine") calcularBaseDonitas();
+  if(cls === "glasRecLine") calcularGlaseadoReceta();
+}
+
+function getRecipeRowsFromDOM(cls){
+  return [...document.querySelectorAll(`.${cls}`)].map(row => ({
+    name: row.querySelector(".recipeIng")?.value || "",
+    qty: Number(row.querySelector(".recipeQty")?.value || 0),
+    unit: row.querySelector(".recipeUnit")?.value || "g"
+  })).filter(r => r.name && r.qty > 0);
+}
+
+function setBuilderRows(containerId, cls, items, calcFnName){
+  const cont = document.getElementById(containerId);
+  if(!cont) return;
+  cont.innerHTML = (items || []).map(item => buildRecipeLineGeneric(cls, item)).join("");
+  bindCalcEventsByClass(cls, calcFnName);
+  window[calcFnName]();
+}
+
+function addLineaBase(item = {}){
+  const cont = document.getElementById("baseBuilder");
+  if(!cont) return;
+  cont.insertAdjacentHTML("beforeend", buildRecipeLineGeneric("baseLine", item));
+  bindCalcEventsByClass("baseLine", "calcularBaseDonitas");
+  calcularBaseDonitas();
+}
+
+function addLineaGlasRec(item = {}){
+  const cont = document.getElementById("glasRecBuilder");
+  if(!cont) return;
+  cont.insertAdjacentHTML("beforeend", buildRecipeLineGeneric("glasRecLine", item));
+  bindCalcEventsByClass("glasRecLine", "calcularGlaseadoReceta");
+  calcularGlaseadoReceta();
+}
+
+function resetRecetaBase(){
+  editingBaseId = null;
+  document.getElementById("baseNombre").value = "";
+  document.getElementById("baseRinde").value = 50;
+  setBuilderRows("baseBuilder", "baseLine", RECETAS_BASE.donitas || [], "calcularBaseDonitas");
+}
+
+function resetToppingUnitario(){
+  editingTopUnitId = null;
+  document.getElementById("topUnitNombre").value = "";
+  document.getElementById("topUnitQty").value = 1;
+  document.getElementById("topUnitUnit").value = "g";
+  fillIngredientSelect("topUnitIngrediente");
+  calcularToppingUnitario();
+}
+
+function resetGlaseadoUnitario(){
+  editingGlasUnitId = null;
+  document.getElementById("glasUnitNombre").value = "";
+  document.getElementById("glasUnitQty").value = 1;
+  document.getElementById("glasUnitUnit").value = "g";
+  fillIngredientSelect("glasUnitIngrediente");
+  calcularGlaseadoUnitario();
+}
+
+function resetGlaseadoReceta(){
+  editingGlasRecId = null;
+  document.getElementById("glasRecNombre").value = "";
+  document.getElementById("glasRecRinde").value = 50;
+  setBuilderRows("glasRecBuilder", "glasRecLine", RECETAS_BASE.glaseado || [], "calcularGlaseadoReceta");
+}
+
+function calcularBaseDonitas(){
+  const receta = getRecipeRowsFromDOM("baseLine");
+  const rinde = Math.max(1, Number(document.getElementById("baseRinde")?.value || 1));
+  const costoTotal = receta.reduce((acc, r) => acc + costoLineaReceta(r.name, r.qty), 0);
+  const costoUnidad = costoTotal / rinde;
+
+  setText("baseCostoTotal", money(costoTotal));
+  setText("baseCostoUnidad", money(costoUnidad));
+
+  return { receta, rinde, costoTotal, costoUnidad };
+}
+
+
+
+function calcularGlaseadoUnitario(){
+
+function calcularGlaseadoReceta(){
+  const receta = getRecipeRowsFromDOM("glasRecLine");
+  const rinde = Math.max(1, Number(document.getElementById("glasRecRinde")?.value || 1));
+  const costoTotal = receta.reduce((acc, r) => acc + costoLineaReceta(r.name, r.qty), 0);
+  const costoUnidad = costoTotal / rinde;
+
+  setText("glasRecCostoTotal", money(costoTotal));
+  setText("glasRecCostoUnidad", money(costoUnidad));
+
+  calcularComboFinal();
+  return { receta, rinde, costoTotal, costoUnidad };
+}
+
+function saveRecipeOption(selectId, items, placeholder){
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+
+  sel.innerHTML = items.length
+    ? items.map(r => `<option value="${escapeHtml(r.id)}" data-cost="${Number(r.costoUnidad || 0)}">${escapeHtml(r.nombre || "")}</option>`).join("")
+    : `<option value="" data-cost="0">${placeholder}</option>`;
+}
+
+function getSelectedRecipeCost(selectId){
+  const sel = document.getElementById(selectId);
+  if(!sel) return 0;
+  const option = sel.options[sel.selectedIndex];
+  return Number(option?.dataset?.cost || 0);
+}
+
+function calcularComboFinal(){
+  const base = calcularBaseDonitas();
+
+  const qty = Math.max(1, Number(document.getElementById("comboQtyFinal")?.value || 1));
+  const topsIncl = Math.max(0, Number(document.getElementById("comboTopInclFinal")?.value || 0));
+  const glasIncl = Math.max(0, Number(document.getElementById("comboGlasInclFinal")?.value || 0));
+  const empaque = Math.max(0, Number(document.getElementById("comboEmpaqueFinal")?.value || 0));
+  const mano = Math.max(0, Number(document.getElementById("comboManoFinal")?.value || 0));
+  const indirectos = Math.max(0, Number(document.getElementById("comboIndirectosFinal")?.value || 0));
+  const margen = Math.max(0, Number(document.getElementById("comboMargenFinal")?.value || 0));
+
+  const topCost = getSelectedRecipeCost("comboTopReceta");
+  const glasCost = getSelectedRecipeCost("comboGlasReceta");
+
+  const costoBaseCombo = base.costoUnidad * qty;
+  const costoIncluidos = (topsIncl * topCost) + (glasIncl * glasCost);
+  const costoTotal = costoBaseCombo + costoIncluidos + empaque + mano + indirectos;
+  const precioMin = costoTotal * 1.4;
+  const precioSug = costoTotal * (1 + (margen / 100));
+  const extraTop = topCost * (1 + (margen / 100));
+  const extraGlas = glasCost * (1 + (margen / 100));
+
+  setText("comboCostoBase", money(costoBaseCombo));
+  setText("comboCostoIncluidos", money(costoIncluidos));
+  setText("comboCostoEmpaque", money(empaque));
+  setText("comboCostoMano", money(mano));
+  setText("comboCostoIndirectos", money(indirectos));
+  setText("comboCostoTotalFinal", money(costoTotal));
+  setText("comboPrecioMinFinal", money(Math.ceil(precioMin)));
+  setText("comboPrecioSugFinal", money(Math.ceil(precioSug)));
+  setText("comboExtraTopFinal", money(Math.ceil(extraTop)));
+  setText("comboExtraGlasFinal", money(Math.ceil(extraGlas)));
+}
+
+
+
+
+function renderTableRows(list, tbodyId, mode){
+  const tbody = document.getElementById(tbodyId);
+  if(!tbody) return;
+  tbody.innerHTML = "";
+
+  if(!list.length){
+    const colspan = mode === "base" ? 6 : 5;
+    tbody.innerHTML = `<tr><td colspan="${colspan}" class="muted">No hay registros guardados.</td></tr>`;
+    return;
+  }
+
+  list.forEach(r => {
+    const tr = document.createElement("tr");
+
+    if(mode === "base"){
+      tr.innerHTML = `
+        <td><b>${escapeHtml(r.nombre || "")}</b></td>
+        <td>${Number(r.rendimiento || 0)}</td>
+        <td>${money(r.costoTotal || 0)}</td>
+        <td>${money(r.costoUnidad || 0)}</td>
+        <td>${escapeHtml(fmtFecha(r.updatedAt))}</td>
+        <td>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="secondary" type="button" onclick="editarRecetaBase('${r.id}')">Editar</button>
+            <button type="button" onclick="borrarRecetaNueva('${r.id}','${escapeHtml(r.nombre || "")}')">Eliminar</button>
+          </div>
+        </td>
+      `;
+    }
+
+    if(mode === "topping_unit" || mode === "glaseado_unit"){
+      tr.innerHTML = `
+        <td><b>${escapeHtml(r.nombre || "")}</b></td>
+        <td>${escapeHtml(r.ingrediente || "")}</td>
+        <td>${Number(r.cantidad || 0)} ${escapeHtml(r.unidad || "")}</td>
+        <td>${money(r.costoUnidad || 0)}</td>
+        <td>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="secondary" type="button" onclick="${mode === "topping_unit" ? `editarToppingUnitario('${r.id}')` : `editarGlaseadoUnitario('${r.id}')`}">Editar</button>
+            <button type="button" onclick="borrarRecetaNueva('${r.id}','${escapeHtml(r.nombre || "")}')">Eliminar</button>
+          </div>
+        </td>
+      `;
+    }
+
+    if(mode === "glaseado_recipe"){
+      tr.innerHTML = `
+        <td><b>${escapeHtml(r.nombre || "")}</b></td>
+        <td>${Number(r.rendimiento || 0)}</td>
+        <td>${money(r.costoTotal || 0)}</td>
+        <td>${money(r.costoUnidad || 0)}</td>
+        <td>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="secondary" type="button" onclick="editarGlaseadoReceta('${r.id}')">Editar</button>
+            <button type="button" onclick="borrarRecetaNueva('${r.id}','${escapeHtml(r.nombre || "")}')">Eliminar</button>
+          </div>
+        </td>
+      `;
+    }
+
+    tbody.appendChild(tr);
+  });
+}
+
+function renderRecetasNueva(){
+  const bases = recetasCache.filter(r => r.tipo === "base");
+  const tops = recetasCache.filter(r => r.tipo === "topping_unit");
+  const glasUnit = recetasCache.filter(r => r.tipo === "glaseado_unit");
+  const glasRec = recetasCache.filter(r => r.tipo === "glaseado_recipe");
+
+  setText("countBases", bases.length);
+  setText("countTops", tops.length);
+  setText("countGlasUnit", glasUnit.length);
+  setText("countGlasRec", glasRec.length);
+
+  renderTableRows(bases, "tablaBases", "base");
+  renderTableRows(tops, "tablaTops", "topping_unit");
+  renderTableRows(glasUnit, "tablaGlasUnit", "glaseado_unit");
+  renderTableRows(glasRec, "tablaGlasRec", "glaseado_recipe");
+
+  saveRecipeOption("comboTopReceta", tops, "Sin toppings guardados");
+  saveRecipeOption("comboGlasReceta", [...glasUnit, ...glasRec], "Sin glaseados guardados");
+
+  calcularComboFinal();
+}
+
+function listenRecetas(){
+  if(unsubRecetas) unsubRecetas();
+
+  unsubRecetas = db.collection("recipe_costings")
+    .orderBy("updatedAt", "desc")
+    .onSnapshot((snap) => {
+      recetasCache = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      renderRecetasNueva();
+    }, (err) => setCalcMsg("Error leyendo recetas: " + err.message));
+}
+
+function editarRecetaBase(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "base");
+  if(!r) return;
+  editingBaseId = id;
+  document.getElementById("baseNombre").value = r.nombre || "";
+  document.getElementById("baseRinde").value = Number(r.rendimiento || 1);
+  setBuilderRows("baseBuilder", "baseLine", Array.isArray(r.receta) ? r.receta : [], "calcularBaseDonitas");
+}
+
+function editarToppingUnitario(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "topping_unit");
+  if(!r) return;
+  editingTopUnitId = id;
+  document.getElementById("topUnitNombre").value = r.nombre || "";
+  fillIngredientSelect("topUnitIngrediente", r.ingrediente || "");
+  document.getElementById("topUnitQty").value = Number(r.cantidad || 0);
+  document.getElementById("topUnitUnit").value = r.unidad || "g";
+  calcularToppingUnitario();
+}
+
+function editarGlaseadoUnitario(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "glaseado_unit");
+  if(!r) return;
+  editingGlasUnitId = id;
+  document.getElementById("glasUnitNombre").value = r.nombre || "";
+  fillIngredientSelect("glasUnitIngrediente", r.ingrediente || "");
+  document.getElementById("glasUnitQty").value = Number(r.cantidad || 0);
+  document.getElementById("glasUnitUnit").value = r.unidad || "g";
+  calcularGlaseadoUnitario();
+}
+
+function editarGlaseadoReceta(id){
+  const r = recetasCache.find(x => x.id === id && x.tipo === "glaseado_recipe");
+  if(!r) return;
+  editingGlasRecId = id;
+  document.getElementById("glasRecNombre").value = r.nombre || "";
+  document.getElementById("glasRecRinde").value = Number(r.rendimiento || 1);
+  setBuilderRows("glasRecBuilder", "glasRecLine", Array.isArray(r.receta) ? r.receta : [], "calcularGlaseadoReceta");
+}
+
+async function borrarRecetaNueva(id, nombre){
+  if(!isAdminUser){
+    setCalcMsg("No tienes permisos para borrar recetas.");
+    return;
+  }
+
+  if(!confirm(`¿Seguro que quieres borrar "${nombre}"?`)) return;
+
+  try{
+    await db.collection("recipe_costings").doc(id).delete();
+    setCalcMsg("✅ Registro borrado.");
+  }catch(e){
+    setCalcMsg("Error borrando: " + e.message);
+  }
+}
+
+function initNuevaCalculadora(){
+  fillIngredientSelect("topUnitIngrediente");
+  fillIngredientSelect("glasUnitIngrediente");
+
+  resetRecetaBase();
+  resetToppingUnitario();
+  resetGlaseadoUnitario();
+  resetGlaseadoReceta();
+
+  saveRecipeOption(
+    "comboTopReceta",
+    recetasCache.filter(r => r.tipo === "topping_unit"),
+    "Sin toppings guardados"
+  );
+
+  saveRecipeOption(
+    "comboGlasReceta",
+    [
+      ...recetasCache.filter(r => r.tipo === "glaseado_unit"),
+      ...recetasCache.filter(r => r.tipo === "glaseado_recipe")
+    ],
+    "Sin glaseados guardados"
+  );
+
+  calcularComboFinal();
+}
+
+  calcularComboFinal();
+}
+
+function calcularReceta(){
+  calcularBaseDonitas();
+  calcularToppingUnitario();
+  calcularGlaseadoUnitario();
+  calcularGlaseadoReceta();
+  calcularComboFinal();
+}
+
+async function guardarRecetaBase(){
+  try{
+    const nombre = (document.getElementById("baseNombre")?.value || "").trim();
+    const rinde = Number(document.getElementById("baseRinde")?.value || 0);
+    const items = getRecipeRowsFromDOM("baseLine");
+
+    if(!nombre){
+      alert("Ponle un nombre a la receta base.");
+      return;
+    }
+
+    if(rinde <= 0){
+      alert("El rinde debe ser mayor que 0.");
+      return;
+    }
+
+    if(!items.length){
+      alert("Agrega al menos un ingrediente a la receta base.");
+      return;
+    }
+
+    const calc = calcularBaseDonitas();
+
+    const payload = {
+      tipo: "base",
+      nombre,
+      rinde,
+      items,
+      costoTotal: Number(calc?.costoTotal || 0),
+      costoUnidad: Number(calc?.costoUnidad || 0),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: auth.currentUser?.email || "admin"
+    };
+
+    await db.collection("recipe_costings").add(payload);
+
+    alert("Base guardada correctamente.");
+  }catch(err){
+    console.error("Error guardando receta base:", err);
+    alert("No se pudo guardar la receta base.");
+  }
+}
+
+async function guardarToppingUnitario(){
+  try{
+    const nombre = (document.getElementById("topUnitNombre")?.value || "").trim();
+    const ingrediente = document.getElementById("topUnitIngrediente")?.value || "";
+    const qty = Number(document.getElementById("topUnitQty")?.value || 0);
+    const unit = document.getElementById("topUnitUnit")?.value || "g";
+
+    if(!nombre){
+      alert("Ponle nombre al topping.");
+      return;
+    }
+
+    if(!ingrediente){
+      alert("Selecciona un ingrediente.");
+      return;
+    }
+
+    if(qty <= 0){
+      alert("La cantidad debe ser mayor que 0.");
+      return;
+    }
+
+    const calc = calcularToppingUnitario();
+
+    const payload = {
+      tipo: "topping_unit",
+      nombre,
+      ingrediente,
+      qty,
+      unit,
+      costoUnidad: Number(calc?.costoUnidad || 0),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: auth.currentUser?.email || "admin"
+    };
+
+    await db.collection("recipe_costings").add(payload);
+
+    alert("✅ Topping guardado");
+  }catch(err){
+    console.error("💥 Error:", err);
+    alert("Error guardando topping");
+  }
+}
+
+
+async function guardarGlaseadoUnitario(){
+  try{
+    const nombre = (document.getElementById("glasUnitNombre")?.value || "").trim();
+    const ingrediente = document.getElementById("glasUnitIngrediente")?.value || "";
+    const qty = Number(document.getElementById("glasUnitQty")?.value || 0);
+    const unit = document.getElementById("glasUnitUnit")?.value || "g";
+
+    if(!nombre){
+      alert("Ponle nombre al glaseado.");
+      return;
+    }
+
+    if(!ingrediente){
+      alert("Selecciona un ingrediente.");
+      return;
+    }
+
+    if(qty <= 0){
+      alert("La cantidad debe ser mayor que 0.");
+      return;
+    }
+
+    const calc = calcularGlaseadoUnitario();
+
+    const payload = {
+      tipo: "glaseado_unit",
+      nombre,
+      ingrediente,
+      qty,
+      unit,
+      costoUnidad: Number(calc?.costoUnidad || 0),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: auth.currentUser?.email || "admin"
+    };
+
+    await db.collection("recipe_costings").add(payload);
+
+    alert("✅ Glaseado guardado");
+  }catch(err){
+    console.error("💥 Error:", err);
+    alert("Error guardando glaseado");
+  }
+}
+
+async function guardarGlaseadoReceta(){
+  try{
+    const nombre = (document.getElementById("glasRecNombre")?.value || "").trim();
+    const rinde = Number(document.getElementById("glasRecRinde")?.value || 0);
+    const items = getRecipeRowsFromDOM("glasRecLine");
+
+    if(!nombre){
+      alert("Ponle nombre al glaseado.");
+      return;
+    }
+
+    if(rinde <= 0){
+      alert("El rinde debe ser mayor que 0.");
+      return;
+    }
+
+    if(!items.length){
+      alert("Agrega al menos un ingrediente.");
+      return;
+    }
+
+    const calc = calcularGlaseadoReceta();
+
+    const payload = {
+      tipo: "glaseado_recipe",
+      nombre,
+      rinde,
+      items,
+      costoTotal: Number(calc?.costoTotal || 0),
+      costoUnidad: Number(calc?.costoUnidad || 0),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedBy: auth.currentUser?.email || "admin"
+    };
+
+    await db.collection("recipe_costings").add(payload);
+
+    alert("✅ Glaseado receta guardado");
+  }catch(err){
+    console.error("💥 Error:", err);
+    alert("Error guardando glaseado receta");
+  }
+}
+
+
   </script>
 </body>
 </html>

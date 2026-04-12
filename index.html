@@ -927,7 +927,53 @@ button:active{transform:scale(.98);}
   }
 }
 
+/* VIDEO INTRO */
+.videoIntro{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.78);
+  z-index:12000;
+  justify-content:center;
+  align-items:center;
+  padding:16px;
+}
 
+.videoIntroCard{
+  width:100%;
+  max-width:430px;
+  background:#fff;
+  border-radius:22px;
+  padding:12px;
+  box-shadow:0 18px 45px rgba(0,0,0,.25);
+  position:relative;
+}
+
+.videoIntro video{
+  width:100%;
+  display:block;
+  border-radius:16px;
+  background:#000;
+  max-height:78vh;
+}
+
+.videoIntroClose{
+  position:absolute;
+  top:-12px;
+  right:-12px;
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:linear-gradient(45deg,var(--main-2),var(--main-3));
+  color:#fff;
+  font-size:20px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 10px 24px rgba(194,24,91,.28);
+  min-height:auto;
+  padding:0;
+}
 
 
 </style>
@@ -937,6 +983,18 @@ button:active{transform:scale(.98);}
 <div id="loader">
   <img src="Carga.png" class="donutLoader" alt="Cargando">
   <div class="loaderText">Cargando...</div>
+</div>
+
+<!-- VIDEO DE BIENVENIDA -->
+<div id="videoIntro" class="videoIntro" onclick="cerrarVideoIntro(event)">
+  <div class="videoIntroCard" onclick="event.stopPropagation()">
+    <button type="button" class="videoIntroClose" onclick="cerrarVideoIntro()">✕</button>
+
+    <video id="videoBienvenida" controls autoplay muted playsinline>
+      <source src="video/bienvenida.mp4" type="video/mp4">
+      Tu navegador no soporta video HTML5.
+    </video>
+  </div>
 </div>
 
 <!-- MODAL ERROR -->
@@ -1044,7 +1102,6 @@ button:active{transform:scale(.98);}
         <li>Selecciona glaseados incluidos.</li>
         <li>Selecciona toppings incluidos.</li>
         <li>Agrega extras si quieres.</li>
-        <li>Escoge delivery o recoger.</li>
         <li>Llena tus datos y confirma.</li>
       </ol>
     </div>
@@ -1067,11 +1124,6 @@ button:active{transform:scale(.98);}
         <li>M&amp;M</li>
         <li>Almendras</li>
       </ul>
-    </div>
-
-    <div class="infoBlock">
-      <h3>🍩 ¿Qué es la dona base?</h3>
-      <p>Es la mini dona recién hecha sobre la que se agregan glaseados y toppings.</p>
     </div>
 
     <button type="button" class="secondary" onclick="cerrarAyuda()">Entendido</button>
@@ -1736,7 +1788,7 @@ function agregarToppingExtraResumen(valorPrevio = "0"){
     const op = document.createElement("option");
     op.value = t.price;
     op.dataset.name = t.name;
-    op.text = `${t.name} (RD$${t.price})`;
+    op.text = `${t.icon} ${t.name} (RD$${t.price})`;
     s.appendChild(op);
   });
 
@@ -1987,7 +2039,7 @@ function actualizarToppings(max){
     count: max,
     options: toppings.map(t => ({
       name: t.name,
-      icon: "",
+      icon: t.icon || "🍩",
       price: 0
     })),
     selectClass: "toppingSelect",
@@ -1995,6 +2047,7 @@ function actualizarToppings(max){
     sameSelectId: "sameToppingSelect"
   });
 }
+
 
 function agregarToppingExtra(valorPrevio = ""){
   const list = document.getElementById("extraToppingsList");
@@ -2139,10 +2192,10 @@ if(menuOfertas){
     if(badgeManual === "oferta"){
       return `<span class="productBadge">🏷 OFERTA</span>`;
     }
-    if(ventas < 10){
+    if(ventas < 5){
       return `<span class="productBadge">🆕 NUEVO</span>`;
     }
-    if(ventas < 30){
+    if(ventas < 10){
       return `<span class="productBadge">🔥 POPULAR</span>`;
     }
     return `<span class="productBadge">⭐ MÁS VENDIDO</span>`;
@@ -2304,10 +2357,29 @@ function escucharTiendaEnVivo(){
     glaseadosDocs.sort((a,b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
     bebidasDocs.sort((a,b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
 
-    toppings = toppingsDocs.map(t => ({
-      name: t.name,
-      price: Number(t.price || 0)
-    }));
+function obtenerIconoTopping(nombre = ""){
+  const n = String(nombre).toLowerCase().trim();
+
+  if(n.includes("oreo")) return "🍪";
+  if(n.includes("m&m") || n.includes("mm")) return "🍬";
+  if(n.includes("almendra")) return "🌰";
+  if(n.includes("hershey")) return "🍫";
+  if(n.includes("kisses")) return "💋";
+  if(n.includes("chispas")) return "🌈";
+  if(n.includes("dubai")) return "✨";
+  if(n.includes("twix")) return "🍫";
+  if(n.includes("canela")) return "🟤";
+  if(n.includes("azúcar glass") || n.includes("azucar glass")) return "🍚";
+  if(n.includes("crema pastelera")) return "🎂";
+
+  return "🍩";
+}
+
+toppings = toppingsDocs.map(t => ({
+  name: t.name,
+  price: Number(t.price || 0),
+  icon: t.icon || obtenerIconoTopping(t.name)
+}));
 
     glaseados = glaseadosDocs.map(g => ({
       name: g.name,
@@ -2844,12 +2916,29 @@ window.addEventListener("click", (e) => {
 
 window.addEventListener("load", () => {
   const loader = document.getElementById("loader");
-  if(loader){
-    loader.style.opacity = "0";
-    loader.style.transition = "opacity .35s ease";
-    setTimeout(() => {
-      if(loader.parentNode) loader.remove();
-    }, 350);
+  const yaVioVideo = localStorage.getItem("videoIntroVisto");
+  const video = document.getElementById("videoBienvenida");
+
+  if(yaVioVideo === "si"){
+    if(loader){
+      loader.style.opacity = "0";
+      loader.style.transition = "opacity .35s ease";
+      setTimeout(() => {
+        if(loader.parentNode) loader.remove();
+      }, 350);
+    }
+  }else{
+    if(loader && loader.parentNode){
+      loader.remove();
+    }
+
+    abrirVideoIntro();
+  }
+
+  if(video){
+    video.addEventListener("ended", () => {
+      cerrarVideoIntro();
+    });
   }
 });
 
